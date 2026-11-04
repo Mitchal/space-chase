@@ -5,14 +5,18 @@ import './core/camera.js';
 import { content } from './core/registry.js';
 import { startRun } from './core/run.js';
 import { loadServerLog, progress } from './core/storage.js';
+import { playtest } from './core/mode.js';
 import { emit } from './core/events.js';
 
+// The dev server lists the pod folders on disk; a packaged build (web or app) ships the list as pods.json.
 let pods = [];
-try { pods = await (await fetch('/api/pods')).json(); } catch { console.warn('No pod list from the server; running the bare kernel.'); }
+try { pods = await (await fetch('/api/pods')).json(); } catch {
+  try { pods = await (await fetch('pods.json')).json(); } catch { console.warn('No pod list; running the bare kernel.'); }
+}
 for (const name of pods) {
   try { await import(`./pods/${name}/pod.js`); } catch (err) { console.error(`Pod "${name}" failed to load`, err); }
 }
 
-await loadServerLog();
+if (playtest) await loadServerLog();
 emit('ready');
 if (!content.startScreen) startRun({ startArena: progress.chosenStart });

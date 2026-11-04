@@ -1,15 +1,18 @@
-// Local only by default; LURE_HOST=0.0.0.0 opens it to the home network (e.g. to play on a phone).
-const HOST = process.env.LURE_HOST || '127.0.0.1';
 // Serves the game and appends each run's reaction to data/taste-log.jsonl.
+// Local only by default; LURE_HOST=0.0.0.0 opens it to the home network (e.g. to play on a phone).
+// LURE_DIST=1 serves the player build (dist/, from tools/build-web.js) on port 8766 instead, as a plain static host.
 const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.join(__dirname, 'game');
+const HOST = process.env.LURE_HOST || '127.0.0.1', DIST = !!process.env.LURE_DIST, PORT = DIST ? 8766 : 8765;
+const ROOT = path.join(__dirname, DIST ? 'dist' : 'game');
 const LOG = path.join(__dirname, 'data', 'taste-log.jsonl');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css',
+  '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.apk': 'application/vnd.android.package-archive' };
 fs.mkdirSync(path.dirname(LOG), { recursive: true });
 
 const readLog = () => fs.existsSync(LOG) ? fs.readFileSync(LOG, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)) : [];
 
 http.createServer((req, res) => {
+  if (DIST) return serveFile(req, res);
   if (req.url === '/api/log' && req.method === 'POST') {
     let body = '';
     req.on('data', c => { body += c; if (body.length > 1e6) req.destroy(); });
@@ -30,6 +33,10 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'content-type': 'application/json' });
     return res.end(JSON.stringify(readLog()));
   }
+  serveFile(req, res);
+}).listen(PORT, HOST, () => console.log(`Lure${DIST ? ' (player build)' : ''} on http://${HOST}:${PORT}`));
+
+function serveFile(req, res) {
   let p = decodeURIComponent(req.url.split('?')[0]);
   if (p === '/') p = '/index.html';
   const file = path.join(ROOT, p);
@@ -39,4 +46,4 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });
     res.end(data);
   });
-}).listen(8765, HOST, () => console.log(`Lure on http://${HOST}:8765`));
+}

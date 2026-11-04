@@ -13,11 +13,14 @@ export function step(dt) {
   sweepDead();
 }
 
-on('keyPressed', code => {
-  if (code !== 'KeyP' || !world.run || world.run.over) return;
-  world.paused = !world.paused;
-  emit('pauseChanged', world.paused);
-});
+// Pauses or resumes the run in progress (no-op when there's none). Any pod may call it (a key, a button, the app going away).
+export function setPaused(paused) {
+  if (!world.run || world.run.over || world.paused === paused) return;
+  world.paused = paused;
+  emit('pauseChanged', paused);
+}
+
+on('keyPressed', code => { if (code === 'KeyP') setPaused(!world.paused); });
 
 let last = performance.now();
 function frame(now) {
