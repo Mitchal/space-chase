@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Space Chase</string>
     <string name="title_activity_main">Space Chase</string>
-    <string name="package_name">io.github.mitchal.lure</string>
-    <string name="custom_url_scheme">io.github.mitchal.lure</string>
+    <string name="package_name">com.mikaelbrandt.spacechase</string>
+    <string name="custom_url_scheme">com.mikaelbrandt.spacechase</string>
 </resources>

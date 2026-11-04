@@ -1,4 +1,4 @@
-package io.github.mitchal.lure;
+package com.mikaelbrandt.spacechase;
 
 import android.os.Build;
 import android.os.Bundle;
