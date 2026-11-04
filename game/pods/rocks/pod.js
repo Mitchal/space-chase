@@ -7,6 +7,7 @@ import { on } from '../../core/events.js';
 import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
 import { player, hurt } from '../../core/player.js';
 import { dist, pushOut } from '../../core/geometry.js';
+import { inView } from '../../core/camera.js';
 import { courseRng } from '../../core/course-seed.js';
 import { SPILL, scatter, fieldShare } from './field-patterns.js';
 
@@ -45,14 +46,16 @@ addSystem(ORDER.move, dt => {
 });
 
 addSystem(ORDER.collide, () => {
+  const pursuers = lurables();
   for (const k of rocks()) {
-    for (const e of lurables()) if (dist(k, e) < k.r + e.r) kill(e, 'rock');
+    for (const e of pursuers) if (!e.dead && dist(k, e) < k.r + e.r) kill(e, 'rock');
     if (dist(k, player) < k.r + player.r) { hurt('rock', k); pushOut(player, k); }
   }
 });
 
 addDrawer(LAYER.hazards, ctx => {
   for (const k of rocks()) {
+    if (!inView(k, k.r + 4)) continue;
     ctx.beginPath(); ctx.arc(k.x, k.y, k.r, 0, Math.PI * 2);
     ctx.fillStyle = '#1f2533'; ctx.fill();
     ctx.strokeStyle = '#c9a27a'; ctx.lineWidth = 2.5; ctx.stroke();

@@ -7,6 +7,8 @@ import { player, hurt } from '../../core/player.js';
 import { fieldPoint } from '../../core/spawn-points.js';
 import { dist } from '../../core/geometry.js';
 import { courseRng } from '../../core/course-seed.js';
+import { glowSprite, drawSprite } from '../../core/sprites.js';
+import { inView } from '../../core/camera.js';
 import { burst, fx } from '../../core/effects.js';
 
 const BLAST = 64, HURT_RADIUS = BLAST * 0.85, SLICE = 250, LOOKAHEAD = 700;
@@ -40,9 +42,10 @@ addSystem(ORDER.spawn, () => {
 
 addSystem(ORDER.collide, dt => {
   for (const m of world.ents) if (m.type === 'mine' && m.spawn > 0) m.spawn -= dt;
+  const pursuers = lurables();
   for (const m of live('mine')) {
     if (m.fuse > 0 && (m.fuse -= dt) <= 0) { explode(m); continue; }
-    if (lurables().some(e => dist(m, e) < m.r + e.r) || dist(m, player) < m.r + player.r) explode(m);
+    if (pursuers.some(e => !e.dead && dist(m, e) < m.r + e.r) || dist(m, player) < m.r + player.r) explode(m);
   }
   for (const b of blasts) {
     b.t += dt;
@@ -54,6 +57,11 @@ addSystem(ORDER.collide, dt => {
   blasts = blasts.filter(b => b.t < 0.32);
 });
 
+const mineSprite = r => glowSprite('mine', r, 10, '#ffd166', g => {
+  g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.strokeStyle = '#ffd166'; g.lineWidth = 3; g.stroke();
+  g.beginPath(); g.arc(0, 0, 3, 0, Math.PI * 2); g.fillStyle = '#ffd166'; g.fill();
+});
+
 addDrawer(LAYER.hazards, ctx => {
   for (const b of blasts) {
     const k = b.t / 0.32, rad = BLAST * Math.min(1, b.t / 0.12);
@@ -62,12 +70,10 @@ addDrawer(LAYER.hazards, ctx => {
     ctx.strokeStyle = `rgba(255,209,102,${1 - k})`; ctx.lineWidth = 3; ctx.stroke();
   }
   for (const m of world.ents) {
-    if (m.type !== 'mine' || m.dead) continue;
+    if (m.type !== 'mine' || m.dead || !inView(m, HURT_RADIUS + 30)) continue;
     ctx.beginPath(); ctx.arc(m.x, m.y, HURT_RADIUS + player.r, 0, Math.PI * 2);
     ctx.setLineDash([3, 7]); ctx.strokeStyle = 'rgba(255,209,102,.28)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
     const pulse = 1 + 0.12 * Math.sin(world.t * 6 + m.x);
-    ctx.beginPath(); ctx.arc(m.x, m.y, m.r * pulse, 0, Math.PI * 2);
-    ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 3; ctx.shadowColor = '#ffd166'; ctx.shadowBlur = 10; ctx.stroke(); ctx.shadowBlur = 0;
-    ctx.beginPath(); ctx.arc(m.x, m.y, 3, 0, Math.PI * 2); ctx.fillStyle = '#ffd166'; ctx.fill();
+    drawSprite(ctx, mineSprite(m.r), m.x, m.y, 0, pulse);
   }
 });

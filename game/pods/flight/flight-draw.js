@@ -15,7 +15,9 @@ function drawWalls(ctx) {
     ctx.fillStyle = 'rgba(255,77,109,.12)'; ctx.fill();
     ctx.beginPath();
     for (let x = x0; x <= x1; x += 12) { const y = world.laneAt(x)[edge]; x === x0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
-    ctx.strokeStyle = WALL; ctx.lineWidth = 3; ctx.shadowColor = WALL; ctx.shadowBlur = 14; ctx.stroke(); ctx.shadowBlur = 0;
+    // The glow is a wide faint stroke under the line (a live shadowBlur here cost a phone dearly).
+    ctx.strokeStyle = 'rgba(255,77,109,.22)'; ctx.lineWidth = 12; ctx.stroke();
+    ctx.strokeStyle = WALL; ctx.lineWidth = 3; ctx.stroke();
   }
 }
 

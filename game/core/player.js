@@ -5,6 +5,7 @@ import { addSystem, addDrawer, ORDER, LAYER } from './registry.js';
 import { intent } from './input.js';
 import { clamp } from './geometry.js';
 import { burst, floatText, fx } from './effects.js';
+import { glowSprite, drawSprite } from './sprites.js';
 
 export const PSPEED = 270;
 // How the hero turns input into motion. Default: grip the input direction (1/s; high = turns on a dime).
@@ -53,8 +54,10 @@ addSystem(ORDER.input, dt => {
 addDrawer(LAYER.player, ctx => {
   if (world.run.outcome === 'dead' || world.transition > 0) return;
   if (player.inv > 0 && Math.floor(world.t * 16) % 2) return;
-  ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
-  ctx.fillStyle = '#7cf2c8'; ctx.shadowColor = '#7cf2c8'; ctx.shadowBlur = 16; ctx.fill(); ctx.shadowBlur = 0;
+  drawSprite(ctx, glowSprite('player', player.r, 16, '#7cf2c8', g => {
+    g.beginPath(); g.arc(0, 0, player.r, 0, Math.PI * 2); g.fillStyle = '#7cf2c8'; g.fill();
+  }), player.x, player.y);
+  ctx.fillStyle = '#7cf2c8';
   // A nose: the ship's heading if it has one, else the direction of travel.
   const s = Math.hypot(player.vx, player.vy);
   if (player.heading !== undefined || s > 30) {

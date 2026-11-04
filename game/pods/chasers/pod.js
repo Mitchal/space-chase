@@ -5,6 +5,7 @@ import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
 import { player, hurt } from '../../core/player.js';
 import { entryPoint } from '../../core/spawn-points.js';
 import { clamp, dist, wrapAngle } from '../../core/geometry.js';
+import { glowSprite, drawSprite } from '../../core/sprites.js';
 import { WARN_S, drawEntryWarning } from './entry-warning.js';
 
 // TURN: v10 widened it to 1.8 to make up for thrusters; v11 is back to direct control, so back to 2.3 (~130px radius at
@@ -69,12 +70,15 @@ addSystem(ORDER.collide, () => {
   }
 });
 
+const ship = () => glowSprite('chaser', 13, 10, COLOR, g => {
+  g.beginPath(); g.moveTo(13, 0); g.lineTo(-9, 8); g.lineTo(-5, 0); g.lineTo(-9, -8); g.closePath();
+  g.fillStyle = COLOR; g.fill();
+});
+
 addDrawer(LAYER.mobs, ctx => {
   for (const e of world.ents) {
     if (e.type !== 'chaser') continue;
     if (e.spawn > 0) { drawEntryWarning(ctx, e, COLOR); continue; }
-    ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.a);
-    ctx.beginPath(); ctx.moveTo(13, 0); ctx.lineTo(-9, 8); ctx.lineTo(-5, 0); ctx.lineTo(-9, -8); ctx.closePath();
-    ctx.fillStyle = COLOR; ctx.shadowColor = COLOR; ctx.shadowBlur = 10; ctx.fill(); ctx.restore();
+    drawSprite(ctx, ship(), e.x, e.y, e.a);
   }
 });
