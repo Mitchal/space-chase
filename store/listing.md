@@ -31,9 +31,9 @@ Games → Action (or Arcade)
 Arcade, Action, Casual, Offline, Single player
 
 ## Contact details
-- Email: required, and shown publicly on the listing.
-- Website: optional (the web version, once hosted).
-- Privacy policy URL: the hosted `privacy.html` (see PUBLISHING.md, step 4).
+- Email: spacechase@mikaelbrandt.com (shown publicly; Porkbun forwards it to your inbox).
+- Website: https://spacechase.mikaelbrandt.com/
+- Privacy policy URL: https://spacechase.mikaelbrandt.com/privacy.html
 
 ## Graphics
 | Asset | Requirement | File |

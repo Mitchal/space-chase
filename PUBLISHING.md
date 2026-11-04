@@ -47,7 +47,7 @@ The Android version code follows it automatically (1.0.1 → 10001).
 
 ## 4. Put the privacy policy online
 Play requires a public URL for it.
-1. Replace `CONTACT_EMAIL` in `game/privacy.html` with the address you want people to write to.
+1. Set up the forward for `spacechase@mikaelbrandt.com` (Porkbun → mikaelbrandt.com → Email Forwarding); the privacy page lists it.
 2. Host the web build at **spacechase.mikaelbrandt.com** (see `HOSTING.md`).
 3. The policy is then at `https://spacechase.mikaelbrandt.com/privacy.html`, and the game itself is playable at
    `https://spacechase.mikaelbrandt.com/`.
