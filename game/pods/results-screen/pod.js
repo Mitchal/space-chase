@@ -42,7 +42,9 @@ if (!playtest) {
   });
 
   $('xAgain').onclick = again;
-  $('xMenu').onclick = () => { hide(); world.run = null; emit('showTitle'); };
+  const toMenu = () => { hide(); world.run = null; emit('showTitle'); };
+  $('xMenu').onclick = toMenu;
+  on('back', e => { if (!e.handled && $('results').classList.contains('show')) { e.handled = true; toMenu(); } });
   $('xShare').onclick = async () => {
     try { if (navigator.share) return await navigator.share({ text: shareText }); } catch { return; }
     try { await navigator.clipboard.writeText(shareText); $('xShared').hidden = false; } catch {}

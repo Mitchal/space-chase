@@ -1,5 +1,5 @@
 // Pausing: P on a keyboard, a small button on screen (phones have no P), and automatically when the app or tab goes
-// into the background. The pause card can resume or quit to the menu.
+// into the background. The pause card can resume or quit to the menu. Back (Android, Escape) pauses, then quits.
 import { world } from '../../core/world.js';
 import { on, emit } from '../../core/events.js';
 import { setPaused } from '../../core/loop.js';
@@ -15,12 +15,19 @@ const $ = id => document.getElementById(id);
 
 $('pauseBtn').onclick = () => setPaused(true);
 $('resumeBtn').onclick = () => setPaused(false);
-$('quitBtn').onclick = () => {
+function quit() {
   setPaused(false);
   world.run = null;
   $('pauseBtn').hidden = true;
   emit('showTitle');
-};
+}
+$('quitBtn').onclick = quit;
+// Back during a run pauses; back again while paused quits to the menu.
+on('back', e => {
+  if (e.handled || !world.run || world.run.over) return;
+  e.handled = true;
+  if (world.paused) quit(); else setPaused(true);
+});
 document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
 
 on('pauseChanged', paused => $('pause').classList.toggle('show', paused));

@@ -2,7 +2,8 @@
 //
 // Events in use: runStart, arenaEnter, arenaExit {…arena, cleared}, arenaCleared, runEnd, runSettled,
 // kill {e, cause}, hurt {cause, src}, playerDown {cause, src}, keyTaken {left, total},
-// exitOpened, keyPressed (code), pauseChanged (paused), showTitle, ready.
+// exitOpened, keyPressed (code), pauseChanged (paused), showTitle, ready, nearMiss {e},
+// back {handled}: a screen that handles "back" sets handled = true.
 
 const handlers = new Map();
 

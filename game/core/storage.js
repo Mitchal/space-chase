@@ -1,7 +1,7 @@
 // The taste log (browser copy + the on-disk copy via the server), run numbering and checkpoint progress.
 
-export const VERSION = 14;
-const LOG_KEY = 'lure.tasteLog.v1', RUN_KEY = 'lure.runCount.v1', START_KEY = 'lure.startArena.v14';
+export const VERSION = 15;
+const LOG_KEY = 'lure.tasteLog.v1', RUN_KEY = 'lure.runCount.v1', START_KEY = 'lure.startArena.v15';
 const mem = { log: [], runs: 0 };
 
 export const progress = { bestArena: 1, chosenStart: 0, serverRuns: 0 };
