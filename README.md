@@ -14,6 +14,7 @@ into rocks, walls, mines, lasers and each other. Every death explodes, and a mis
 | Player build (offline-capable web app in `dist/`) | `npm run build` | serve `dist/` from any static host |
 | …served locally | `LURE_DIST=1 LURE_HOST=0.0.0.0 node serve.js` | `http://<IP>:8766`, APK at `/lure.apk` |
 | Android app (debug APK) | `npm run android` | `release/lure.apk` |
+| Android app for Google Play (signed bundle) | `npm run android:release` | `release/lure.aab` |
 | Architecture lint | `npm run lint` | |
 
 `npm run android` needs Android Studio installed (it uses its bundled Java and the Android SDK).
@@ -44,11 +45,7 @@ when the course ahead is generated, and what is culled. A wide phone shows more 
 ## Shipping notes
 
 - **Web:** upload `dist/` anywhere static (GitHub Pages, Netlify, Cloudflare Pages). It installs as an app and runs offline.
-- **Google Play:** the APK in `release/` is a debug build for sideloading. For the store you need:
-  - a release build signed with an upload key (Android Studio: Build → Generate Signed App Bundle, keeping the key safe);
-  - `versionCode`/`versionName` in `android/app/build.gradle`;
-  - a privacy policy (the game stores only local scores; there's no network or tracking);
-  - store listing art.
+- **Google Play:** step by step in [PUBLISHING.md](PUBLISHING.md). `npm run android:release` builds the signed bundle; store text and art are in `store/`.
 - **Not built yet:**
   - sound;
   - haptics;
