@@ -9,3 +9,6 @@ android/capacitor-cordova-android-plugins/
 *.apk
 .claude/
 release/
+android/keystore.properties
+*.jks
+*.keystore

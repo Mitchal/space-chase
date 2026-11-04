@@ -1,7 +1,7 @@
 # Lure
 
-You can't attack. Fly right through an asteroid field ahead of a death wave, with pursuers on your tail. Lead them
-into rocks, walls, mines, lasers and each other. Every death explodes, and a pursuer roaring past within a hair slows time.
+You can't attack. Fly right through an asteroid field ahead of a death wave, with missiles on your tail. Lead them
+into rocks, walls, mines, lasers and each other. Every death explodes, and a missile roaring past within a hair slows time.
 
 **The hook is the Daily Challenge:** one course a day, the same for everyone. Beat your best score; the ghost of your best run flies with you.
 

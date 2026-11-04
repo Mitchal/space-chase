@@ -3,6 +3,7 @@
 import { world, W, H } from '../../core/world.js';
 import { player } from '../../core/player.js';
 import { clamp } from '../../core/geometry.js';
+import { view } from '../../core/canvas.js';
 
 export const SAMPLE_S = 0.1;
 const COLOR = '185,196,255';
@@ -31,7 +32,7 @@ export function drawGhost(ctx, g) {
     ctx.font = '600 11px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.fillText('best', g.x, g.y - 16);
     return;
   }
-  const x = clamp(g.x, c.x + 18, c.x + W - 18), y = clamp(g.y, c.y + 18, c.y + H - 18);
+  const n = view.inset, x = clamp(g.x, c.x + n.left + 18, c.x + W - n.right - 18), y = clamp(g.y, c.y + n.top + 18, c.y + H - n.bottom - 18);
   ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
   const ahead = g.x > player.x;
   ctx.font = '600 11px system-ui,sans-serif'; ctx.textAlign = ahead ? 'right' : 'left';

@@ -13,9 +13,10 @@ export const PSPEED = 270;
 export const handling = { grip: 14, steer: null };
 export const player = { x: W / 2, y: H / 2, r: 9, vx: 0, vy: 0, hp: 2, maxHp: 2, inv: 0 };
 
+// What players see ("hit by a missile"); also the killedBy values in the taste log ("a chaser" before v16).
 const LABELS = {
-  chaser: 'a chaser', charger: 'a charger', 'charger dash': 'a charger dash', mine: 'a mine blast',
-  laser: 'a laser', rock: 'a rock', wall: 'a death wall', wave: 'the death wave', blast: 'a pursuer blast',
+  chaser: 'a missile', charger: 'a charger', 'charger dash': 'a charger dash', mine: 'a mine blast',
+  laser: 'a laser', rock: 'a rock', wall: 'a death wall', wave: 'the death wave', blast: 'a missile blast',
 };
 export const hurtLabel = cause => LABELS[cause] || cause;
 

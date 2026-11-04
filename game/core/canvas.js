@@ -3,6 +3,7 @@ import { W, H, world, setViewWidth } from './world.js';
 import { runDrawers, LAYER } from './registry.js';
 import { fx } from './effects.js';
 import { rand } from './geometry.js';
+import { measureSafeArea } from './safe-area.js';
 
 const BG = '#0e1118';
 
@@ -14,7 +15,9 @@ export const ctx = cvs.getContext('2d', { alpha: false });
 // was most of the frame cost (v14 on his phone: "Lagging on my phone"). Capped at MAX_SCALE: sharp enough, and cheap.
 const MAX_SCALE = 1.5;
 // hud: text size multiplier for screen-space text; on a phone the whole view is scaled down, so text needs to grow.
-export const view = { scale: 1, hud: 1 };
+// inset: how far screen-space UI must stay from each edge of the view (game pixels), clear of notches and rounded
+// corners (core/safe-area.js). HUD drawers place things relative to it.
+export const view = { scale: 1, hud: 1, inset: { top: 0, right: 0, bottom: 0, left: 0 } };
 const touch = matchMedia('(pointer: coarse)').matches;
 export const hudFont = (px, weight = 600) => `${weight} ${Math.round(px * view.hud)}px system-ui,sans-serif`;
 
@@ -23,6 +26,12 @@ function fit() {
   setViewWidth(H * innerWidth / innerHeight); // fill the screen's width instead of letterboxing
   const s = Math.min(innerWidth / W, innerHeight / H) * margin;
   view.hud = touch ? Math.min(1.6, Math.max(1, 0.75 / s)) : 1;
+  // The canvas is centred; where it already sits clear of an edge, that edge needs less (or no) inset.
+  const safe = measureSafeArea(), gapX = (innerWidth - W * s) / 2, gapY = (innerHeight - H * s) / 2;
+  view.inset = {
+    top: Math.max(0, safe.top - gapY) / s, bottom: Math.max(0, safe.bottom - gapY) / s,
+    left: Math.max(0, safe.left - gapX) / s, right: Math.max(0, safe.right - gapX) / s,
+  };
   cvs.style.width = W * s + 'px'; cvs.style.height = H * s + 'px';
   view.scale = Math.min(MAX_SCALE, s * dpr);
   cvs.width = Math.round(W * view.scale); cvs.height = Math.round(H * view.scale);

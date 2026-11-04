@@ -29,7 +29,7 @@ const begin = () => { $('title').classList.remove('show'); startRun({ startArena
 // (content.controlsHelp); these lines are always true.
 const DEFAULT_CONTROLS = 'Move with <kbd>WASD</kbd> / arrows, or hold the mouse to steer. That\'s all.';
 const BASE_HOW = [
-  '<b style="color:#ff7a59">Pursuers</b> die on each other, <b style="color:#c9a27a">rocks</b>, <b style="color:#ffd166">mines</b> and <b style="color:#ff4d6d">lasers</b>. So do you.',
+  '<b style="color:#ff7a59">Missiles</b> blow up on each other, <b style="color:#c9a27a">rocks</b>, <b style="color:#ffd166">mines</b> and <b style="color:#ff4d6d">lasers</b>. So do you.',
   'Two hits and you\'re down. Each new sector gives one back.',
 ];
 

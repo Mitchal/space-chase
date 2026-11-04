@@ -5,11 +5,12 @@ import { player } from '../../core/player.js';
 import { hudFont, view } from '../../core/canvas.js';
 
 addDrawer(LAYER.hud, ctx => {
+  const { top, left } = view.inset, y = top + 26 * view.hud;
   ctx.font = hudFont(15); ctx.fillStyle = '#e8ecf3';
   ctx.textAlign = 'left';
-  ctx.fillText('♥'.repeat(Math.max(0, player.hp)) + '♡'.repeat(player.maxHp - Math.max(0, player.hp)), 16, 26 * view.hud);
+  ctx.fillText('♥'.repeat(Math.max(0, player.hp)) + '♡'.repeat(player.maxHp - Math.max(0, player.hp)), left + 16, y);
   ctx.textAlign = 'center';
-  ctx.fillText(`${content.stageLabel} ${world.run.ai + 1} / ${content.arenas.length} · ${world.arena.def.name}`, W / 2, 26 * view.hud);
+  ctx.fillText(`${content.stageLabel} ${world.run.ai + 1} / ${content.arenas.length} · ${world.arena.def.name}`, W / 2, y);
 });
 
 addDrawer(LAYER.effects, ctx => {

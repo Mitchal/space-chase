@@ -1,7 +1,7 @@
 {
   "name": "Lure",
   "short_name": "Lure",
-  "description": "You can't attack. Lead your pursuers into rocks, walls and each other. A new daily course every day.",
+  "description": "You can't attack. Lead the missiles chasing you into rocks, walls and each other. A new daily course every day.",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",

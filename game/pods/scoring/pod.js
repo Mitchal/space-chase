@@ -30,6 +30,7 @@ addSummary('score', () => ({ score, maxChain, chainsOf3 }));
 
 addDrawer(LAYER.hud, ctx => {
   ctx.font = hudFont(15); ctx.textAlign = 'right'; ctx.fillStyle = '#e8ecf3';
-  ctx.fillText(String(score), W - 16, 26 * view.hud);
-  if (chain > 1) { ctx.fillStyle = '#7cf2c8'; ctx.fillText(`chain ×${chain}`, W - 16, 46 * view.hud); }
+  const x = W - view.inset.right - 16, top = view.inset.top;
+  ctx.fillText(String(score), x, top + 26 * view.hud);
+  if (chain > 1) { ctx.fillStyle = '#7cf2c8'; ctx.fillText(`chain ×${chain}`, x, top + 46 * view.hud); }
 });

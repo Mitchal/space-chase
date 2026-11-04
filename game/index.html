@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Lure: you can't attack. Lead your pursuers into rocks, walls and each other. A new daily course every day.">
+<meta name="description" content="Lure: you can't attack. Lead the missiles chasing you into rocks, walls and each other. A new daily course every day.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -20,7 +20,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:14px/1.
 canvas{background:#0e1118;border:1px solid var(--line);border-radius:6px;touch-action:none}
 @media (pointer:coarse){canvas{border:0;border-radius:0}}
 .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,.74);
-  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  padding:var(--safe-top,0) var(--safe-right,0) var(--safe-bottom,0) var(--safe-left,0);box-sizing:border-box}
 .overlay.show{display:flex}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box}
 .card.menu{text-align:center;width:min(440px,calc(100vw - 32px))}
@@ -48,7 +48,7 @@ button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)
 .badge{display:inline-block;background:var(--accent);color:#06110d;font-weight:800;letter-spacing:.12em;border-radius:999px;padding:3px 12px;font-size:12px;margin-bottom:8px}
 details{margin-top:16px;text-align:left}
 summary{cursor:pointer;color:var(--dim);text-align:center}
-.pause-btn{position:fixed;right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;
+.pause-btn{position:fixed;right:calc(10px + var(--safe-right,0px));bottom:calc(10px + var(--safe-bottom,0px));width:44px;height:44px;border-radius:50%;
   border:1px solid var(--line);background:rgba(21,25,37,.7);color:var(--fg);font-size:14px;cursor:pointer;z-index:2}
 /* A phone on its side is short: tighten the cards so the menu and results fit without scrolling. */
 @media (max-height:480px){

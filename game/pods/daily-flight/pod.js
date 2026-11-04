@@ -56,5 +56,5 @@ addDrawer(LAYER.player - 1, ctx => {
 addDrawer(LAYER.hud, ctx => {
   if (world.botPolicy || rec.best === null) return;
   ctx.font = hudFont(13); ctx.textAlign = 'right'; ctx.fillStyle = '#b9c4ff';
-  ctx.fillText(`best today ${rec.best.toLocaleString()}`, W - 16, 66 * view.hud);
+  ctx.fillText(`best today ${rec.best.toLocaleString()}`, W - view.inset.right - 16, view.inset.top + 66 * view.hud);
 });

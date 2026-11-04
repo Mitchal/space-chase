@@ -17,7 +17,7 @@ content.stageFlow = { clearBetween: false, pauseS: 0, recenter: false, clearedTe
 content.forward = { x: 1, y: 0 }; // for bots: progress is to the right
 content.howToPlay = [
   'Fly right to the <b style="color:#7cf2c8">finish</b>. The <b style="color:#ff4d6d">death wave</b> rolls in from behind; the <b style="color:#ff4d6d">walls</b> above and below kill on touch.',
-  "Pursuers are faster than you but turn wider, so lead them into rocks, walls and the wave. A red arrow on the edge of the screen shows where one is coming in.",
+  "Missiles are faster than you but turn wider, so lead them into rocks, walls and the wave. A red arrow on the edge of the screen shows where one is coming in.",
 ];
 world.cameraFollows = true;
 world.bounds = { minX: -1e6, maxX: COURSE_END + 300, minY: -1e6, maxY: 1e6 };

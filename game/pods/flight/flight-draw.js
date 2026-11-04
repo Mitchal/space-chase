@@ -3,7 +3,7 @@
 import { world, W, H } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
-import { hudFont } from '../../core/canvas.js';
+import { hudFont, view } from '../../core/canvas.js';
 
 const WALL = '#ff4d6d';
 
@@ -49,11 +49,12 @@ function drawWaveWarning(ctx, wave) {
   g.addColorStop(0, `rgba(255,77,109,${0.15 + 0.5 * k})`); g.addColorStop(1, 'rgba(255,77,109,0)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, 80, H);
   ctx.font = hudFont(12, 700); ctx.textAlign = 'left'; ctx.fillStyle = '#ff9aa8';
-  ctx.fillText(`WAVE ◀ ${Math.round(player.x - wave.x)}`, 10, H / 2);
+  ctx.fillText(`WAVE ◀ ${Math.round(player.x - wave.x)}`, view.inset.left + 10, H / 2);
 }
 
 function drawProgress(ctx, wave, sectorLen, end) {
-  const n = content.arenas.length, x0 = 160, x1 = W - 160, y = H - 16;
+  // Inside the safe area, with room on the right for the on-screen pause button.
+  const n = content.arenas.length, x0 = view.inset.left + 160, x1 = W - view.inset.right - 200, y = H - view.inset.bottom - 16;
   const at = x => x0 + (x1 - x0) * Math.max(0, Math.min(1, x / end));
   ctx.fillStyle = '#2a3142'; ctx.fillRect(x0, y, x1 - x0, 4);
   ctx.fillStyle = '#7cf2c8'; ctx.fillRect(x0, y, at(player.x) - x0, 4);
