@@ -1,7 +1,8 @@
 // Shares a run's line with a link to the game. On phones, the system share sheet. On computers, the clipboard: a
 // desktop share sheet is a clumsy detour. Every failure falls through to the next way, so the button never does
 // nothing. The last fallback hands the text back so the screen can show it for copying by hand.
-export const GAME_URL = 'https://spacechase.mikaelbrandt.com/';
+import { GAME_URL } from '../../core/game-url.js';
+export { GAME_URL };
 
 const touch = matchMedia('(pointer: coarse)').matches;
 

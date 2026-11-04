@@ -1,8 +1,9 @@
 // Serves the game and appends each run's reaction to data/taste-log.jsonl.
 // Local only by default; LURE_HOST=0.0.0.0 opens it to the home network (e.g. to play on a phone).
 // LURE_DIST=1 serves the player build (dist/, from tools/build-web.js) on port 8766 instead, as a plain static host.
+// LURE_PORT picks another port (e.g. when an old server still holds the default one).
 const http = require('http'), fs = require('fs'), path = require('path');
-const HOST = process.env.LURE_HOST || '127.0.0.1', DIST = !!process.env.LURE_DIST, PORT = DIST ? 8766 : 8765;
+const HOST = process.env.LURE_HOST || '127.0.0.1', DIST = !!process.env.LURE_DIST, PORT = +process.env.LURE_PORT || (DIST ? 8766 : 8765);
 const ROOT = path.join(__dirname, DIST ? 'dist' : 'game');
 const LOG = path.join(__dirname, 'data', 'taste-log.jsonl');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css',
