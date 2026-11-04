@@ -1,0 +1,17 @@
+{
+  "about": "Headless bot playtests of Lure v3 (game/sim.js), 12 runs per cell, after matching arena length across variants. Bots are skill proxies, not taste proxies. 'random' = no-skill floor; 'evader' = crude competent player that flees and swirls, dodges telegraphs and avoids rocks, then runs straight for the exit once it opens (it does NOT deliberately lead pursuers into the door slam). arena = mean arena reached (of 6); kps = lured kills/s; slammedPerEscape = pursuers crushed by the door per escape.",
+  "summary": {
+    "random/A": { "runs": 12, "wins": 0, "arena": 1, "dur": 9.5, "kps": 0.33, "escapes": 0, "deaths": { "a chaser": 11, "a mine blast": 1 } },
+    "random/B": { "runs": 12, "wins": 0, "arena": 1, "dur": 9.5, "kps": 0.33, "escapes": 0, "deaths": { "a chaser": 10, "a mine blast": 2 } },
+    "evader/A": { "runs": 12, "wins": 2, "arena": 3.83, "dur": 89, "kps": 0.8, "escapes": 36, "secondsPerEscapedArena": 22.7, "slammedPerEscape": 0.56, "deaths": { "a chaser": 6, "a mine blast": 2, "a charger dash": 1, "a laser": 1 } },
+    "evader/B": { "runs": 12, "wins": 1, "arena": 3.92, "dur": 86, "kps": 0.76, "escapes": 36, "secondsPerEscapedArena": 21.9, "slammedPerEscape": 0.5, "deaths": { "a chaser": 10, "a charger": 1 } }
+  },
+  "evaderA_outcome_dur_arena": [["dead",72.6,3],["dead",64.6,3],["dead",88.4,4],["dead",140.9,6],["win",149.8,6],["dead",85.9,4],["dead",43.6,2],["dead",86.7,4],["dead",126.3,5],["dead",44.9,2],["dead",11.2,1],["win",153,6]],
+  "evaderB_outcome_dur_arena": [["win",141.1,6],["dead",110.9,5],["dead",51.5,3],["dead",117.6,5],["dead",16.7,1],["dead",112.6,5],["dead",127.5,6],["dead",19.2,1],["dead",66.7,3],["dead",109.3,5],["dead",19.7,1],["dead",139.7,6]],
+  "notes": [
+    "First tuning (B killCharge 1.2, A on the raw timer) made B far easier: evader B won 8/10 at ~17.6s per arena, while evader A won 0/10 and stalled at arena 4. Retuned (A timer x0.7, B killCharge 0.6) so the A/B tests *why* the exit opens, not difficulty.",
+    "A winning run takes ~2.5 minutes (P9 target: runs that build over minutes).",
+    "Mikael out-lured the evader bot in v2 (about 1.0 kills/s vs about 0.8), so his B arenas may open somewhat faster than the bot's.",
+    "Slam counts are low because the bot runs straight for the door. A human who deliberately drags pursuers to the exit will slam more."
+  ]
+}

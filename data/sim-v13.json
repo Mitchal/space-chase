@@ -1,0 +1,10 @@
+{
+  "version": 13,
+  "note": "Evader bot, direct control. Bots starting at sector 5 get the 8s ramp-in, so late-sector numbers are optimistic.",
+  "tuning": [
+    { "change": "slow-mo for all; Tumble/Breakout lasers 4.5s/3.8s; late rocks A 22 / B 13", "from1": { "A": { "runs": 14, "arena": 3.43, "wins": 1, "rockShareOfKills": 0.42 }, "B": { "runs": 14, "arena": 3.71, "wins": 3, "rockShareOfKills": 0.39 } }, "from5": { "A": { "runs": 14, "wins": 10, "rockShareOfKills": 0.48 }, "B": { "runs": 14, "wins": 9, "rockShareOfKills": 0.35 } } },
+    { "change": "late pursuers max 5 -> 7, every 2.6/2.2 -> 2.2/1.9 (reverted)", "from5": { "A": { "runs": 16, "wins": 13, "rockShareOfKills": 0.38 }, "B": { "runs": 16, "wins": 9, "rockShareOfKills": 0.31 } }, "verdict": "more pursuers = bigger chains; easier, not harder" },
+    { "change": "final", "from1": { "A": { "runs": 18, "arena": 3.67, "wins": 3, "rockShareOfKills": 0.41, "laserKillsPerRun": 2.0 }, "B": { "runs": 18, "arena": 3.83, "wins": 2, "rockShareOfKills": 0.43, "laserKillsPerRun": 3.1 } } }
+  ],
+  "verdict": "Overall difficulty as in v12. B thins the late field; whether that reads as 'less auto-death' or 'emptier' is for him to say."
+}

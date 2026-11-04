@@ -1,0 +1,10 @@
+{
+  "version": 9,
+  "note": "Evader bot from sector 1. 'direct' bypasses the thrusters; the thruster autopilot is a crude floor, not a proxy for him.",
+  "tuning": [
+    { "change": "A share 0.55 (r 22-70), B share 0.30 (r 40-100), entry warning 1.5s, flank min 380", "direct": { "A": 3.29, "B": 3.0 }, "thrusterAutopilot": { "A": 2.07, "B": 2.21 }, "rocksInViewAvg": { "A": 3.5, "B": 2.0 } },
+    { "change": "A share 0.65, B 0.40 (more rocks to lure into)", "direct": { "A": { "runs": 34, "arena": 3.38 }, "B": { "runs": 34, "arena": 2.77 } }, "thrusterAutopilot": { "A": 2.0, "B": 2.0 } },
+    { "change": "B share 0.34 (final)", "direct": { "A": { "runs": 34, "arena": 3.38, "pursuersSeenShare": 0.48 }, "B": { "runs": 22, "arena": 3.32, "pursuersSeenShare": 0.45 } }, "thrusterAutopilot": { "A": { "runs": 12, "arena": 2.25 }, "B": { "runs": 12, "arena": 2.25 } } }
+  ],
+  "verdict": "A and B matched within noise. Bots get further than in v8 (direct 2.3-2.8 -> 3.3-3.4; thrusters 1.5-1.7 -> 2.25): fewer rocks and no close, unwarned pursuers. Under thrusters, bots still die mostly to rocks (10 of 12)."
+}

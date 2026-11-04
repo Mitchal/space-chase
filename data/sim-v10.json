@@ -1,0 +1,78 @@
+{
+  "version": 10,
+  "note": "Evader bot from sector 1. 'thrust' uses the thruster autopilot (the controls he plays with); 'direct' bypasses it.",
+  "tuning": [
+    {
+      "change": "turn 1.8, wall knock-back, A from behind (no pinning)",
+      "A": {
+        "direct": 6,
+        "thrust": 1.75,
+        "seenShare": 0.09,
+        "waveKillsPerRun": 29.3
+      },
+      "B": {
+        "direct": 3.5,
+        "thrust": 2.08,
+        "seenShare": 0.55,
+        "waveKillsPerRun": 0.25
+      },
+      "verdict": "A broken: the wave ate pursuers from behind (v7 again)"
+    },
+    {
+      "change": "announced pursuers pinned to the screen; catch-up ×1.35 beyond 450px",
+      "A": {
+        "direct": 4.17,
+        "thrust": 2.58,
+        "seenShare": 0.64,
+        "waveKillsPerRun": 0.92
+      },
+      "B": {
+        "direct": 3,
+        "thrust": 1.58,
+        "seenShare": 0.57
+      }
+    },
+    {
+      "change": "A pace 0.7, extra 1",
+      "A": {
+        "direct": 3.94,
+        "thrust": 2.06
+      }
+    },
+    {
+      "change": "A pace 0.55, extra 2 (final)",
+      "A": {
+        "runs": 14,
+        "direct": 3.86,
+        "thrust": 1.93,
+        "seenShare": 0.66,
+        "waveKillsPerRun": 0.57
+      },
+      "B": {
+        "runs": 14,
+        "direct": 2.93,
+        "thrust": 1.86,
+        "seenShare": 0.56,
+        "waveKillsPerRun": 0.14
+      }
+    },
+    {
+      "change": "rock sizes settled on v9 A for both variants (removes the confound)",
+      "A": {
+        "runs": 14,
+        "direct": 3.79,
+        "thrust": 2.21,
+        "seenShare": 0.68,
+        "waveKillsPerRun": 0.71
+      },
+      "B": {
+        "runs": 14,
+        "direct": 3.14,
+        "thrust": 1.93,
+        "seenShare": 0.57,
+        "waveKillsPerRun": 0.14
+      }
+    }
+  ],
+  "verdict": "Matched within noise under the thruster autopilot (A 1.9-2.2, B 1.9). With direct control A stays easier (3.8-3.9 vs 2.9-3.1): pursuers from behind rarely catch a ship flying straight at full speed. Under thrusters, bots die mostly to rocks."
+}

@@ -1,0 +1,64 @@
+{
+  "version": 3,
+  "madeAt": "2026-10-30T17:30:00.000Z",
+  "runs": [
+    {
+      "run": 9,
+      "variant": "A",
+      "playAgain": { "yes": 0.82, "meh": 0.14, "no": 0.04 },
+      "vsPrevious": { "first run": 0.68, "better": 0.17, "same": 0.08, "worse": 0.07 },
+      "tags": { "tense": 0.35, "satisfying": 0.3, "learning": 0.3, "flow": 0.25, "clever": 0.25 },
+      "tagsLeftBlank": 0.3,
+      "gutSentence": "Love the escape idea, the door crushing them behind me feels great. That is exactly the Obi-Wan thing. The rocks took me a second to understand.",
+      "themes": ["the exit / getaway structure delivers the objective he asked for", "door slam as the reference moment", "learning the new world elements (rocks, gate charge)"],
+      "arenaReached": { "median": 3, "range": [2, 5] },
+      "killedBy": { "a chaser": 0.5, "a laser": 0.2, "a mine blast": 0.15, "a charger dash": 0.1, "a charger": 0.05 }
+    },
+    {
+      "run": 10,
+      "variant": "B",
+      "playAgain": { "yes": 0.82, "meh": 0.14, "no": 0.04 },
+      "vsPrevious": { "same": 0.38, "better": 0.3, "worse": 0.22, "first run": 0.1 },
+      "tags": { "clever": 0.35, "flow": 0.35, "satisfying": 0.3, "tense": 0.25 },
+      "tagsLeftBlank": 0.35,
+      "gutSentence": "Felt like killing them opened the door faster, nice that luring is how you get out. Got further this time.",
+      "themes": ["noticing (or not) that kills drive the exit", "progress / getting further via checkpoints", "intensity spike when the exit opens"],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.4, "a charger dash": 0.22, "a laser": 0.18, "a mine blast": 0.12, "a charger": 0.08 }
+    },
+    {
+      "run": 11,
+      "variant": "A",
+      "playAgain": { "yes": 0.75, "meh": 0.2, "no": 0.05 },
+      "vsPrevious": { "same": 0.4, "worse": 0.33, "better": 0.22, "first run": 0.05 },
+      "tags": { "tense": 0.3, "learning": 0.3, "too hard": 0.2, "flow": 0.25 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "Started from a later arena and it got hectic fast when the alarm went off. Waiting for the door felt a bit long this time. Maybe the exit could move or there could be more than one?",
+      "themes": ["exit-open alarm spike / chargers in later arenas", "waiting on the timer vs wanting agency", "he proposes a new objective or structure idea"],
+      "arenaReached": { "median": 4, "range": [3, 6] },
+      "killedBy": { "a charger dash": 0.3, "a chaser": 0.35, "a laser": 0.17, "a mine blast": 0.1, "a charger": 0.08 }
+    },
+    {
+      "run": 12,
+      "variant": "B",
+      "playAgain": { "yes": 0.75, "meh": 0.2, "no": 0.05 },
+      "vsPrevious": { "same": 0.35, "better": 0.3, "worse": 0.3, "first run": 0.05 },
+      "tags": { "flow": 0.3, "satisfying": 0.3, "clever": 0.25, "tense": 0.25 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Dragging a big group into the door and slamming it is the best part. Moving rocks were chaotic but fun. This is getting close to the game.",
+      "themes": ["door slam / dragging pursuers to the exit", "late-arena elements (moving rocks, everything at once)", "overall direction / run arc feels right"],
+      "arenaReached": { "median": 5, "range": [3, 6] },
+      "killedBy": { "a chaser": 0.38, "a charger dash": 0.27, "a laser": 0.17, "a mine blast": 0.1, "a charger": 0.08 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P8", "verdict": "will hold", "why": "Open-the-exit is the form he picked himself; a visible gate from arena entry gives the dodge a destination, so expect explicit approval on the first run." },
+    { "pillar": "P1", "verdict": "will hold", "why": "The door slam only crushes what he chose to drag along, which reads as his idea; B strengthens this by tying lured kills to the escape." },
+    { "pillar": "P7", "verdict": "will hold", "why": "Decoy and pocket mine are gone and dash is always on the same key, so no control friction; new elements are in the world, not on the keyboard." },
+    { "pillar": "P9", "verdict": "at risk", "why": "Bots average ~4 of 6 arenas in ~90s; with 3 hearts and the alarm spike, his runs from arena 1 may still end before 2 minutes, though checkpoints soften it." },
+    { "pillar": "P5", "verdict": "at risk", "why": "Chargers enter at arena 4 alongside lasers and the 1.7x alarm spawns; that pile-up is where 'cheap' deaths returned before." },
+    { "pillar": "P4", "verdict": "will hold", "why": "Continuous spawning removes the lone-enemy stall; the only dead-air risk is waiting on A's timer with nothing near a hazard." }
+  ],
+  "biggestRisk": "The exit-open alarm (1.7x spawns) stacked with chargers and lasers from arena 4 on could make the moment of escape feel like a chaotic scramble rather than a planned getaway, producing deaths he calls cheap right as the climax should land; secondarily, the A/B difference is so subtle (only the exit % climb rate) that he may not perceive it and the comparisons will mostly read 'same'.",
+  "abVerdict": "Slight preference for B (~58%), expressed indirectly rather than as an explicit A/B call: B runs more likely tagged clever/satisfying and described in terms of 'killing them opens the door', while A runs more likely mention waiting on the exit or the alarm scramble. A sizeable chance (~35%) he doesn't notice any difference between variants."
+}

@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-03T12:00:00Z",
+  "runs": [
+    {
+      "run": 46,
+      "variant": "B",
+      "playAgain": { "yes": 0.84, "meh": 0.11, "no": 0.05 },
+      "vsPrevious": { "better": 0.42, "same": 0.08, "worse": 0.08, "first run": 0.42 },
+      "tags": { "satisfying": 0.4, "flow": 0.2, "clever": 0.25 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Oh yes, the explosions! Got a bunch of them to blow up together behind me. And so much easier to fly near the rocks again.",
+      "themes": [
+        "the blasts / a chain going off (his own idea, very visible: orange bursts, shake)",
+        "direct control back: threading rocks feels possible again (may be one clause, or silent)",
+        "retry energy; possibly 'chasers are fast now'"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 5] },
+      "killedBy": { "a chaser": 0.3, "a rock": 0.2, "a laser": 0.1, "a death wall": 0.1, "the death wave": 0.08, "a pursuer blast": 0.12, "a mine blast": 0.05, "a charger dash": 0.02, "none (won)": 0.03 }
+    },
+    {
+      "run": 47,
+      "variant": "A",
+      "playAgain": { "yes": 0.8, "meh": 0.15, "no": 0.05 },
+      "vsPrevious": { "better": 0.2, "same": 0.35, "worse": 0.35, "first run": 0.1 },
+      "tags": { "tense": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "Hm, no explosions this time? They just died. The chasers are pretty quick now, one caught me while I was turning around a rock.",
+      "themes": [
+        "notices the blasts are missing (blind, but the contrast with 46 is stark)",
+        "faster pursuers on his tail: one moment where one caught him",
+        "self-blame / try again"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 5] },
+      "killedBy": { "a chaser": 0.38, "a rock": 0.22, "a laser": 0.11, "a death wall": 0.1, "the death wave": 0.09, "a pursuer blast": 0.0, "a mine blast": 0.05, "a charger dash": 0.02, "none (won)": 0.03 }
+    },
+    {
+      "run": 48,
+      "variant": "B",
+      "playAgain": { "yes": 0.8, "meh": 0.14, "no": 0.06 },
+      "vsPrevious": { "better": 0.45, "same": 0.25, "worse": 0.2, "first run": 0.1 },
+      "tags": { "satisfying": 0.35, "clever": 0.3, "chaotic": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "Lured like five of them into a rock and the whole pack went up, that was awesome! Then one blew up right next to me though.",
+      "themes": [
+        "one chain moment: gathering a crowd and setting it off",
+        "the blast hurting him when a pursuer dies near his tail (fair or not)",
+        "busier screen / lots of pursuers"
+      ],
+      "arenaReached": { "median": 3, "range": [2, 5] },
+      "killedBy": { "a chaser": 0.27, "a rock": 0.18, "a laser": 0.12, "a death wall": 0.09, "the death wave": 0.08, "a pursuer blast": 0.15, "a mine blast": 0.06, "a charger dash": 0.02, "none (won)": 0.03 }
+    },
+    {
+      "run": 49,
+      "variant": "A",
+      "playAgain": { "yes": 0.78, "meh": 0.17, "no": 0.05 },
+      "vsPrevious": { "better": 0.2, "same": 0.35, "worse": 0.35, "first run": 0.1 },
+      "tags": { "tense": 0.2, "learning": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "Got further this time. Fun to swing them into the rocks, but I miss the explosions when three of them bunch up.",
+      "themes": [
+        "a deeper run / progress (direct control lets him reach new sectors again)",
+        "missing the chain payoff, or a concrete tweak to pursuers (speed/number)",
+        "possibly a laser or later-sector hazard"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.33, "a rock": 0.2, "a laser": 0.15, "a death wall": 0.1, "the death wave": 0.08, "a pursuer blast": 0.0, "a mine blast": 0.07, "a charger dash": 0.03, "none (won)": 0.04 }
+    },
+    {
+      "run": 50,
+      "variant": "B",
+      "playAgain": { "yes": 0.78, "meh": 0.15, "no": 0.07 },
+      "vsPrevious": { "better": 0.35, "same": 0.3, "worse": 0.25, "first run": 0.1 },
+      "tags": { "satisfying": 0.3, "chaotic": 0.2, "clever": 0.2 },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "Haha a whole chain went off across the screen. Got killed by one of their blasts though, didn't see it coming. Maybe the blast should be a bit bigger so it's easier to set off but I'd know to stay clear.",
+      "themes": [
+        "a chain-reaction moment",
+        "a pursuer-blast hit, judged against 'my mistake' vs 'cheap'",
+        "a concrete tweak proposal to the blasts (radius, chain scoring, or a visual cue)"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.25, "a rock": 0.17, "a laser": 0.13, "a death wall": 0.08, "the death wave": 0.08, "a pursuer blast": 0.17, "a mine blast": 0.06, "a charger dash": 0.02, "none (won)": 0.04 }
+    },
+    {
+      "run": 51,
+      "variant": "A",
+      "playAgain": { "yes": 0.72, "meh": 0.21, "no": 0.07 },
+      "vsPrevious": { "better": 0.18, "same": 0.37, "worse": 0.37, "first run": 0.08 },
+      "tags": { "tense": 0.2 },
+      "tagsLeftBlank": 0.65,
+      "gutSentence": "The explosion version is more fun I think. This one felt a bit flat, the chasers just disappear. Keep the explosions.",
+      "themes": [
+        "comparison: prefers the blast runs (may say so outright at session end)",
+        "flatness / less payoff without blasts",
+        "a new idea amplifying chains, or what the later sectors should add"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.33, "a rock": 0.2, "a laser": 0.15, "a death wall": 0.1, "the death wave": 0.08, "a pursuer blast": 0.0, "a mine blast": 0.07, "a charger dash": 0.03, "none (won)": 0.04 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P7", "verdict": "will hold", "why": "Direct control is what he asked for; expect at most one clause of relief, then silence. A 'turn on a dime is weird' relapse (run 20) is possible but unlikely (~10%) now that he has felt the alternative." },
+    { "pillar": "P1", "verdict": "will hold", "why": "Gathering a crowd and setting it off is his own clever/satisfying moment scaled up; the 66px radius means chains still need packing. Small risk that B's 26-30 kills read as automatic later in the session." },
+    { "pillar": "P5", "verdict": "at risk", "why": "In B, a pursuer smashing on a rock he just threaded past dies 30-80px behind him, inside the blast. Labelled 'a pursuer blast', so readable after the fact, but it can feel like his own trap went off in his face." },
+    { "pillar": "P10", "verdict": "will hold", "why": "Blasts hurt him like mines; he asked for one set of rules and proposed 'like a mine'. Expect acceptance with maybe a radius/clarity tweak, not a request for immunity." },
+    { "pillar": "Pursuers are the star", "verdict": "will hold", "why": "Faster, more frequent, from behind, on screen most of the run; with direct control he can out-turn them again (v6 'clever dodging')." },
+    { "pillar": "P9", "verdict": "will hold", "why": "Direct control should lift him past sector 3 for the first time since v7, easing the 15-run sector fatigue." }
+  ],
+  "biggestRisk": "Pursuer blasts hitting him in B. Pursuers sit on his tail, and the move he likes best (thread close past a rock and let the pursuer hit it) now sets off a blast right behind him. Bots never died to a blast because they don't play that way, but he does. If one of those hits kills him with no visible warning, the payoff turns into 'felt bad', and a single unreadable death has flipped play-again before (run 33).",
+  "abVerdict": "Prefers B (blasts) clearly, and unlike v8-v10 he'll name it: the blasts are loud, visible and his own idea, so expect praise for a chain on B runs (~75%) and 'no explosions this time?' or 'felt flatter' on at least one A run (~45%), possibly saying 'keep the explosions' by the end. Likely qualifier: one complaint or tweak about a blast hurting him."
+}

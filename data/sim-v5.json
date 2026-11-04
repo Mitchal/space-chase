@@ -1,0 +1,19 @@
+{
+  "about": "Headless bot playtests of Lure v5, the flight (game/pods/bots), 15 runs per cell on the final tuning. Bots are skill proxies, not taste proxies. 'random' = no-skill floor; 'evader' = crude competent player: flees and swirls, dodges telegraphs, keeps off rocks and mines, cruises left of centre. A full run is 6 sectors x 40s = 240s. arena = mean sector reached (of 6).",
+  "summary": {
+    "random/A": { "runs": 15, "wins": 0, "sector": 1, "dur": 6.35, "deaths": { "a chaser": 4, "a rock": 11 } },
+    "random/B": { "runs": 15, "wins": 0, "sector": 1, "dur": 9.15, "deaths": { "a chaser": 9, "a rock": 6 } },
+    "evader/A": { "runs": 15, "wins": 0, "sector": 2.53, "dur": 89.3, "kps": 0.5, "deaths": { "a laser": 1, "a chaser": 5, "a rock": 9 } },
+    "evader/B": { "runs": 15, "wins": 0, "sector": 2.93, "dur": 94.5, "kps": 0.51, "deaths": { "a chaser": 8, "a rock": 4, "a mine blast": 1, "a laser": 2 } }
+  },
+  "evader_sector_survival": { "1": "25/30 cleared", "2": "17/25", "3": "6/17 (lasers arrive: the bot's weakest point)", "4": "3/6", "5": "1/3", "6": "0/1" },
+  "tuning_history": [
+    "First pass: evader averaged sector 2.3-2.5 and the random bot hit rocks within ~6s. Sectors 1-2 softened (fewer rocks and chasers) so sector 1 onboards rather than walls.",
+    "Found and fixed a telemetry bug: in a continuous flow the next sector starts inside the 'arenaCleared' handler, so 'escaped' was recorded on the wrong sector. Now arenaExit carries {cleared}. 0 inconsistent runs after the fix."
+  ],
+  "notes": [
+    "The bot never wins (0/30), but it's the crudest proxy yet: it can't plan a path through a scrolling field. Mikael has out-performed the evader in every version (v4: critic expected arena 2, he reached 6 and won twice). Expect him to get much further.",
+    "Runs now last minutes (P9): bot runs up to 207s, a full flight is 240s.",
+    "A vs B (scroll speed 95 vs 140 px/s) are matched in difficulty for the bot (2.53 vs 2.93 sectors)."
+  ]
+}

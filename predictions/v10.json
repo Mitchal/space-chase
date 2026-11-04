@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-02T15:00:00Z",
+  "runs": [
+    {
+      "run": 40,
+      "variant": "B",
+      "playAgain": { "yes": 0.76, "meh": 0.17, "no": 0.07 },
+      "vsPrevious": { "better": 0.25, "same": 0.12, "worse": 0.08, "first run": 0.55 },
+      "tags": { "tense": 0.25, "learning": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "Managed to shake one into a rock this time, but then another one came in from the top while I was busy with it. Again.",
+      "themes": [
+        "one moment with pursuers: an out-turn that worked, then a second one from the side/ahead that got him",
+        "pursuers still arriving from anywhere (his v9 complaint persists in B), possibly unnamed",
+        "retry energy / self-blame"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 3] },
+      "killedBy": { "a chaser": 0.38, "a rock": 0.3, "a laser": 0.09, "the death wave": 0.08, "a death wall": 0.06, "a mine blast": 0.06, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 41,
+      "variant": "A",
+      "playAgain": { "yes": 0.8, "meh": 0.14, "no": 0.06 },
+      "vsPrevious": { "better": 0.42, "same": 0.25, "worse": 0.2, "first run": 0.13 },
+      "tags": { "tense": 0.25, "satisfying": 0.2, "clever": 0.2 },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "Oh, now they're on my tail! That feels more like the TIE fighters. There are a lot of them though, had a whole train behind me.",
+      "themes": [
+        "notices pursuers coming from behind (the most visible change, and the one he asked for), told as the fantasy",
+        "the number of them: a train/swarm on his tail",
+        "a moment of swinging the tail through rocks or into each other"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a chaser": 0.42, "a rock": 0.28, "a laser": 0.09, "the death wave": 0.07, "a death wall": 0.05, "a mine blast": 0.06, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 42,
+      "variant": "B",
+      "playAgain": { "yes": 0.72, "meh": 0.2, "no": 0.08 },
+      "vsPrevious": { "better": 0.22, "same": 0.33, "worse": 0.35, "first run": 0.1 },
+      "tags": { "tense": 0.2, "too hard": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "They came from the sides again this time, I was looking behind me and one came in from ahead. Harder to plan.",
+      "themes": [
+        "pursuers from the flanks/ahead feel unplannable again (contrast with run 41, maybe without naming variants)",
+        "death by a pursuer he didn't route around",
+        "a small proposal about where they should come from (e.g. 'always from behind')"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 3] },
+      "killedBy": { "a chaser": 0.38, "a rock": 0.3, "a laser": 0.1, "the death wave": 0.08, "a death wall": 0.05, "a mine blast": 0.06, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 43,
+      "variant": "A",
+      "playAgain": { "yes": 0.74, "meh": 0.2, "no": 0.06 },
+      "vsPrevious": { "better": 0.38, "same": 0.3, "worse": 0.22, "first run": 0.1 },
+      "tags": { "satisfying": 0.25, "clever": 0.2, "tense": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "Dragged a whole line of them through the asteroids and watched them pop one after another, that was great. Then the laser got me.",
+      "themes": [
+        "a tail-through-the-rocks moment (reference moment 2 delivered), or the opposite: too many to shake",
+        "getting a bit further (sector 3, lasers)",
+        "the count of pursuers in A (praise for the train, or 'maybe a bit fewer')"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a chaser": 0.38, "a rock": 0.27, "a laser": 0.13, "the death wave": 0.07, "a death wall": 0.05, "a mine blast": 0.06, "a charger dash": 0.02, "none (won)": 0.02 }
+    },
+    {
+      "run": 44,
+      "variant": "B",
+      "playAgain": { "yes": 0.62, "meh": 0.28, "no": 0.1 },
+      "vsPrevious": { "better": 0.2, "same": 0.38, "worse": 0.32, "first run": 0.1 },
+      "tags": { "tense": 0.2, "samey": 0.2 },
+      "tagsLeftBlank": 0.65,
+      "gutSentence": "Died in the asteroid belt again. I keep starting from the beginning, maybe I should be able to start from the sector I reached.",
+      "themes": [
+        "sector fatigue: same opening, stalling at sectors 2-3 (15+ runs from sector 1)",
+        "a proposal about progression (checkpoints, start further, or something new to see)",
+        "a pursuer from the side as the cause of death"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 3] },
+      "killedBy": { "a chaser": 0.37, "a rock": 0.3, "a laser": 0.1, "the death wave": 0.08, "a death wall": 0.05, "a mine blast": 0.07, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 45,
+      "variant": "A",
+      "playAgain": { "yes": 0.6, "meh": 0.3, "no": 0.1 },
+      "vsPrevious": { "better": 0.3, "same": 0.35, "worse": 0.25, "first run": 0.1 },
+      "tags": { "tense": 0.2, "satisfying": 0.2 },
+      "tagsLeftBlank": 0.65,
+      "gutSentence": "I like them coming from behind better, I can plan for it. But I still can't get past the laser part, need a break.",
+      "themes": [
+        "a stated preference for pursuers from behind (the A/B answered in his own words)",
+        "stalled progress / end-of-session fatigue",
+        "a moment with the laser sector or the swarm"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a chaser": 0.38, "a rock": 0.26, "a laser": 0.14, "the death wave": 0.07, "a death wall": 0.05, "a mine blast": 0.06, "a charger dash": 0.02, "none (won)": 0.02 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P1 (out-turn, don't outrun)", "verdict": "will hold", "why": "Turn 2.3 -> 1.8 is his own fix and big enough to feel; expect it to be absorbed silently, showing up as 'shook one into a rock' moments rather than as a comment about turning." },
+    { "pillar": "Pursuers are the star / reference moment 2", "verdict": "will hold", "why": "Both variants keep pursuers on screen ~55-68%; in A a tail behind him is literally the TIE-fighter picture and the most likely source of his best moment of the session." },
+    { "pillar": "P2 (intensity with dynamics)", "verdict": "at risk", "why": "A sends pursuers almost twice as often and allows 5 alive from sector 1, plus 1.35x catch-up when far: the tail never thins out, which can read as 'can't shake em' again or 'too many', in A specifically." },
+    { "pillar": "P5 (readable)", "verdict": "will hold", "why": "Warnings unchanged and praised; the wall knock-back removes the 'never got free' double hit silently. Small residual risk in A of a hit from behind while he looks ahead." },
+    { "pillar": "P9 / P3 (runs build over minutes; run 5 looks different)", "verdict": "at risk", "why": "Bots still reach ~2 under thrusters, so he likely stalls in sectors 2-3 from sector 1 for the 10th-15th run in a row; v9 already produced the first 'meh'. Expect fatigue and a progression proposal late in the session." },
+    { "pillar": "P12 (thrusters)", "verdict": "will hold", "why": "With pursuers weakened, the cost he raised in v9 shrinks; expect silence about controls again." }
+  ],
+  "biggestRisk": "Sector fatigue, not the A/B: the pursuer fixes make the dodging feel better, but bots under thrusters still reach only ~sector 2, so he is likely to keep dying in the Asteroid belt/Crossfire from sector 1 for the 10th-15th straight run. v9 ended on 'meh' after nine such runs; by runs 44-45 expect 'meh' and a request about progression (start from a checkpoint, see something new). A's doubled, catch-up-boosted swarm can add 'too many of them / can't shake em' and accelerate it.",
+  "abVerdict": "Unlike past A/Bs, this one is visible and is his own complaint, so ~55% he names it in his words ('they're on my tail now', 'they came from the sides again'). He'll prefer A (~60%), framed as the TIE-fighter fantasy and being able to plan, with the main hedge being the number of pursuers in A ('a lot of them'); ~25% a third option such as 'from behind, but fewer' or 'mostly behind with the occasional flanker'. Sector reached will be about equal."
+}

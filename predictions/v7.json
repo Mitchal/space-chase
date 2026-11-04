@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-02T10:00:00Z",
+  "runs": [
+    {
+      "run": 23,
+      "variant": "A",
+      "playAgain": { "yes": 0.82, "meh": 0.14, "no": 0.04 },
+      "vsPrevious": { "better": 0.4, "same": 0.1, "worse": 0.15, "first run": 0.35 },
+      "tags": { "tense": 0.35, "learning": 0.3, "flow": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Okay the ship slides now, takes a bit to get used to. Kept drifting into rocks I saw coming. Again!",
+      "themes": [
+        "the handling under his thumbs: drift/overshoot while re-learning control (a felt difficulty, not an evaluation of the fix)",
+        "a death he attributes to not stopping in time (rock or wall)",
+        "short retry energy ('again', 'I need to be better')"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a rock": 0.42, "a chaser": 0.17, "a death wall": 0.12, "a laser": 0.08, "the death wave": 0.06, "none (won)": 0.06, "a charger dash": 0.05, "a mine blast": 0.04 }
+    },
+    {
+      "run": 24,
+      "variant": "B",
+      "playAgain": { "yes": 0.82, "meh": 0.14, "no": 0.04 },
+      "vsPrevious": { "better": 0.5, "same": 0.25, "worse": 0.2, "first run": 0.05 },
+      "tags": { "tense": 0.45, "learning": 0.2, "satisfying": 0.2 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "Whoa that surge! Had to floor it with chasers on my tail. Got further this time.",
+      "themes": [
+        "the wave surge as a visible on-screen event (a moment of panic, breaking away)",
+        "progress: further than last run",
+        "momentum fading from his comments as he adapts"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a rock": 0.35, "a chaser": 0.14, "the death wave": 0.14, "a laser": 0.1, "none (won)": 0.09, "a death wall": 0.08, "a charger dash": 0.06, "a mine blast": 0.04 }
+    },
+    {
+      "run": 25,
+      "variant": "A",
+      "playAgain": { "yes": 0.78, "meh": 0.17, "no": 0.05 },
+      "vsPrevious": { "better": 0.4, "same": 0.33, "worse": 0.27, "first run": 0.0 },
+      "tags": { "tense": 0.4, "satisfying": 0.25, "clever": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "The later sectors get really tight with the drift, I can't thread those rocks and still swing the chasers around.",
+      "themes": [
+        "late sectors (narrow lane, dense moving rocks, lasers) plus momentum feel cramped; hard to out-turn",
+        "a concrete next tweak (lane width, rock density, grip, or the end)",
+        "near-win ('so close' again) if he reaches sector 6"
+      ],
+      "arenaReached": { "median": 5, "range": [3, 6] },
+      "killedBy": { "a rock": 0.33, "none (won)": 0.15, "a laser": 0.14, "a chaser": 0.12, "a charger dash": 0.08, "a death wall": 0.08, "the death wave": 0.06, "a mine blast": 0.04 }
+    },
+    {
+      "run": 26,
+      "variant": "B",
+      "playAgain": { "yes": 0.76, "meh": 0.18, "no": 0.06 },
+      "vsPrevious": { "better": 0.4, "same": 0.33, "worse": 0.27, "first run": 0.0 },
+      "tags": { "tense": 0.4, "satisfying": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "SO close again! Breakout is brutal when the surge comes while I'm dodging lasers.",
+      "themes": [
+        "sector 6 / the finish as the wall he keeps hitting",
+        "stacked threats in the last sector (surge + lasers + chargers) feel like a pile-up",
+        "wants to win"
+      ],
+      "arenaReached": { "median": 5, "range": [3, 6] },
+      "killedBy": { "a rock": 0.28, "the death wave": 0.14, "a laser": 0.14, "none (won)": 0.14, "a chaser": 0.1, "a charger dash": 0.09, "a death wall": 0.07, "a mine blast": 0.04 }
+    },
+    {
+      "run": 27,
+      "variant": "A",
+      "playAgain": { "yes": 0.7, "meh": 0.22, "no": 0.08 },
+      "vsPrevious": { "better": 0.45, "same": 0.35, "worse": 0.2, "first run": 0.0 },
+      "tags": { "satisfying": 0.35, "tense": 0.3, "flow": 0.25, "clever": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "Made it! What happens after? Maybe there should be something at the end, like a mothership or a gate I have to fly through.",
+      "themes": [
+        "the win (first or nearly) and the ending feeling thin",
+        "he proposes something new for the climax or what comes next (boss/ending, more sectors, new world element)",
+        "a fiction detail he notices (e.g. asteroids passing through each other, ship look/trail)"
+      ],
+      "arenaReached": { "median": 6, "range": [3, 6] },
+      "killedBy": { "a rock": 0.28, "none (won)": 0.24, "a laser": 0.13, "a chaser": 0.1, "a charger dash": 0.08, "a death wall": 0.07, "the death wave": 0.06, "a mine blast": 0.04 }
+    },
+    {
+      "run": 28,
+      "variant": "B",
+      "playAgain": { "yes": 0.66, "meh": 0.24, "no": 0.1 },
+      "vsPrevious": { "better": 0.3, "same": 0.42, "worse": 0.28, "first run": 0.0 },
+      "tags": { "tense": 0.35, "satisfying": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "Fun. The first seconds feel a bit empty now that I know them. Maybe put something to dodge right away.",
+      "themes": [
+        "a design idea for what's next (structure, ending, new threat or world element)",
+        "the opening feels slow/empty once learned (8s with no pursuers, repeated six times)",
+        "enthusiasm plateau if he has already won"
+      ],
+      "arenaReached": { "median": 5, "range": [2, 6] },
+      "killedBy": { "a rock": 0.27, "none (won)": 0.17, "the death wave": 0.14, "a laser": 0.13, "a chaser": 0.1, "a charger dash": 0.08, "a death wall": 0.07, "a mine blast": 0.04 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P12", "verdict": "at risk", "why": "Momentum fixes the 'turn on a dime' fiction, but grip 4 on a movement-only control is a big drop from 14; in narrow, dense late sectors the drift may feel like the ship's fault, not his. New fiction nits are possible (rocks passing through each other)." },
+    { "pillar": "P1", "verdict": "will hold", "why": "He still out-turns 300px/s pursuers that sweep ~130px per turn, so the clever-dodge feeling from run 19 survives, though it gets cramped in the narrowest lanes." },
+    { "pillar": "P2", "verdict": "will hold", "why": "Ramp-in removes the cold-start wall, so sector-1 deaths should mostly vanish. B surges give a visible build/peak/release; A gives a steadier squeeze." },
+    { "pillar": "P4", "verdict": "at risk", "why": "Eight pursuer-free seconds at the start of every run: welcome at first, possibly 'empty' by the fifth or sixth repetition." },
+    { "pillar": "P9", "verdict": "will hold", "why": "A ~2-minute flight he nearly or actually finishes. Once he wins, expect him to ask what comes after the end." },
+    { "pillar": "P5", "verdict": "will hold", "why": "Surge warnings are on-screen events, and rocks entering from beyond the walls are visible because the camera is centred on him." }
+  ],
+  "biggestRisk": "What's under his thumbs: the ship now slides (grip 4, ~0.5s to reverse) while lanes narrow to 400px, rocks get denser and walls still hurt. In Belt, Tumble and Breakout he'll see a gap, steer for it, and keep drifting into a rock or a wall; with two hits, deaths start to feel like the ship's fault rather than his mistake. Expect 'a bit too slidey in the tight parts' or a request to tune grip or lane width, not praise for the momentum he asked for.",
+  "abVerdict": "Leans B (~55%) in what he says, because a surge is something he watches happen (flare, wave charging onto the screen, breaking away), while A's leashed wave sits just off-screen as a label. ~50% he never names a difference. If he does, it'll be a reaction to a surge moment ('that surge got me'), not a comparison. Outcomes may favour A (more wins), so a win in an A run could mask the preference."
+}

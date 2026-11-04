@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-03T17:00:00Z",
+  "runs": [
+    {
+      "run": 61,
+      "variant": "A",
+      "playAgain": { "yes": 0.86, "meh": 0.11, "no": 0.03 },
+      "vsPrevious": { "better": 0.14, "same": 0.18, "worse": 0.13, "first run": 0.55 },
+      "tags": { "satisfying": 0.6, "tense": 0.3, "clever": 0.3, "learning": 0.25 },
+      "tagsLeftBlank": 0.2,
+      "gutSentence": "Nice, a daily course! Feels right to start from the beginning now so the score actually means something. Now I have a best to beat.",
+      "themes": [
+        "the daily framing and the best score as a target (first contact with the meta loop)",
+        "one moment: a chain or a chaser that got him, framed against the score",
+        "chargers gone, absorbed silently or in one clause (~20% he mentions it)"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.62, "a rock": 0.1, "a laser": 0.07, "a death wall": 0.03, "the death wave": 0.03, "a mine blast": 0.02, "a charger dash": 0.0, "none (won)": 0.13 }
+    },
+    {
+      "run": 62,
+      "variant": "B",
+      "playAgain": { "yes": 0.84, "meh": 0.12, "no": 0.04 },
+      "vsPrevious": { "better": 0.36, "same": 0.27, "worse": 0.3, "first run": 0.07 },
+      "tags": { "satisfying": 0.55, "tense": 0.35, "clever": 0.3, "learning": 0.3 },
+      "tagsLeftBlank": 0.22,
+      "gutSentence": "Haha I can see my ghost! Fun to see where I flew last time, I passed the spot where I died. Would be cool if it was someone else's ghost too.",
+      "themes": [
+        "the ghost, first time he sees it (named ~55%): racing his past self, passing or losing to it",
+        "beating (or not) today's best",
+        "a forward-looking idea: other players' ghosts, a leaderboard or the race with collisions"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.62, "a rock": 0.1, "a laser": 0.07, "a death wall": 0.03, "the death wave": 0.03, "a mine blast": 0.02, "a charger dash": 0.0, "none (won)": 0.13 }
+    },
+    {
+      "run": 63,
+      "variant": "A",
+      "playAgain": { "yes": 0.8, "meh": 0.15, "no": 0.05 },
+      "vsPrevious": { "better": 0.34, "same": 0.33, "worse": 0.3, "first run": 0.03 },
+      "tags": { "satisfying": 0.55, "learning": 0.35, "clever": 0.3, "tense": 0.25 },
+      "tagsLeftBlank": 0.28,
+      "gutSentence": "I'm starting to learn the course, I knew where the mines were this time. Went for a big chain for the score and got too greedy :-D",
+      "themes": [
+        "learning the fixed course (rocks and mines in the same places)",
+        "score hunting: chasing chains/slow-mo for points and blaming his own greed",
+        "maybe a passing 'no ghost this time?' (~15%)"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.6, "a rock": 0.1, "a laser": 0.07, "a death wall": 0.03, "the death wave": 0.03, "a mine blast": 0.02, "a charger dash": 0.0, "none (won)": 0.15 }
+    },
+    {
+      "run": 64,
+      "variant": "B",
+      "playAgain": { "yes": 0.78, "meh": 0.16, "no": 0.06 },
+      "vsPrevious": { "better": 0.35, "same": 0.32, "worse": 0.3, "first run": 0.03 },
+      "tags": { "satisfying": 0.5, "tense": 0.35, "clever": 0.3, "learning": 0.25 },
+      "tagsLeftBlank": 0.32,
+      "gutSentence": "New best! Racing the ghost made me push harder. It would be even more fun if I could bump into it, or lure my chasers onto it.",
+      "themes": [
+        "the ghost as a rival: pushing harder, passing it, or dying while chasing it",
+        "a new best (or 'so close')",
+        "the race idea: a ghost/rival he can collide with or lure pursuers onto"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.6, "a rock": 0.1, "a laser": 0.07, "a death wall": 0.03, "the death wave": 0.03, "a mine blast": 0.02, "a charger dash": 0.0, "none (won)": 0.15 }
+    },
+    {
+      "run": 65,
+      "variant": "A",
+      "playAgain": { "yes": 0.7, "meh": 0.22, "no": 0.08 },
+      "vsPrevious": { "better": 0.3, "same": 0.36, "worse": 0.3, "first run": 0.04 },
+      "tags": { "satisfying": 0.5, "learning": 0.25, "clever": 0.25, "samey": 0.2 },
+      "tagsLeftBlank": 0.35,
+      "gutSentence": "Still fun, but the same course every time gets a bit samey within one day. The best score alone won't keep me coming back, maybe missions or new worlds on top.",
+      "themes": [
+        "longevity worry resurfacing: same course + a number is thin (his 'will probably lower the longevity')",
+        "a next-step proposal: missions (cages), worlds/weather, leaderboard vs others, hearts",
+        "a run moment (deep run or a chaser death)"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.6, "a rock": 0.1, "a laser": 0.07, "a death wall": 0.03, "the death wave": 0.03, "a mine blast": 0.02, "a charger dash": 0.0, "none (won)": 0.15 }
+    },
+    {
+      "run": 66,
+      "variant": "B",
+      "playAgain": { "yes": 0.7, "meh": 0.22, "no": 0.08 },
+      "vsPrevious": { "better": 0.3, "same": 0.35, "worse": 0.31, "first run": 0.04 },
+      "tags": { "satisfying": 0.5, "tense": 0.3, "clever": 0.25, "learning": 0.2 },
+      "tagsLeftBlank": 0.38,
+      "gutSentence": "I like having the ghost there, it's like a race. Would be awesome with other players' ghosts and a leaderboard. Let's do the missions next.",
+      "themes": [
+        "ghost = race: wants other players / a leaderboard / collisions",
+        "structure over feel: what the meta loop needs next",
+        "a run moment, often tired or 'so close'"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.6, "a rock": 0.1, "a laser": 0.07, "a death wall": 0.03, "the death wave": 0.03, "a mine blast": 0.02, "a charger dash": 0.0, "none (won)": 0.15 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P1", "verdict": "will hold", "why": "Chargers (the one non-luring enemy) are gone and late rocks sit between v13's A and B; every pursuer now chases, so kills stay his doing. Expect the removal to be absorbed silently." },
+    { "pillar": "P6", "verdict": "at risk", "why": "Within one session the 'daily' course is simply the same course every run. Freshness, his stated meta-loop value ('new worlds'), is what this slice lacks; expect 'samey' or a request for worlds/missions late in the session." },
+    { "pillar": "P3", "verdict": "will hold", "why": "A fixed course makes improvement legible: he learns where rocks and mines are and the best score climbs. 'Learning' and 'new best' should appear." },
+    { "pillar": "P9", "verdict": "will hold", "why": "No checkpoints means every run is a full flight from sector 1 (60-100s when it goes well); he wins from the start sometimes, so runs keep their build-up." },
+    { "pillar": "P5", "verdict": "will hold", "why": "The ghost is a labelled hollow circle in a distinct blue; small chance (~10%) it reads as clutter among pursuers or confuses him when it vanishes where his best run ended." },
+    { "pillar": "P11", "verdict": "at risk", "why": "Slightly easier without chargers (bots 3.9-4.0 vs 3.7-3.8) and he called v13 'a bit too easy maybe'; a 'too easy' tag on a winning run is plausible (~15%), though the score gives him a new way to be greedy and die." }
+  ],
+  "biggestRisk": "He experiences 'same course every run', not 'a new course every day': the date seed only shows tomorrow, and within today's session the slice is one fixed course plus a number and a passive circle. He already predicted this himself ('that will probably lower the longevity'), so after a new best or two expect the enthusiasm to flatten into 'fun, but what keeps me coming back?', a late meh, and a request for the next layer (missions, worlds, other players' ghosts or a collidable race) rather than any complaint about the flight.",
+  "abVerdict": "Leans B, and he names the ghost (~60%), because it is visible, labelled and his own pick ('scores and ghosts', the race idea). He will narrate it as a moment ('I passed my ghost', 'it was like racing myself') and immediately extend it: other players' ghosts, a leaderboard, or a ghost he can bump or lure chasers onto. A runs rarely mention its absence (~15%). Small chance (~15-20%) he finds it neutral or distracting and says the score is what matters."
+}

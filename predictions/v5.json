@@ -1,0 +1,219 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-02T08:30:00Z",
+  "runs": [
+    {
+      "run": 17,
+      "variant": "A",
+      "playAgain": {
+        "yes": 0.8,
+        "meh": 0.15,
+        "no": 0.05
+      },
+      "vsPrevious": {
+        "better": 0.44,
+        "same": 0.04,
+        "worse": 0.05,
+        "first run": 0.48
+      },
+      "tags": {
+        "tense": 0.4,
+        "flow": 0.4,
+        "satisfying": 0.3,
+        "learning": 0.25,
+        "clever": 0.2
+      },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Oh this is way more like it, dodging through the asteroids with them on my tail and watching them smash. Felt a bit slow in the first sector though, and I'm not sure where the chasers are behind me.",
+      "themes": [
+        "the TIE-fighters-in-an-asteroid-field moment finally lives in the core loop (positive, his own idea working)",
+        "pace/length: slow or sparse opening, or the run being long and steady rather than player-paced",
+        "a concrete next idea (e.g. controlling speed / pushing right, bigger set pieces at the end)"
+      ],
+      "arenaReached": {
+        "median": 4,
+        "range": [
+          2,
+          6
+        ]
+      },
+      "killedBy": {
+        "a rock": 0.33,
+        "a chaser": 0.3,
+        "a laser": 0.15,
+        "a charger dash": 0.05,
+        "a mine blast": 0.05,
+        "none (won)": 0.12
+      }
+    },
+    {
+      "run": 18,
+      "variant": "B",
+      "playAgain": {
+        "yes": 0.78,
+        "meh": 0.17,
+        "no": 0.05
+      },
+      "vsPrevious": {
+        "better": 0.56,
+        "same": 0.24,
+        "worse": 0.16,
+        "first run": 0.04
+      },
+      "tags": {
+        "tense": 0.45,
+        "flow": 0.4,
+        "satisfying": 0.25,
+        "learning": 0.2
+      },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "That was faster, I liked that, more intense. The rocks come at you quicker so you really have to weave.",
+      "themes": [
+        "notices the speed difference and links it to intensity (high-octane)",
+        "weaving through rocks / near misses",
+        "difficulty or a cheap hit from a rock or a chaser from behind"
+      ],
+      "arenaReached": {
+        "median": 5,
+        "range": [
+          3,
+          6
+        ]
+      },
+      "killedBy": {
+        "a rock": 0.35,
+        "a chaser": 0.25,
+        "a laser": 0.13,
+        "a charger dash": 0.05,
+        "a mine blast": 0.04,
+        "none (won)": 0.18
+      }
+    },
+    {
+      "run": 19,
+      "variant": "A",
+      "playAgain": {
+        "yes": 0.65,
+        "meh": 0.25,
+        "no": 0.1
+      },
+      "vsPrevious": {
+        "better": 0.29,
+        "same": 0.32,
+        "worse": 0.37,
+        "first run": 0.01
+      },
+      "tags": {
+        "flow": 0.3,
+        "satisfying": 0.25,
+        "tense": 0.25,
+        "clever": 0.2,
+        "samey": 0.2
+      },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "This one felt slower again. I think I prefer it fast. Maybe I should be able to push forward to speed up, or the sectors could be shorter so it doesn't drag.",
+      "themes": [
+        "compares speed to the previous run (A slower) and states a preference",
+        "proposes a pace control or structural tweak (shorter sectors, set pieces, an ending/boss)",
+        "kills feel incidental vs set up (P1), or the flight becoming routine"
+      ],
+      "arenaReached": {
+        "median": 6,
+        "range": [
+          4,
+          6
+        ]
+      },
+      "killedBy": {
+        "a rock": 0.25,
+        "a chaser": 0.22,
+        "a laser": 0.15,
+        "a charger dash": 0.06,
+        "a mine blast": 0.04,
+        "none (won)": 0.28
+      }
+    },
+    {
+      "run": 20,
+      "variant": "B",
+      "playAgain": {
+        "yes": 0.6,
+        "meh": 0.27,
+        "no": 0.13
+      },
+      "vsPrevious": {
+        "better": 0.45,
+        "same": 0.3,
+        "worse": 0.23,
+        "first run": 0.02
+      },
+      "tags": {
+        "flow": 0.3,
+        "tense": 0.3,
+        "satisfying": 0.25,
+        "samey": 0.2
+      },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "Made it to the end. Fast is better. But once I know the sectors it's kind of the same each time; it needs something more at the end or some variation.",
+      "themes": [
+        "winning / reaching the end (and whether it felt earned)",
+        "replay value and variety once the flight is learned (enthusiasm decay)",
+        "a new design proposal for the format"
+      ],
+      "arenaReached": {
+        "median": 6,
+        "range": [
+          4,
+          6
+        ]
+      },
+      "killedBy": {
+        "a rock": 0.22,
+        "a chaser": 0.2,
+        "a laser": 0.13,
+        "a charger dash": 0.06,
+        "a mine blast": 0.04,
+        "none (won)": 0.35
+      }
+    }
+  ],
+  "pillarForecast": [
+    {
+      "pillar": "P1",
+      "verdict": "at risk",
+      "why": "Pursuers trail behind him while rocks stream left into them, so many rock kills happen without a deliberate setup. He'll enjoy watching them smash at first, but he may again feel the kills are more accidental than planned."
+    },
+    {
+      "pillar": "P2",
+      "verdict": "will hold",
+      "why": "Danger now comes from the situation in front of him (density, speed), which he can see, and sectors escalate visibly. B's speed reads as intensity."
+    },
+    {
+      "pillar": "P4",
+      "verdict": "at risk",
+      "why": "Sector 1 is deliberately sparse and A cruises at 95 px/s. That echoes run 3's 'slow to start', especially on repeat runs from sector 1."
+    },
+    {
+      "pillar": "P5",
+      "verdict": "at risk",
+      "why": "Pursuers enter from the left edge, just behind a player who starts at x=0.3 looking right at the field. A hit from behind that he never saw could feel cheap."
+    },
+    {
+      "pillar": "P8",
+      "verdict": "at risk",
+      "why": "Progress is visible (bar), but the pace is fixed at 40s per sector. He liked setting the pace himself, so he may ask for a way to influence speed."
+    },
+    {
+      "pillar": "P9",
+      "verdict": "will hold",
+      "why": "A full flight is 4 minutes, which answers 'we might need more levels'. A residual risk is that it feels long once it's learned."
+    },
+    {
+      "pillar": "P10/P11",
+      "verdict": "will hold",
+      "why": "He has accepted 2 hearts and dangerous rocks quietly. A strong player with a heart back per sector should get deep quickly."
+    }
+  ],
+  "biggestRisk": "The flight is a fixed 4-minute conveyor: the scroll, not the player, sets the pace, and every sector lasts exactly 40s. Once the novelty of his own idea wears off (by runs 19-20), and especially in the slower variant A, it may feel like being carried through rather than choosing a route. Kills come mostly from rocks running into pursuers behind him rather than traps he set. Expect 'slow', 'samey' or a request for speed control or variation, not a complaint about difficulty.",
+  "abVerdict": "Speed is visible, so unlike v4 he will probably notice (~70%). Leaning B (fast), ~55%, likely expressed as 'faster felt more intense/better' on run 18 or as 'slower again' on run 19. About 20% he prefers A for the room to set traps, and about 25% he doesn't name a preference or answers with a third option (letting him control the speed, e.g. pushing right to go faster)."
+}

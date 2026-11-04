@@ -1,0 +1,64 @@
+{
+  "version": 2,
+  "madeAt": "2026-10-30T15:00:00.000Z",
+  "runs": [
+    {
+      "run": 5,
+      "variant": "A",
+      "playAgain": { "yes": 0.72, "meh": 0.23, "no": 0.05 },
+      "vsPrevious": { "better": 0.6, "same": 0.15, "worse": 0.2, "first run": 0.05 },
+      "tags": { "flow": 0.4, "tense": 0.3, "satisfying": 0.3, "too hard": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "Way better start, straight into the action. It's fast now, I died earlier than before but it felt like my fault.",
+      "themes": ["faster start / no dead air", "intensity and pace", "difficulty jump vs v1"],
+      "waveReached": { "median": 6, "range": [4, 8] },
+      "killedBy": { "a chaser": 0.55, "a charger dash": 0.15, "a mine blast": 0.15, "a laser": 0.12, "a charger": 0.03 }
+    },
+    {
+      "run": 6,
+      "variant": "B",
+      "playAgain": { "yes": 0.75, "meh": 0.2, "no": 0.05 },
+      "vsPrevious": { "better": 0.55, "same": 0.2, "worse": 0.2, "first run": 0.05 },
+      "tags": { "flow": 0.45, "satisfying": 0.35, "clever": 0.25, "tense": 0.2 },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "The dash is nice, I can do the last second spin now and make them crash. Starting from wave 4 helps a lot.",
+      "themes": ["the dash and the last-second escape", "checkpoint / getting going faster", "unlock (decoy) anticipation"],
+      "waveReached": { "median": 7, "range": [4, 9] },
+      "killedBy": { "a chaser": 0.5, "a charger dash": 0.17, "a laser": 0.15, "a mine blast": 0.15, "a charger": 0.03 }
+    },
+    {
+      "run": 7,
+      "variant": "A",
+      "playAgain": { "yes": 0.62, "meh": 0.3, "no": 0.08 },
+      "vsPrevious": { "better": 0.35, "same": 0.2, "worse": 0.4, "first run": 0.05 },
+      "tags": { "clever": 0.3, "satisfying": 0.3, "flow": 0.3, "tense": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "The decoy is cool, feels like a real trick. But I missed the dash, I kept pressing space.",
+      "themes": ["decoy as a new way to lure", "missing the dash", "progress across runs"],
+      "waveReached": { "median": 7, "range": [5, 10] },
+      "killedBy": { "a chaser": 0.5, "a charger dash": 0.15, "a laser": 0.17, "a mine blast": 0.15, "a charger": 0.03 }
+    },
+    {
+      "run": 8,
+      "variant": "B",
+      "playAgain": { "yes": 0.7, "meh": 0.25, "no": 0.05 },
+      "vsPrevious": { "better": 0.55, "same": 0.2, "worse": 0.2, "first run": 0.05 },
+      "tags": { "flow": 0.4, "satisfying": 0.3, "clever": 0.25, "samey": 0.2 },
+      "tagsLeftBlank": 0.6,
+      "gutSentence": "Getting there. Dash plus decoy is a good combo. The meta loop is better but I want more variety, more stuff to unlock.",
+      "themes": ["dash + decoy combo", "meta loop / progression depth", "variety / samey-ness"],
+      "waveReached": { "median": 8, "range": [6, 10] },
+      "killedBy": { "a chaser": 0.45, "a laser": 0.18, "a charger dash": 0.17, "a mine blast": 0.15, "a charger": 0.05 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P1", "verdict": "will hold", "why": "Collisions remain the core kill source; decoy and assist mines are player-placed or player-triggered, so kills still read as his idea." },
+    { "pillar": "P2", "verdict": "will hold", "why": "B-level speed and density directly answer 'I want the high-octane moments'; wide turns keep it readable. Risk is a difficulty spike making early runs feel short." },
+    { "pillar": "P3", "verdict": "at risk", "why": "Checkpoints change the starting wave, so 'run 5 vs run 1' is muddied; unlocks may get credited instead of skill." },
+    { "pillar": "P4", "verdict": "will hold", "why": "Mines from wave 1, overlapping waves and the assist mine remove both 'slow to start' and 'lame with a single enemy'." },
+    { "pillar": "P5", "verdict": "at risk", "why": "Charger is better telegraphed, but faster chasers plus denser waves will make chaser body-hits the dominant death, possibly in clutter he calls cheap." },
+    { "pillar": "P6", "verdict": "at risk", "why": "Checkpoints and two unlocks help, but he asked for a changed meta loop; two unlocks may read as thin and he may ask for more." }
+  ],
+  "biggestRisk": "The faster, denser v2 opening punishes him earlier than v1 did (shorter first runs dying to chasers in clutter), so the first impression is 'harder' rather than 'more rush'; combined with a meta loop that still feels thin after the decoy, that could produce 'samey' again by run 8.",
+  "abVerdict": "He prefers B (dash), about 65%. He'll express it by mentioning the dash positively in run 6 or 8 and noting he missed it in run 7, framed around pulling off the last-second escape; a minority chance he says the dash makes it too easy or doesn't notice much difference."
+}

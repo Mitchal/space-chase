@@ -1,0 +1,20 @@
+{
+  "about": "Headless bot playtests of Lure v4 (game/pods/bots), 20 runs per cell on the final tuning. Bots are skill proxies, not taste proxies. 'random' = no-skill floor; 'evader' = crude competent player: flees and swirls, dodges telegraphs, keeps off rocks and mines, collects the nearest key, then heads for the exit. It grabs keys back to back and never deliberately waits or sets traps. arena = mean arena reached (of 6); kps = lured kills/s; lullShare = share of kills made while pressure < 0.75 (the 'setup window', P1 tripwire).",
+  "summary": {
+    "random/A": { "runs": 20, "wins": 0, "arena": 1, "dur": 6.86, "kps": 0.33, "deaths": { "a chaser": 18, "a mine blast": 2 } },
+    "random/B": { "runs": 20, "wins": 0, "arena": 1, "dur": 7.5, "kps": 0.37, "deaths": { "a chaser": 18, "a mine blast": 2 } },
+    "evader/A": { "runs": 20, "wins": 9, "arena": 5.35, "dur": 59.3, "kps": 0.8, "lullShare": 0.53, "secondsPerEscapedArena": 9.7, "deaths": { "a chaser": 8, "a rock": 2, "a mine blast": 1 } },
+    "evader/B": { "runs": 20, "wins": 4, "arena": 4.45, "dur": 55.05, "kps": 0.97, "lullShare": 0.11, "secondsPerEscapedArena": 11.7, "deaths": { "a rock": 5, "a chaser": 7, "a laser": 1, "a mine blast": 3 } }
+  },
+  "tuning_history": [
+    "First pass: evader won 9/10 (A) at 8s per arena, ~50s per run. Too easy and too short (P9, P11). Raised chaser start counts, lull pressure 0.4 -> 0.55, spread keys further apart.",
+    "Second pass: one stall in 60 runs (107s stuck on a 3rd key). Root cause: core openPoint fell back to an unchecked random point when the floor was crowded. Fixed: it now returns the roomiest candidate. 0 stalls in the next 160+ arenas; slowest arena 23-38s.",
+    "Third pass: evader A won 11/12. Raised chaser spawn rate ~33% and the cap 16 -> 20. Final numbers above."
+  ],
+  "notes": [
+    "Arenas are short (~10-12s for the bot) because keys let the player set the pace. Mikael predicted this himself ('when I can set the pace with keys it will mostly be shorter levels, which is cool'). A full winning run is ~60-105s for the bot, shorter than v3's ~150s. This is in tension with P9 (runs build over minutes); his reaction will tell.",
+    "The B difficulty gap (20% vs 45% wins) is partly a bot artifact: the evader never waits between keys, so in B it stacks surges (lullShare 0.11). A human who uses B's control over the pace would see more calm.",
+    "Rocks now hurt the player (P10): rocks caused 7 of 40 evader deaths.",
+    "Mikael out-lured the bots in v3 (and won 3 of 5 runs while the evader won ~10-20%), so these numbers likely overstate his difficulty."
+  ]
+}

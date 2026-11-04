@@ -1,0 +1,111 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-02T14:00:00Z",
+  "runs": [
+    {
+      "run": 34,
+      "variant": "B",
+      "playAgain": { "yes": 0.8, "meh": 0.14, "no": 0.06 },
+      "vsPrevious": { "better": 0.22, "same": 0.08, "worse": 0.08, "first run": 0.62 },
+      "tags": { "learning": 0.25, "satisfying": 0.25, "tense": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Big asteroids, nice! Got two of them to smash into one, but then I clipped a huge one myself. Again.",
+      "themes": [
+        "the bigger asteroids, noticed on first sight (mostly positive)",
+        "one moment: luring a chaser into a rock, or crashing into a big rock himself",
+        "retry energy"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 3] },
+      "killedBy": { "a rock": 0.44, "a chaser": 0.27, "a death wall": 0.1, "a mine blast": 0.07, "the death wave": 0.06, "a laser": 0.03, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 35,
+      "variant": "A",
+      "playAgain": { "yes": 0.8, "meh": 0.13, "no": 0.07 },
+      "vsPrevious": { "better": 0.38, "same": 0.25, "worse": 0.17, "first run": 0.2 },
+      "tags": { "satisfying": 0.3, "clever": 0.25, "learning": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Tricked a chaser into an asteroid right as another one was coming in, saw it coming this time. Got further.",
+      "themes": [
+        "outsmarting chasers with the rocks (the high point, told as a moment)",
+        "progress: got further than before",
+        "possibly the entry arrow, as 'I saw it coming' rather than as a feature"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a rock": 0.4, "a chaser": 0.3, "a death wall": 0.08, "a mine blast": 0.07, "a laser": 0.07, "the death wave": 0.05, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 36,
+      "variant": "B",
+      "playAgain": { "yes": 0.76, "meh": 0.16, "no": 0.08 },
+      "vsPrevious": { "better": 0.25, "same": 0.25, "worse": 0.25, "first run": 0.05 },
+      "tags": { "learning": 0.25, "tense": 0.25, "satisfying": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "Had three chasers on me and no asteroid close enough to use. Need to plan my route better.",
+      "themes": [
+        "pursuers piling up with nothing nearby to lure into (B is sparse), blamed on himself",
+        "a big rock he couldn't get around in time (thruster momentum), told as his mistake",
+        "a small idea about the field (count, size mix, or speed of rocks)"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a rock": 0.38, "a chaser": 0.32, "a death wall": 0.08, "a laser": 0.08, "a mine blast": 0.06, "the death wave": 0.05, "a charger dash": 0.01, "none (won)": 0.02 }
+    },
+    {
+      "run": 37,
+      "variant": "A",
+      "playAgain": { "yes": 0.78, "meh": 0.15, "no": 0.07 },
+      "vsPrevious": { "better": 0.35, "same": 0.3, "worse": 0.2, "first run": 0.05 },
+      "tags": { "satisfying": 0.3, "clever": 0.25, "tense": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "That was a good one, lured a bunch of them through the rocks. The laser got me though.",
+      "themes": [
+        "a deep run with several lures (Crossfire or later)",
+        "a new hazard reached (laser) as the killer, accepted as fair",
+        "asteroids now feel like tools (implicit A/B lean to A)"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 4] },
+      "killedBy": { "a rock": 0.34, "a chaser": 0.28, "a laser": 0.13, "a death wall": 0.08, "a mine blast": 0.07, "the death wave": 0.05, "a charger dash": 0.02, "none (won)": 0.03 }
+    },
+    {
+      "run": 38,
+      "variant": "B",
+      "playAgain": { "yes": 0.72, "meh": 0.19, "no": 0.09 },
+      "vsPrevious": { "better": 0.2, "same": 0.35, "worse": 0.3, "first run": 0.15 },
+      "tags": { "tense": 0.25, "learning": 0.2, "too hard": 0.2 },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "Died early to an asteroid I didn't get around. I think there were more to use last time.",
+      "themes": [
+        "an early death he attributes to his handling or a big rock",
+        "a vague sense that this run had fewer usable asteroids (B), without naming a variant",
+        "wanting to start further in or to see later sectors (checkpoint / sector 1 fatigue)"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a rock": 0.38, "a chaser": 0.3, "a death wall": 0.08, "a laser": 0.08, "a mine blast": 0.06, "the death wave": 0.06, "a charger dash": 0.02, "none (won)": 0.02 }
+    },
+    {
+      "run": 39,
+      "variant": "A",
+      "playAgain": { "yes": 0.72, "meh": 0.2, "no": 0.08 },
+      "vsPrevious": { "better": 0.35, "same": 0.3, "worse": 0.2, "first run": 0.15 },
+      "tags": { "satisfying": 0.3, "clever": 0.2, "tense": 0.2 },
+      "tagsLeftBlank": 0.55,
+      "gutSentence": "Best run so far, the asteroids feel right now. Want to see what comes after this sector.",
+      "themes": [
+        "a personal-best run, credited to his own skill",
+        "asteroids 'feel right' / a closing verdict on the field (leans A without naming it)",
+        "a forward-looking idea: later sectors, a new pursuer, or what the next build should add"
+      ],
+      "arenaReached": { "median": 3, "range": [2, 5] },
+      "killedBy": { "a rock": 0.3, "a chaser": 0.27, "a laser": 0.15, "a death wall": 0.08, "a charger dash": 0.06, "a mine blast": 0.06, "the death wave": 0.04, "none (won)": 0.04 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P5", "verdict": "will hold", "why": "A 1.5s pulsing arrow plus the 380px minimum removes the run-33 death; like other fixes it will mostly be absorbed silently, at most a passing 'saw it coming'. Residual risk: a pursuer entering inside the lane where a death wall is on screen still reads as close." },
+    { "pillar": "Reference moment 2 (rocks as a toolkit, chasers are the star)", "verdict": "at risk", "why": "Rocks are cut to 65% (A) and ~34% (B) of v8's count, so fewer pursuers die and there is less nearby to lure into; in B this can repeat run 32's 'tried to but they never came'. Chasers will be on screen a lot (good), but with fewer tools." },
+    { "pillar": "P1", "verdict": "will hold", "why": "Bigger rocks are easier targets to steer a pursuer into and easier to see; outsmarting chasers stays the high point, especially in A." },
+    { "pillar": "P12", "verdict": "will hold", "why": "Thrusters unchanged; expect silence, and 'skill issue' self-blame when he clips a big rock." },
+    { "pillar": "P9 / P3", "verdict": "at risk", "why": "Every run still starts at sector 1; a bit easier than v8, so he may reach Crossfire or Rams, but six runs of the same opening sectors invites mild sameness late in the session." }
+  ],
+  "biggestRisk": "Too few rocks, not too small ones: with fewer asteroids, fewer pursuers die, so up to 3-4 chasers pile up on him with nothing close to lure them into. In B (2-3 rocks on screen) this repeats run 32's 'I should have gone for the asteroids… they never came', and he ends up trying to outrun faster pursuers, which he can't. He'll likely blame himself at first, then ask for more asteroids (a middle count) once he senses it.",
+  "abVerdict": "He likely won't name A vs B as a variant difference (about 60%), but the first run (B) is where he notices 'big asteroids' and likes them. A should feel better in play (more rocks to use, more lure kills, his 'better's and 'satisfying'/'clever' tags fall on A runs); sector reached will be roughly equal. If he states a preference it's for A, or a third option: 'big like these, but more of them'."
+}

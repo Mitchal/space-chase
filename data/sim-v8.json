@@ -1,0 +1,10 @@
+{
+  "version": 8,
+  "note": "Evader bot from sector 1. 'direct' bypasses the thrusters so the A/B compares layouts; the thruster autopilot is a crude floor, not a proxy for him.",
+  "tuning": [
+    { "change": "flank spawns, leash 800, spawn rate unchanged", "direct": { "A": 2.5, "B": 2.0 }, "pursuersSeenShare": 0.55, "waveKillsPerRun": 0 },
+    { "change": "spawn every ×1.6, sides 80% / ahead 20%, live cap 4–6", "direct": { "A": 3.1, "B": 2.1 } },
+    { "change": "wall gaps 150 → 210, wall share 0.75 → 0.6, live cap 3–5 (final)", "direct": { "A": { "runs": 15, "arena": 2.8, "pursuersSeenShare": 0.54, "pursuersOnScreenAvg": 0.8 }, "B": { "runs": 15, "arena": 2.3, "pursuersSeenShare": 0.52, "pursuersOnScreenAvg": 0.71 } }, "thrusterAutopilot": { "A": 1.5, "B": 1.7 } }
+  ],
+  "verdict": "Pursuers are on screen about half the run (v7 lost most of them to the wave off-screen). Wave kills per run: ~0. B (walls) is somewhat harder for bots, which avoid rocks instead of threading gaps. Bots reach less far than in v7 (2.3–2.8 vs 4–4.8) because pursuers now survive to chase; v8 is likely harder for him too."
+}

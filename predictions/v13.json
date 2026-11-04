@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-03T16:10:00Z",
+  "runs": [
+    {
+      "run": 59,
+      "variant": "A",
+      "playAgain": { "yes": 0.82, "meh": 0.13, "no": 0.05 },
+      "vsPrevious": { "better": 0.25, "same": 0.2, "worse": 0.12, "first run": 0.43 },
+      "tags": { "satisfying": 0.6, "clever": 0.35, "tense": 0.35, "learning": 0.25 },
+      "tagsLeftBlank": 0.15,
+      "gutSentence": "Fun as always! I went for the slow-mo on one and the next one got me, too greedy again haha.",
+      "themes": [
+        "one moment where a chaser caught him, often while chasing a near miss (self-blame, greed)",
+        "chains / slow-mo as the payoff (slow-mo now in every run, absorbed silently or in one clause)",
+        "retry energy"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.52, "a rock": 0.11, "a laser": 0.1, "a death wall": 0.05, "the death wave": 0.05, "a mine blast": 0.03, "a charger dash": 0.03, "none (won)": 0.11 }
+    },
+    {
+      "run": 60,
+      "variant": "B",
+      "playAgain": { "yes": 0.8, "meh": 0.14, "no": 0.06 },
+      "vsPrevious": { "better": 0.38, "same": 0.3, "worse": 0.24, "first run": 0.08 },
+      "tags": { "satisfying": 0.55, "tense": 0.35, "clever": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.2,
+      "gutSentence": "Got to the end part and there were lasers everywhere, that was intense! I had to actually lure them myself there.",
+      "themes": [
+        "the late sectors if he reaches them: more lasers (noticed sooner than the rock count)",
+        "a deep run / near win, or an early chaser death if he doesn't get there",
+        "chains as the peak"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.48, "a laser": 0.14, "a rock": 0.09, "a death wall": 0.05, "the death wave": 0.05, "a mine blast": 0.03, "a charger dash": 0.04, "none (won)": 0.12 }
+    },
+    {
+      "run": 61,
+      "variant": "A",
+      "playAgain": { "yes": 0.75, "meh": 0.19, "no": 0.06 },
+      "vsPrevious": { "better": 0.33, "same": 0.35, "worse": 0.27, "first run": 0.05 },
+      "tags": { "satisfying": 0.5, "clever": 0.3, "tense": 0.3, "too easy": 0.2 },
+      "tagsLeftBlank": 0.25,
+      "gutSentence": "Made it through again. The last part still feels a bit easy, they mostly crash into rocks on their own. The lasers help though.",
+      "themes": [
+        "late sectors still easy / auto-die in the dense field (if he reaches 5-6)",
+        "lasers at the end (positive, 'fun but hard')",
+        "a win or a deep run"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.45, "a laser": 0.12, "a rock": 0.1, "a death wall": 0.05, "the death wave": 0.05, "a mine blast": 0.03, "a charger dash": 0.04, "none (won)": 0.16 }
+    },
+    {
+      "run": 62,
+      "variant": "B",
+      "playAgain": { "yes": 0.72, "meh": 0.21, "no": 0.07 },
+      "vsPrevious": { "better": 0.33, "same": 0.37, "worse": 0.25, "first run": 0.05 },
+      "tags": { "satisfying": 0.5, "tense": 0.35, "clever": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.3,
+      "gutSentence": "The ending felt more like my doing this time, fewer rocks so I had to set them up. Now I'm wondering what I'm playing for after I win though.",
+      "themes": [
+        "late field thinner = he had to lure them himself (possible blind naming of B, ~35%)",
+        "the meta loop: what to play for between runs (score, unlocks, goals)",
+        "a laser or chaser death in Tumble/Breakout"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.45, "a laser": 0.15, "a rock": 0.08, "a death wall": 0.05, "the death wave": 0.05, "a mine blast": 0.03, "a charger dash": 0.05, "none (won)": 0.14 }
+    },
+    {
+      "run": 63,
+      "variant": "A",
+      "playAgain": { "yes": 0.68, "meh": 0.24, "no": 0.08 },
+      "vsPrevious": { "better": 0.28, "same": 0.37, "worse": 0.3, "first run": 0.05 },
+      "tags": { "satisfying": 0.45, "tense": 0.3, "clever": 0.25, "samey": 0.2 },
+      "tagsLeftBlank": 0.35,
+      "gutSentence": "Died early this time, a chaser got me before I found a rock. Still fun, but I'd like something to unlock or aim for between runs.",
+      "themes": [
+        "an early chaser death (cold start / overconfidence)",
+        "meta loop / reason to come back",
+        "fatigue creeping in ('still fun, but')"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.5, "a laser": 0.11, "a rock": 0.11, "a death wall": 0.05, "the death wave": 0.06, "a mine blast": 0.03, "a charger dash": 0.03, "none (won)": 0.11 }
+    },
+    {
+      "run": 64,
+      "variant": "B",
+      "playAgain": { "yes": 0.62, "meh": 0.28, "no": 0.1 },
+      "vsPrevious": { "better": 0.3, "same": 0.33, "worse": 0.32, "first run": 0.05 },
+      "tags": { "satisfying": 0.4, "tense": 0.3, "clever": 0.25, "learning": 0.2 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "Ok, I think the core is there. Lasers at the end are a nice touch. Let's talk about the meta loop.",
+      "themes": [
+        "stepping back to the design level: the meta loop",
+        "the late-game tuning summed up (lasers good; rock count perhaps)",
+        "tired / done for the session"
+      ],
+      "arenaReached": { "median": 4, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.46, "a laser": 0.14, "a rock": 0.09, "a death wall": 0.05, "the death wave": 0.06, "a mine blast": 0.03, "a charger dash": 0.05, "none (won)": 0.12 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P1", "verdict": "at risk", "why": "In A the late field is unchanged, so pursuers still 'auto-die' on rocks when he reaches sectors 5-6; B should feel more like his own doing, but only on runs that get that far." },
+    { "pillar": "P2", "verdict": "will hold", "why": "Slow-mo in every run keeps the earned breather; more lasers add peaks he can read." },
+    { "pillar": "P5", "verdict": "at risk", "why": "Lasers every 3.8s in Breakout on top of five pursuers and two chargers: expect at least one 'didn't see that laser' death late in a run, mostly in B where fewer rocks crowd the view but more pressure falls on him." },
+    { "pillar": "P6", "verdict": "at risk", "why": "Nothing new appears in the world in this build and he has already won from sector 1; with the core declared complete, 'what moves me forward between runs' becomes the open itch (meta loop)." },
+    { "pillar": "P11", "verdict": "at risk", "why": "A may still draw 'too easy' at the end; B and the extra lasers may fix it, so it splits by variant." },
+    { "pillar": "P7", "verdict": "will hold", "why": "No new inputs; controls stay silent." }
+  ],
+  "biggestRisk": "Novelty exhaustion, not a mechanic: the only changes live in sectors 5-6, which he reaches on maybe half his runs, and he already called the core loop complete and won from sector 1. With nothing new to discover and no reason to play beyond the run itself, enthusiasm decays into 'still fun, but what am I playing for' and a meh or two late in the session (run 16 pattern: a 'no' after winning), with his comments turning to the meta loop instead of the tuning.",
+  "abVerdict": "Leans B, weakly, and mostly unnamed (~55% he never names the rock difference; the extra lasers in both variants get noticed first). If he names it, it will be B framed in his own run-58 terms ('I had to lure them myself at the end', 'less auto-die'), or an A run drawing 'the end is still easy, too many rocks'. Small chance (~15%) he calls B's ending empty or too hard with all the lasers."
+}

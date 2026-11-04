@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lure</title>
+<style>
+:root{--bg:#0b0d12;--fg:#e8ecf3;--dim:#8a93a6;--panel:#151925;--accent:#7cf2c8;--line:#2a3142;--warn:#ff6b5b}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;overflow:hidden}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{background:#0e1118;border:1px solid var(--line);border-radius:6px;touch-action:none}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,.74)}
+.overlay.show{display:flex}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box}
+h1{margin:0 0 4px;font-size:30px;letter-spacing:.08em}
+h2{margin:0 0 6px;font-size:20px}
+.dim{color:var(--dim)}
+.small{font-size:12px}
+label{display:block;margin:14px 0 6px;font-weight:600}
+textarea{width:100%;box-sizing:border-box;background:#0e1118;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;resize:vertical}
+.chips,.seg{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#0e1118;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:4px 11px;cursor:pointer;font:inherit;font-size:13px}
+.chip.on{background:var(--accent);color:#06110d;border-color:var(--accent)}
+.chip.warn.on{background:var(--warn);border-color:var(--warn);color:#1a0603}
+.chip:disabled{opacity:.35;cursor:default}
+.row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+button.main{background:var(--accent);color:#06110d;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 16px;font:inherit;cursor:pointer}
+a{color:var(--accent)}
+kbd{background:#0e1118;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+ul{padding-left:18px;margin:8px 0}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+
+<div id="title" class="overlay show"><div class="card">
+  <h1>LURE</h1>
+  <p class="dim">You can't attack. They can. Get out alive.</p>
+  <ul>
+    <li>Move with <kbd>WASD</kbd> / arrows (or hold the mouse). <kbd>Shift</kbd> or <kbd>Space</kbd> to dash.</li>
+    <li><b style="color:#ff7a59">Chasers</b> die if they hit each other, a <b style="color:#9aa4b8">rock</b>, a <b style="color:#ffd166">mine</b>, a <b style="color:#ff4d6d">laser</b> or a dashing <b style="color:#b388ff">charger</b>.</li>
+    <li>Each arena has an <b style="color:#7cf2c8">exit</b>. When it opens, run for it. The door slams on anyone chasing you.</li>
+    <li>Escape 6 arenas. <kbd>P</kbd> pauses. <kbd>Ctrl</kbd>+<kbd>Enter</kbd> in the form saves and starts the next run.</li>
+  </ul>
+  <label>Start at</label>
+  <div id="tStarts" class="seg"></div>
+  <div class="row"><button class="main" id="startBtn">Start run</button></div>
+  <p class="dim small" style="margin-top:12px">Runs logged: <span class="logCount">0</span> · <a href="#" class="exportLink">export log</a></p>
+</div></div>
+
+<div id="pause" class="overlay"><div class="card"><h2>Paused</h2><p class="dim">Press <kbd>P</kbd> to resume.</p></div></div>
+
+<div id="react" class="overlay"><div class="card">
+  <h2 id="rTitle">Run over</h2>
+  <p id="rStats" class="dim small"></p>
+  <label for="rText">Gut reaction, in one sentence</label>
+  <textarea id="rText" rows="2" placeholder="Whatever comes first: 'felt cheap when…', 'loved when…'"></textarea>
+  <label>Tags (any)</label>
+  <div id="rTags" class="chips"></div>
+  <label>Compared to your previous run</label>
+  <div id="rCmp" class="seg"></div>
+  <label>Did you want to play again right away?</label>
+  <div id="rAgain" class="seg"></div>
+  <label>Next run starts at</label>
+  <div id="rStarts" class="seg"></div>
+  <div class="chips" style="margin-top:12px"><button type="button" class="chip warn" id="rInvalid">This run doesn't count (interrupted)</button></div>
+  <div class="row">
+    <button class="main" id="rSave">Save &amp; play next</button>
+    <button class="ghost" id="rSaveStop">Save &amp; stop</button>
+  </div>
+  <p class="dim small" style="margin-top:12px">Runs logged: <span class="logCount">0</span> · <a href="#" class="exportLink">export log</a></p>
+</div></div>
+
+<script>
+'use strict';
+const VERSION = 3;
+const W = 960, H = 640;
+const PSPEED = 270;
+const LOG_KEY = 'lure.tasteLog.v1', RUN_KEY = 'lure.runCount.v1', START_KEY = 'lure.startArena.v3';
+
+// P2 "high octane, readable motion" carried over from v2.
+const BASE = { chaserSpeed: 168, chaserTurn: 2.3, telegraph: 1.2, chargerWindup: 1.0, chargerDash: 600 };
+// Blind A/B for v3 (not a control change, per the method lessons):
+// should the objective feed on the lure game (P1 + P8), or stay a pure getaway timer?
+// chargeScale matches the average arena length, so the test is about *why* the exit opens, not difficulty.
+const VARIANTS = { A: { name: 'Timer exit', killCharge: 0, chargeScale: 0.7 }, B: { name: 'Kills charge the exit', killCharge: 0.6, chargeScale: 1 } };
+
+// P8 "open the exit" + P9 "runs build over minutes" + P6 "new things in the world, not on the controller".
+// chaser/charger = seconds between spawns, charge = seconds for the exit to open on time alone.
+const ARENAS = [
+  { name: 'Hangar', charge: 26, chaser: 1.5, rocks: 0, mines: 3 },
+  { name: 'Debris field', charge: 28, chaser: 1.35, rocks: 6, mines: 2 },
+  { name: 'Crossfire', charge: 30, chaser: 1.25, rocks: 4, mines: 2, lasers: 6 },
+  { name: 'Rams', charge: 32, chaser: 1.25, rocks: 4, mines: 3, charger: 9 },
+  { name: 'Drift', charge: 34, chaser: 1.1, rocks: 6, drift: true, mines: 2, charger: 10, lasers: 7 },
+  { name: 'Breakout', charge: 38, chaser: 0.95, rocks: 4, mines: 4, charger: 8, lasers: 5 },
+];
+const MAX_CHASERS = 16, SLAM_RADIUS = 170;
+
+// ---------- storage & progress ----------
+const mem = { log: [], runs: 0 };
+function loadLog() { try { return JSON.parse(localStorage.getItem(LOG_KEY)) || mem.log; } catch { return mem.log; } }
+function saveLog(log) { mem.log = log; try { localStorage.setItem(LOG_KEY, JSON.stringify(log)); } catch {} }
+
+const progress = { bestArena: 1 };
+function addProgress(t) { progress.bestArena = Math.max(progress.bestArena, t.arenaReached); }
+const availableStarts = () => ARENAS.map((_, i) => i).filter(i => i + 1 <= progress.bestArena);
+let chosenStart = 0;
+try { chosenStart = parseInt(localStorage.getItem(START_KEY) || '0', 10) || 0; } catch {}
+
+let serverRuns = 0;
+fetch('/api/log').then(r => r.json()).then(l => {
+  serverRuns = l.length;
+  for (const e of l) if (e.version === VERSION && !e.invalid) addProgress(e.telemetry);
+  refreshTitle();
+}).catch(() => { for (const e of loadLog()) if (e.version === VERSION) addProgress(e.telemetry); refreshTitle(); });
+
+function nextRunIndex() {
+  let n = mem.runs;
+  try { n = parseInt(localStorage.getItem(RUN_KEY) || '0', 10) || 0; } catch {}
+  n = Math.max(n, serverRuns);
+  mem.runs = n + 1;
+  try { localStorage.setItem(RUN_KEY, String(n + 1)); } catch {}
+  return n;
+}
+function refreshCounts() { document.querySelectorAll('.logCount').forEach(el => el.textContent = Math.max(loadLog().length, serverRuns)); }
+function exportLog(e) {
+  e.preventDefault();
+  const json = JSON.stringify(loadLog(), null, 2);
+  try { navigator.clipboard.writeText(json); } catch {}
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  a.download = 'lure-taste-log.json';
+  a.click();
+}
+document.querySelectorAll('.exportLink').forEach(a => a.addEventListener('click', exportLog));
+
+function renderStarts(id) {
+  const el = $(id); el.innerHTML = '';
+  const avail = availableStarts();
+  if (!avail.includes(chosenStart)) chosenStart = 0;
+  ARENAS.forEach((A, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (i === chosenStart ? ' on' : '');
+    b.textContent = avail.includes(i) ? `${i + 1} · ${A.name}` : `${i + 1} · ???`;
+    b.disabled = !avail.includes(i);
+    b.onclick = () => { chosenStart = i; try { localStorage.setItem(START_KEY, String(i)); } catch {} renderStarts(id); };
+    el.appendChild(b);
+  });
+}
+function refreshTitle() { renderStarts('tStarts'); refreshCounts(); }
+
+// ---------- canvas ----------
+const cvs = document.getElementById('c'), ctx = cvs.getContext('2d');
+function fit() {
+  const dpr = window.devicePixelRatio || 1;
+  const s = Math.min(innerWidth / W, innerHeight / H) * 0.97;
+  cvs.style.width = W * s + 'px'; cvs.style.height = H * s + 'px';
+  cvs.width = W * dpr; cvs.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+addEventListener('resize', fit); fit();
+
+// ---------- input ----------
+const keys = {};
+const mouse = { down: false, x: 0, y: 0 };
+const typing = () => document.activeElement && document.activeElement.tagName === 'TEXTAREA';
+addEventListener('keydown', e => {
+  if (typing()) return;
+  keys[e.code] = true;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
+  if ($('title').classList.contains('show')) { if (e.code === 'Space' || e.code === 'Enter') startRun(); return; }
+  if (!G || G.over) return;
+  if (e.code === 'KeyP') togglePause();
+  if (paused) return;
+  if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'Space') useDash();
+});
+addEventListener('keyup', e => { keys[e.code] = false; });
+$('rText').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); saveReaction(true); } });
+function setMouse(e) { const r = cvs.getBoundingClientRect(); mouse.x = (e.clientX - r.left) / r.width * W; mouse.y = (e.clientY - r.top) / r.height * H; }
+cvs.addEventListener('pointerdown', e => { mouse.down = true; setMouse(e); });
+addEventListener('pointermove', e => { if (mouse.down) setMouse(e); });
+addEventListener('pointerup', () => { mouse.down = false; });
+
+// ---------- helpers ----------
+function $(id) { return document.getElementById(id); }
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function wrapAngle(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; }
+const isMob = e => e.type === 'chaser' || e.type === 'charger';
+const BLAST = 64;
+const lured = k => Object.values(k).reduce((a, b) => a + b, 0);
+
+// ---------- game ----------
+let G = null, paused = false;
+
+// opts (used by bots/sims): { variant, startArena }
+function startRun(opts = {}) {
+  $('title').classList.remove('show');
+  $('react').classList.remove('show');
+  const idx = nextRunIndex();
+  const variant = opts.variant || (idx % 2 === 0 ? 'A' : 'B');
+  const startArena = opts.startArena ?? (availableStarts().includes(chosenStart) ? chosenStart : 0);
+  G = {
+    cfg: { ...BASE, ...VARIANTS[variant] }, variant, runIndex: idx, startArena, t: 0, ai: startArena - 1,
+    ents: [], spawnQ: [], fx: [], parts: [], texts: [], exit: null, trans: 0, lastSide: -1,
+    p: { x: W / 2, y: H / 2, vx: 0, vy: 0, r: 9, hp: 3, inv: 0 },
+    cdDash: 0, dashT: 0, dashDir: { x: 1, y: 0 },
+    score: 0, chain: 0, chainT: 0, shake: 0, hitstop: 0, over: false, endT: 0, outcome: null, killer: null,
+    tel: { kills: { collide: 0, rock: 0, mine: 0, laser: 0, charger: 0, slam: 0 }, hits: [], maxChain: 0, chains3: 0,
+           nearMiss: 0, dashes: 0, assistMines: 0, idleTime: 0, wallTime: 0, dist: 0, arenas: [] },
+  };
+  enterArena();
+}
+
+function enterArena() {
+  G.ai++;
+  const A = ARENAS[G.ai], p = G.p;
+  G.arenaT = 0; G.charge = 0; G.ents = []; G.spawnQ = []; G.fx = []; G.laserT = 0; G.chargerT = 0; G.mineT = 0;
+  G.spawnT = 0.6; G.lastKillT = G.t; G.lastAssistT = -99;
+  p.x = W / 2; p.y = H / 2; p.vx = p.vy = 0; p.inv = 1.2;
+  if (G.ai > G.startArena) p.hp = Math.min(3, p.hp + 1);
+  // P8: the exit is visible from the start, so you can plan your route to it.
+  let side; do { side = Math.floor(Math.random() * 4); } while (side === G.lastSide);
+  G.lastSide = side;
+  G.exit = side === 0 ? { x: rand(160, W - 160), y: 0, horiz: true } : side === 1 ? { x: rand(160, W - 160), y: H, horiz: true }
+         : side === 2 ? { x: 0, y: rand(140, H - 140), horiz: false } : { x: W, y: rand(140, H - 140), horiz: false };
+  G.exit.open = false;
+  for (let i = 0; i < (A.rocks || 0); i++) {
+    for (let k = 0; k < 40; k++) {
+      const r = rand(20, 36), pt = { x: rand(100, W - 100), y: rand(100, H - 100) };
+      if (dist(pt, p) < 150 || dist(pt, G.exit) < 140 || G.ents.some(o => dist(o, pt) < o.r + r + 60)) continue;
+      const a = Math.random() * Math.PI * 2;
+      G.ents.push({ type: 'rock', x: pt.x, y: pt.y, r, vx: A.drift ? Math.cos(a) * 35 : 0, vy: A.drift ? Math.sin(a) * 35 : 0 });
+      break;
+    }
+  }
+  for (let i = 0; i < (A.mines || 0); i++) G.spawnQ.push({ at: G.t + 0.1 + i * 0.15, type: 'mine' });
+  for (let i = 0; i < 4; i++) G.spawnQ.push({ at: G.t + 0.3 + i * 0.3, type: 'chaser' });
+  G.arenaStat = { arena: G.ai + 1, name: A.name, startS: +G.t.toFixed(1), kills: 0, slammed: 0, hits: 0, openedAtS: null, escapedAtS: null };
+  G.texts.push({ x: W / 2, y: H / 2 - 110, s: `ARENA ${G.ai + 1} · ${A.name.toUpperCase()}`, t: 1.8, big: true });
+}
+
+function edgePoint() {
+  for (let k = 0; k < 20; k++) {
+    const side = Math.floor(Math.random() * 4);
+    const pt = side === 0 ? { x: rand(30, W - 30), y: 30 } : side === 1 ? { x: rand(30, W - 30), y: H - 30 }
+             : side === 2 ? { x: 30, y: rand(30, H - 30) } : { x: W - 30, y: rand(30, H - 30) };
+    if (dist(pt, G.p) > 220 && dist(pt, G.exit) > 120) return pt;
+  }
+  return { x: 30, y: 30 };
+}
+function clearOf(pt, pad) { return G.ents.every(e => (e.type !== 'mine' && e.type !== 'rock') || dist(e, pt) > e.r + pad); }
+function openPoint(minD) {
+  for (let k = 0; k < 40; k++) {
+    const pt = { x: rand(70, W - 70), y: rand(70, H - 70) };
+    if (dist(pt, G.p) > minD && clearOf(pt, 80)) return pt;
+  }
+  return { x: rand(70, W - 70), y: rand(70, H - 70) };
+}
+
+function spawn(type, pos) {
+  if (type === 'chaser') {
+    const pt = edgePoint();
+    G.ents.push({ type, x: pt.x, y: pt.y, r: 10, a: Math.atan2(G.p.y - pt.y, G.p.x - pt.x), spawn: 0.7 });
+  } else if (type === 'charger') {
+    const pt = edgePoint();
+    G.ents.push({ type, x: pt.x, y: pt.y, r: 13, state: 'approach', st: rand(1.5, 2.5), dx: 0, dy: 0, len: 0, spawn: 0.9 });
+  } else if (type === 'mine') {
+    const pt = pos && clearOf(pos, 30) ? pos : openPoint(150);
+    G.ents.push({ type, x: pt.x, y: pt.y, r: 11, spawn: 0.8, fuse: -1 });
+  }
+}
+
+function spawnLaser() {
+  const ang = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4][Math.floor(Math.random() * 4)];
+  G.ents.push({ type: 'laser', x: G.p.x, y: G.p.y, c: Math.cos(ang), s: Math.sin(ang), tele: G.cfg.telegraph, teleMax: G.cfg.telegraph, active: 0.35, r: 7 });
+}
+const laserDist = (L, o) => Math.abs((o.x - L.x) * L.s - (o.y - L.y) * L.c);
+function rayToWall(x, y, dx, dy) {
+  const tx = dx > 0 ? (W - x) / dx : dx < 0 ? -x / dx : Infinity;
+  const ty = dy > 0 ? (H - y) / dy : dy < 0 ? -y / dy : Infinity;
+  return Math.min(tx, ty);
+}
+function pushOut(o, rock) {
+  const d = dist(o, rock) || 1, min = o.r + rock.r;
+  if (d < min) { o.x = rock.x + (o.x - rock.x) / d * min; o.y = rock.y + (o.y - rock.y) / d * min; }
+}
+
+function useDash() {
+  if (!G || G.over || G.trans > 0 || G.cdDash > 0) return;
+  const p = G.p, m = Math.hypot(p.vx, p.vy);
+  G.dashDir = m > 20 ? { x: p.vx / m, y: p.vy / m } : { x: 1, y: 0 };
+  G.dashT = 0.16; G.cdDash = 2.2; G.tel.dashes++;
+}
+
+function kill(e, cause) {
+  if (e.dead) return;
+  e.dead = true;
+  burst(e.x, e.y, e.type === 'charger' ? '#b388ff' : '#ff7a59', 16);
+  if (cause === 'player') return;
+  G.tel.kills[cause]++; G.arenaStat.kills++;
+  G.lastKillT = G.t;
+  if (G.cfg.killCharge && !G.exit.open) G.charge = Math.min(1, G.charge + G.cfg.killCharge / (ARENAS[G.ai].charge * G.cfg.chargeScale));
+  G.chain = G.chainT > 0 ? G.chain + 1 : 1;
+  G.chainT = 1.2;
+  G.score += 100 * G.chain;
+  G.tel.maxChain = Math.max(G.tel.maxChain, G.chain);
+  if (G.chain === 3) G.tel.chains3++;
+  G.texts.push({ x: e.x, y: e.y - 14, s: G.chain > 1 ? `CHAIN ×${G.chain}` : '+100', t: 0.9, col: G.chain > 1 ? '#7cf2c8' : '#e8ecf3' });
+  G.shake = Math.max(G.shake, 2 + G.chain);
+}
+
+function explode(m) {
+  if (m.dead) return;
+  m.dead = true;
+  G.fx.push({ type: 'boom', x: m.x, y: m.y, t: 0, dur: 0.32, R: BLAST, hurt: false });
+  burst(m.x, m.y, '#ffd166', 22);
+  G.shake = Math.max(G.shake, 7);
+}
+
+const KILLER_LABEL = { chaser: 'a chaser', charger: 'a charger', 'charger dash': 'a charger dash', mine: 'a mine blast', laser: 'a laser' };
+function hurt(cause, src) {
+  const p = G.p;
+  if (p.inv > 0 || G.over || G.trans > 0) return;
+  p.hp--; p.inv = 1.4; G.shake = 12; G.chain = 0; G.chainT = 0; G.hitstop = 0.35;
+  G.tel.hits.push({ cause, t: +G.t.toFixed(1), arena: G.ai + 1 }); G.arenaStat.hits++;
+  burst(p.x, p.y, '#ffffff', 20);
+  const label = KILLER_LABEL[cause] || cause;
+  G.texts.push({ x: p.x, y: p.y - 22, s: 'hit by ' + label, t: 1.2, col: '#ff9aa8' });
+  if (p.hp <= 0) { G.killer = { x: src ? src.x : p.x, y: src ? src.y : p.y, label }; closeArenaStat(); endRun('dead'); }
+}
+
+function burst(x, y, col, n) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, sp = rand(60, 260);
+    G.parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: rand(0.3, 0.7), col });
+  }
+}
+function nearMiss(e, gap) { if (gap > 0 && gap < 14 && (!e.nm || G.t - e.nm > 1)) { e.nm = G.t; G.tel.nearMiss++; } }
+
+function closeArenaStat() {
+  const s = G.arenaStat;
+  if (s.done) return;
+  s.done = true;
+  const { done, ...stat } = s;
+  G.tel.arenas.push({ ...stat, durationS: +(G.t - s.startS).toFixed(1) });
+}
+
+// The reference moment as a mechanic: slip through, the door slams on your pursuers.
+function escape() {
+  const slammed = G.ents.filter(e => isMob(e) && dist(e, G.exit) < SLAM_RADIUS);
+  for (const e of slammed) kill(e, 'slam');
+  G.arenaStat.slammed = slammed.length; G.arenaStat.escapedAtS = +G.t.toFixed(1);
+  G.score += 500;
+  G.shake = 14;
+  G.texts.push({ x: W / 2, y: H / 2 - 40, s: 'ESCAPED', t: 1.4, col: '#7cf2c8', big: true });
+  if (slammed.length) G.texts.push({ x: W / 2, y: H / 2, s: `door slammed on ${slammed.length}`, t: 1.4, col: '#e8ecf3' });
+  closeArenaStat();
+  if (G.ai === ARENAS.length - 1) endRun('win'); else G.trans = 1.4;
+}
+
+function update(dt) {
+  const p = G.p, cfg = G.cfg, A = ARENAS[G.ai];
+  G.t += dt;
+  if (G.over) { G.endT += dt; updateFx(dt); return; }
+  if (G.trans > 0) { G.trans -= dt; updateFx(dt); if (G.trans <= 0) enterArena(); return; }
+  G.arenaT += dt;
+  if (G.cdDash > 0) G.cdDash -= dt;
+
+  // player (a bot policy can drive instead of the keyboard)
+  let ix, iy;
+  const bot = window.__botPolicy ? window.__botPolicy(G) : null;
+  if (bot) { ix = bot.ix; iy = bot.iy; if (bot.dash) useDash(); }
+  else {
+    ix = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+    iy = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
+    if (mouse.down) {
+      const dx = mouse.x - p.x, dy = mouse.y - p.y, d = Math.hypot(dx, dy);
+      if (d > 4) { const k = Math.min(1, d / 40); ix = dx / d * k; iy = dy / d * k; } else { ix = iy = 0; }
+    }
+  }
+  const im = Math.hypot(ix, iy); if (im > 1) { ix /= im; iy /= im; }
+  if (G.dashT > 0) {
+    G.dashT -= dt;
+    p.vx = G.dashDir.x * PSPEED * 3.2; p.vy = G.dashDir.y * PSPEED * 3.2;
+    G.parts.push({ x: p.x, y: p.y, vx: 0, vy: 0, t: 0.25, col: '#7cf2c8' });
+  } else {
+    p.vx += (ix * PSPEED - p.vx) * Math.min(1, dt * 14);
+    p.vy += (iy * PSPEED - p.vy) * Math.min(1, dt * 14);
+  }
+  const ox = p.x, oy = p.y;
+  p.x = clamp(p.x + p.vx * dt, p.r, W - p.r);
+  p.y = clamp(p.y + p.vy * dt, p.r, H - p.r);
+  for (const r of G.ents) if (r.type === 'rock') pushOut(p, r);
+  const moved = Math.hypot(p.x - ox, p.y - oy);
+  G.tel.dist += moved;
+  if (moved / dt < 25) G.tel.idleTime += dt;
+  if (p.x < 40 || p.y < 40 || p.x > W - 40 || p.y > H - 40) G.tel.wallTime += dt;
+  if (p.inv > 0) p.inv -= dt;
+  if (G.chainT > 0) { G.chainT -= dt; if (G.chainT <= 0) G.chain = 0; }
+
+  // exit charge
+  if (!G.exit.open) {
+    G.charge = Math.min(1, G.charge + dt / (A.charge * cfg.chargeScale));
+    if (G.charge >= 1) {
+      G.exit.open = true; G.arenaStat.openedAtS = +G.t.toFixed(1);
+      G.texts.push({ x: W / 2, y: H / 2 - 110, s: 'EXIT OPEN', t: 1.4, col: '#7cf2c8', big: true });
+    }
+  } else if (dist(p, G.exit) < 44) { escape(); return; }
+
+  // spawning: pressure ramps up during the arena and spikes once the exit opens
+  const prog = Math.min(1, G.arenaT / (A.charge * cfg.chargeScale)), alarm = G.exit.open ? 0.6 : 1;
+  const chasers = G.ents.filter(e => e.type === 'chaser').length + G.spawnQ.filter(s => s.type === 'chaser').length;
+  G.spawnT -= dt;
+  if (G.spawnT <= 0) { if (chasers < MAX_CHASERS) G.spawnQ.push({ at: G.t, type: 'chaser' }); G.spawnT = A.chaser * (1 - 0.35 * prog) * alarm; }
+  if (A.charger) {
+    G.chargerT += dt;
+    const chargers = G.ents.filter(e => e.type === 'charger').length + G.spawnQ.filter(s => s.type === 'charger').length;
+    if (G.chargerT >= A.charger * alarm && chargers < 2) { G.chargerT = 0; G.spawnQ.push({ at: G.t, type: 'charger' }); }
+  }
+  if (A.lasers) { G.laserT += dt; if (G.laserT >= A.lasers * alarm) { G.laserT = 0; spawnLaser(); } }
+  G.mineT += dt;
+  const mineCount = G.ents.filter(e => e.type === 'mine').length + G.spawnQ.filter(s => s.type === 'mine').length;
+  if (G.mineT > 8 && mineCount < A.mines) { G.mineT = 0; G.spawnQ.push({ at: G.t, type: 'mine' }); }
+  G.spawnQ = G.spawnQ.filter(s => { if (G.t >= s.at) { spawn(s.type, s.pos); return false; } return true; });
+
+  const target = p;
+  const chargerBusy = G.ents.some(e => e.type === 'charger' && (e.state === 'windup' || e.state === 'dash'));
+  for (const e of G.ents) {
+    if (e.dead) continue;
+    if (e.spawn > 0) { e.spawn -= dt; continue; }
+    if (e.type === 'chaser') {
+      const want = Math.atan2(target.y - e.y, target.x - e.x);
+      e.a += clamp(wrapAngle(want - e.a), -cfg.chaserTurn * dt, cfg.chaserTurn * dt);
+      e.x = clamp(e.x + Math.cos(e.a) * cfg.chaserSpeed * dt, e.r, W - e.r);
+      e.y = clamp(e.y + Math.sin(e.a) * cfg.chaserSpeed * dt, e.r, H - e.r);
+    } else if (e.type === 'charger') {
+      e.st -= dt;
+      if (e.state === 'approach') {
+        const d = dist(e, target) || 1;
+        e.x += (target.x - e.x) / d * 65 * dt; e.y += (target.y - e.y) / d * 65 * dt;
+        if (e.st <= 0) {
+          if (chargerBusy) e.st = 0.5;
+          else { e.state = 'windup'; e.st = cfg.chargerWindup; e.dx = (target.x - e.x) / d; e.dy = (target.y - e.y) / d; e.len = rayToWall(e.x, e.y, e.dx, e.dy); }
+        }
+      } else if (e.state === 'windup') {
+        if (e.st <= 0) { e.state = 'dash'; e.st = 0.6; e.sx = e.x; e.sy = e.y; }
+      } else if (e.state === 'dash') {
+        const nx = e.x + e.dx * cfg.chargerDash * dt, ny = e.y + e.dy * cfg.chargerDash * dt;
+        e.x = clamp(nx, e.r, W - e.r); e.y = clamp(ny, e.r, H - e.r);
+        if (e.x !== nx || e.y !== ny) { e.st = 0; G.shake = Math.max(G.shake, 4); }
+        if (e.st <= 0) { e.state = 'rest'; e.st = 0.9; }
+      } else if (e.state === 'rest') {
+        if (e.st <= 0) { e.state = 'approach'; e.st = rand(1.4, 2.4); }
+      }
+    } else if (e.type === 'mine') {
+      if (e.fuse > 0) { e.fuse -= dt; if (e.fuse <= 0) explode(e); }
+    } else if (e.type === 'laser') {
+      if (e.tele > 0) e.tele -= dt; else { e.active -= dt; if (e.active <= 0) e.dead = true; }
+    } else if (e.type === 'rock' && (e.vx || e.vy)) {
+      e.x += e.vx * dt; e.y += e.vy * dt;
+      if (e.x < 80 || e.x > W - 80) e.vx *= -1;
+      if (e.y < 80 || e.y > H - 80) e.vy *= -1;
+    }
+  }
+
+  // interactions between hazards
+  const live = G.ents.filter(e => !e.dead && !(e.spawn > 0));
+  const mobs = live.filter(isMob), rocks = live.filter(e => e.type === 'rock');
+  for (let i = 0; i < mobs.length; i++) for (let j = i + 1; j < mobs.length; j++) {
+    const a = mobs[i], b = mobs[j];
+    if (a.dead || b.dead || dist(a, b) > a.r + b.r) continue;
+    if (a.type === 'chaser' && b.type === 'chaser') { kill(a, 'collide'); kill(b, 'collide'); }
+    else if (a.type === 'charger' && b.type === 'charger') { if (a.state === 'dash' || b.state === 'dash') { kill(a, 'charger'); kill(b, 'charger'); } }
+    else { const ch = a.type === 'charger' ? a : b, c = ch === a ? b : a; if (ch.state === 'dash') kill(c, 'charger'); }
+  }
+  for (const r of rocks) for (const e of mobs) {
+    if (e.dead || dist(r, e) > r.r + e.r) continue;
+    if (e.type === 'chaser' || e.state === 'dash') kill(e, 'rock'); else pushOut(e, r);
+  }
+  for (const m of live) if (m.type === 'mine' && !m.dead) for (const e of mobs) if (!e.dead && dist(m, e) < m.r + e.r) { explode(m); break; }
+  for (const L of live) if (L.type === 'laser' && L.tele <= 0 && !L.dead) {
+    for (const e of live) {
+      if (e.dead) continue;
+      if (isMob(e) && laserDist(L, e) < L.r + e.r) kill(e, 'laser');
+      if (e.type === 'mine' && laserDist(L, e) < L.r + e.r) explode(e);
+    }
+  }
+
+  // player vs hazards
+  for (const e of live) {
+    if (e.dead || e.type === 'rock') continue;
+    if (e.type === 'laser') {
+      if (e.tele <= 0) { const g = laserDist(e, p) - (e.r + p.r); if (g < 0) hurt('laser', p); else nearMiss(e, g); }
+      continue;
+    }
+    const g = dist(e, p) - (e.r + p.r);
+    if (g < 0) {
+      if (e.type === 'chaser') { hurt('chaser', e); kill(e, 'player'); }
+      else if (e.type === 'charger') hurt(e.state === 'dash' ? 'charger dash' : 'charger', e);
+      else if (e.type === 'mine') explode(e);
+    } else if (e.type !== 'mine') nearMiss(e, g);
+  }
+
+  updateFx(dt);
+  if (!G) return;
+  G.ents = G.ents.filter(e => !e.dead);
+
+  // P4 dead-air guard: if nothing can be lured into anything, drop a mine in the path.
+  const alive = G.ents.filter(isMob).length, sinceKill = G.t - G.lastKillT;
+  if (alive > 0 && !rocks.length && mineCount === 0 && sinceKill > 6 && G.t - G.lastAssistT > 3) {
+    const mob = G.ents.filter(isMob).sort((a, b) => dist(a, p) - dist(b, p))[0];
+    const d = dist(mob, p) || 1, k = Math.min(0.5, Math.max(0, 1 - 130 / d));
+    G.spawnQ.push({ at: G.t, type: 'mine', pos: { x: clamp(p.x + (mob.x - p.x) * k, 40, W - 40), y: clamp(p.y + (mob.y - p.y) * k, 40, H - 40) } });
+    G.lastAssistT = G.t; G.tel.assistMines++;
+  }
+}
+
+function updateFx(dt) {
+  const p = G.p;
+  for (const f of G.fx) {
+    f.t += dt;
+    const rad = f.R * Math.min(1, f.t / 0.12);
+    for (const e of G.ents) {
+      if (e.dead || e.spawn > 0) continue;
+      const d = dist(e, f);
+      if (isMob(e) && d < rad + e.r) kill(e, 'mine');
+      else if (e.type === 'mine' && e.fuse < 0 && d < rad + e.r) e.fuse = 0.09;
+    }
+    if (!G.over && !f.hurt && dist(p, f) < rad * 0.85 + p.r) { f.hurt = true; hurt('mine', f); }
+  }
+  G.fx = G.fx.filter(f => f.t < f.dur);
+  for (const q of G.parts) { q.t -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.92; q.vy *= 0.92; }
+  G.parts = G.parts.filter(q => q.t > 0);
+  for (const t of G.texts) { t.t -= dt; if (!t.big) t.y -= 30 * dt; }
+  G.texts = G.texts.filter(t => t.t > 0);
+  G.shake *= Math.pow(0.002, dt);
+  if (G.over && G.endT > 1.4 && !window.__botPolicy && !$('react').classList.contains('show')) showReact();
+}
+
+function endRun(outcome) {
+  G.over = true; G.outcome = outcome; G.endT = 0; G.endedAt = G.t;
+  if (outcome === 'win') G.texts.push({ x: W / 2, y: H / 2 + 50, s: 'YOU GOT OUT', t: 3, col: '#7cf2c8', big: true });
+}
+
+function togglePause() { paused = !paused; $('pause').classList.toggle('show', paused); }
+
+// ---------- reaction form ----------
+const TAGS = ['clever', 'satisfying', 'flow', 'tense', 'learning', 'boring', 'unfair', 'confusing', 'too easy', 'too hard', 'samey', 'chaotic'];
+const form = { tags: new Set(), cmp: null, again: null, invalid: false };
+function seg(id, opts, key) {
+  const el = $(id); el.innerHTML = '';
+  for (const o of opts) {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = o; b.type = 'button';
+    b.onclick = () => { form[key] = o; [...el.children].forEach(c => c.classList.toggle('on', c === b)); };
+    el.appendChild(b);
+  }
+}
+$('rInvalid').onclick = () => { form.invalid = !form.invalid; $('rInvalid').classList.toggle('on', form.invalid); };
+function showReact() {
+  form.tags = new Set(); form.cmp = null; form.again = null; form.invalid = false;
+  $('rInvalid').classList.remove('on');
+  $('rText').value = '';
+  const tg = $('rTags'); tg.innerHTML = '';
+  for (const t of TAGS) {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = t; b.type = 'button';
+    b.onclick = () => { form.tags.has(t) ? form.tags.delete(t) : form.tags.add(t); b.classList.toggle('on'); };
+    tg.appendChild(b);
+  }
+  seg('rCmp', ['better', 'same', 'worse', 'first run'], 'cmp');
+  seg('rAgain', ['yes', 'meh', 'no'], 'again');
+  addProgress({ arenaReached: G.ai + 1 });
+  renderStarts('rStarts');
+  $('rTitle').textContent = G.outcome === 'win' ? `Run ${G.runIndex + 1}: you got out` : `Run ${G.runIndex + 1}: down in arena ${G.ai + 1} (${ARENAS[G.ai].name})`;
+  $('rStats').textContent = `Score ${G.score} · ${Math.round(G.endedAt)}s · lured kills ${lured(G.tel.kills)} · best chain ×${G.tel.maxChain}`
+    + (G.killer ? ` · killed by ${G.killer.label}` : '');
+  refreshCounts();
+  $('react').classList.add('show');
+  setTimeout(() => $('rText').focus(), 50);
+}
+function saveReaction(andContinue) {
+  const tel = G.tel;
+  const entry = {
+    version: VERSION, run: G.runIndex + 1, at: new Date().toISOString(), variant: G.variant,
+    ...(form.invalid ? { invalid: true } : {}),
+    reaction: { text: $('rText').value.trim(), tags: [...form.tags], vsPrevious: form.cmp, playAgain: form.again },
+    telemetry: {
+      outcome: G.outcome, durationS: +G.endedAt.toFixed(1), startArena: G.startArena + 1, arenaReached: G.ai + 1, score: G.score,
+      kills: tel.kills, maxChain: tel.maxChain, chainsOf3: tel.chains3, hits: tel.hits, killedBy: G.killer ? G.killer.label : null,
+      nearMisses: tel.nearMiss, dashes: tel.dashes, assistMines: tel.assistMines, arenas: tel.arenas,
+      wallTimeS: +tel.wallTime.toFixed(1), idleTimeS: +tel.idleTime.toFixed(1), distancePx: Math.round(tel.dist),
+    },
+  };
+  const log = loadLog(); log.push(entry); saveLog(log);
+  serverRuns = Math.max(serverRuns, entry.run);
+  fetch('/api/log', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(entry) }).catch(() => {});
+  $('react').classList.remove('show');
+  if (andContinue) startRun(); else { G = null; refreshTitle(); $('title').classList.add('show'); }
+}
+$('rSave').onclick = () => saveReaction(true);
+$('rSaveStop').onclick = () => saveReaction(false);
+$('startBtn').onclick = () => startRun();
+
+// ---------- render ----------
+function drawExit() {
+  const e = G.exit, half = 46, open = e.open, pulse = 0.6 + 0.4 * Math.sin(G.t * 8);
+  // Inset from the wall so the whole gate is on screen.
+  const ix = e.x === 0 ? 7 : e.x === W ? W - 7 : e.x, iy = e.y === 0 ? 7 : e.y === H ? H - 7 : e.y;
+  const [x1, y1, x2, y2] = e.horiz ? [ix - half, iy, ix + half, iy] : [ix, iy - half, ix, iy + half];
+  if (open) {
+    const g = ctx.createRadialGradient(ix, iy, 0, ix, iy, 90);
+    g.addColorStop(0, `rgba(124,242,200,${0.35 * pulse})`); g.addColorStop(1, 'rgba(124,242,200,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ix, iy, 90, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+  ctx.strokeStyle = open ? `rgba(124,242,200,${pulse})` : '#4a556c'; ctx.lineWidth = 12;
+  if (open) { ctx.shadowColor = '#7cf2c8'; ctx.shadowBlur = 24; }
+  ctx.stroke(); ctx.shadowBlur = 0;
+  if (!open) {
+    const f = G.charge;
+    ctx.beginPath();
+    if (e.horiz) { ctx.moveTo(x1, y1); ctx.lineTo(x1 + (x2 - x1) * f, y1); } else { ctx.moveTo(x1, y1); ctx.lineTo(x1, y1 + (y2 - y1) * f); }
+    ctx.strokeStyle = '#7cf2c8'; ctx.lineWidth = 4; ctx.stroke();
+  } else {
+    // door-slam radius: anyone inside it when you escape gets crushed
+    ctx.beginPath(); ctx.arc(e.x, e.y, SLAM_RADIUS, 0, Math.PI * 2);
+    ctx.setLineDash([4, 8]); ctx.strokeStyle = 'rgba(124,242,200,.25)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.lineCap = 'butt';
+  ctx.font = '700 13px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = open ? '#7cf2c8' : '#8a93a6';
+  const lx = clamp(e.x, 40, W - 40) + (e.x === 0 ? 34 : e.x === W ? -34 : 0), ly = clamp(e.y, 0, H) + (e.y === 0 ? 30 : e.y === H ? -22 : 4);
+  ctx.fillText(open ? 'EXIT' : `${Math.floor(G.charge * 100)}%`, lx, ly);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  if (G && G.shake > 0.3) ctx.translate(rand(-G.shake, G.shake), rand(-G.shake, G.shake));
+  ctx.strokeStyle = '#151a25'; ctx.lineWidth = 1;
+  for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  if (!G) { ctx.restore(); return; }
+
+  for (const e of G.ents) {
+    if (e.type !== 'laser') continue;
+    const L = 1400;
+    ctx.beginPath(); ctx.moveTo(e.x - e.c * L, e.y - e.s * L); ctx.lineTo(e.x + e.c * L, e.y + e.s * L);
+    if (e.tele > 0) {
+      const k = 1 - e.tele / e.teleMax;
+      ctx.setLineDash([10, 8]); ctx.strokeStyle = `rgba(255,77,109,${0.25 + 0.5 * k})`; ctx.lineWidth = 1 + 2 * k; ctx.stroke(); ctx.setLineDash([]);
+    } else {
+      ctx.strokeStyle = 'rgba(255,77,109,.35)'; ctx.lineWidth = e.r * 2 + 10; ctx.stroke();
+      ctx.strokeStyle = '#ffd0d8'; ctx.lineWidth = e.r * 2 - 4; ctx.stroke();
+    }
+  }
+  if (G.exit) drawExit();
+  for (const f of G.fx) {
+    const k = f.t / f.dur, rad = f.R * Math.min(1, f.t / 0.12);
+    ctx.beginPath(); ctx.arc(f.x, f.y, rad, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,209,102,${0.35 * (1 - k)})`; ctx.fill();
+    ctx.strokeStyle = `rgba(255,209,102,${1 - k})`; ctx.lineWidth = 3; ctx.stroke();
+  }
+  for (const e of G.ents) {
+    if (e.type === 'laser') continue;
+    if (e.type === 'rock') {
+      ctx.beginPath(); ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+      ctx.fillStyle = '#1f2533'; ctx.fill(); ctx.strokeStyle = '#9aa4b8'; ctx.lineWidth = 2; ctx.stroke();
+      continue;
+    }
+    if (e.spawn > 0) {
+      ctx.beginPath(); ctx.arc(e.x, e.y, e.r + e.spawn * 26, 0, Math.PI * 2);
+      ctx.strokeStyle = e.type === 'mine' ? 'rgba(255,209,102,.5)' : e.type === 'charger' ? 'rgba(179,136,255,.6)' : 'rgba(255,122,89,.6)';
+      ctx.lineWidth = 2; ctx.stroke();
+      continue;
+    }
+    if (e.type === 'chaser') {
+      ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.a);
+      ctx.beginPath(); ctx.moveTo(13, 0); ctx.lineTo(-9, 8); ctx.lineTo(-5, 0); ctx.lineTo(-9, -8); ctx.closePath();
+      ctx.fillStyle = '#ff7a59'; ctx.shadowColor = '#ff7a59'; ctx.shadowBlur = 10; ctx.fill(); ctx.restore();
+    } else if (e.type === 'charger') {
+      if (e.state === 'windup') {
+        const k = 1 - e.st / G.cfg.chargerWindup;
+        ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + e.dx * e.len, e.y + e.dy * e.len);
+        ctx.strokeStyle = `rgba(179,136,255,${0.25 + 0.2 * k})`; ctx.lineWidth = e.r * 2; ctx.stroke();
+        ctx.setLineDash([8, 6]); ctx.strokeStyle = `rgba(227,212,255,${0.5 + 0.5 * k})`; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(e.x, e.y, e.r + 4 + 30 * (1 - k), 0, Math.PI * 2);
+        ctx.strokeStyle = '#e3d4ff'; ctx.lineWidth = 2; ctx.stroke();
+      }
+      if (e.state === 'dash' || (e.state === 'rest' && e.st > 0.6)) {
+        ctx.beginPath(); ctx.moveTo(e.sx, e.sy); ctx.lineTo(e.x, e.y);
+        ctx.strokeStyle = 'rgba(179,136,255,.45)'; ctx.lineWidth = e.r * 2; ctx.stroke();
+      }
+      ctx.save(); ctx.translate(e.x, e.y);
+      if (e.state === 'windup') ctx.translate(rand(-2, 2), rand(-2, 2));
+      ctx.fillStyle = e.state === 'dash' ? '#e3d4ff' : '#b388ff'; ctx.shadowColor = '#b388ff'; ctx.shadowBlur = e.state === 'dash' ? 22 : 10;
+      ctx.fillRect(-e.r, -e.r, e.r * 2, e.r * 2); ctx.restore();
+    } else if (e.type === 'mine') {
+      ctx.beginPath(); ctx.arc(e.x, e.y, BLAST * 0.85 + 9, 0, Math.PI * 2);
+      ctx.setLineDash([3, 7]); ctx.strokeStyle = 'rgba(255,209,102,.28)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+      const pulse = 1 + 0.12 * Math.sin(G.t * 6 + e.x);
+      ctx.beginPath(); ctx.arc(e.x, e.y, e.r * pulse, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 3; ctx.shadowColor = '#ffd166'; ctx.shadowBlur = 10; ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.arc(e.x, e.y, 3, 0, Math.PI * 2); ctx.fillStyle = '#ffd166'; ctx.fill();
+    }
+  }
+  for (const q of G.parts) { ctx.globalAlpha = Math.min(1, q.t * 2); ctx.fillStyle = q.col; ctx.fillRect(q.x - 2, q.y - 2, 4, 4); }
+  ctx.globalAlpha = 1;
+
+  const p = G.p;
+  if (G.outcome !== 'dead' && G.trans <= 0 && !(p.inv > 0 && Math.floor(G.t * 16) % 2)) {
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = '#7cf2c8'; ctx.shadowColor = '#7cf2c8'; ctx.shadowBlur = 16; ctx.fill(); ctx.shadowBlur = 0;
+  }
+  if (G.killer) { ctx.beginPath(); ctx.arc(G.killer.x, G.killer.y, 26, 0, Math.PI * 2); ctx.strokeStyle = '#ff9aa8'; ctx.lineWidth = 2; ctx.stroke(); }
+  ctx.restore();
+
+  ctx.textAlign = 'center';
+  for (const t of G.texts) {
+    ctx.globalAlpha = Math.min(1, t.t * 2); ctx.fillStyle = t.col || '#e8ecf3';
+    ctx.font = t.big ? '700 30px system-ui,sans-serif' : '700 15px system-ui,sans-serif';
+    ctx.fillText(t.s, t.x, t.y);
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.textAlign = 'left'; ctx.font = '600 15px system-ui,sans-serif'; ctx.fillStyle = '#e8ecf3';
+  ctx.fillText('♥'.repeat(Math.max(0, p.hp)) + '♡'.repeat(3 - Math.max(0, p.hp)), 16, 26);
+  ctx.textAlign = 'center'; ctx.fillText(`Arena ${G.ai + 1} / ${ARENAS.length} · ${ARENAS[G.ai].name}`, W / 2, 26);
+  ctx.textAlign = 'right'; ctx.fillText(String(G.score), W - 16, 26);
+  if (G.chain > 1) { ctx.fillStyle = '#7cf2c8'; ctx.fillText(`chain ×${G.chain}`, W - 16, 46); }
+
+  const x = 16, y = H - 18, ready = G.cdDash <= 0;
+  ctx.textAlign = 'left'; ctx.font = '600 13px system-ui,sans-serif';
+  ctx.fillStyle = ready ? '#7cf2c8' : '#8a93a6'; ctx.fillText('Shift dash', x, y);
+  ctx.fillStyle = '#2a3142'; ctx.fillRect(x, y + 4, 90, 3);
+  ctx.fillStyle = ready ? '#7cf2c8' : '#8a93a6'; ctx.fillRect(x, y + 4, 90 * (1 - Math.max(0, G.cdDash) / 2.2), 3);
+}
+
+let last = performance.now();
+function frame(now) {
+  let dt = Math.min(0.033, (now - last) / 1000); last = now;
+  if (G && G.hitstop > 0) { G.hitstop -= dt; dt *= 0.3; }
+  if (G && !paused) update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+refreshTitle();
+requestAnimationFrame(frame);
+
+window.__lure = { get state() { return G; }, variants: VARIANTS, arenas: ARENAS, progress, get log() { return loadLog(); } };
+</script>
+<script src="sim-v3.js"></script>
+</body>
+</html>

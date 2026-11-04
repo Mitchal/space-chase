@@ -1,0 +1,20 @@
+{
+  "about": "Headless bot playtests of Lure v6 (camera-centred flight, death wave, death walls, flying asteroids), 20 runs per cell on the final tuning. Bots are skill proxies, not taste proxies. 'random' = no-skill floor; 'evader' = crude competent player: flees and swirls toward the lane middle, dodges telegraphs, keeps off rocks/walls, pushes right (harder when the wave is close). arena = mean sector reached (of 6). Course = 6 x 3600px.",
+  "summary": {
+    "random/A": { "runs": 20, "wins": 0, "sector": 1, "dur": 6.2, "deaths": { "a rock": 3, "the death wave": 6, "a death wall": 5, "a chaser": 6 } },
+    "random/B": { "runs": 20, "wins": 0, "sector": 1, "dur": 5.9, "deaths": { "a chaser": 9, "the death wave": 6, "a death wall": 2, "a rock": 3 } },
+    "evader/A": { "runs": 20, "wins": 0, "sector": 3.6, "dur": 61.8, "kps": 0.56, "deaths": { "a rock": 13, "a chaser": 7 } },
+    "evader/B": { "runs": 20, "wins": 6, "sector": 5.0, "dur": 81.5, "kps": 0.64, "deaths": { "a laser": 2, "a chaser": 5, "a rock": 7 } }
+  },
+  "tuning_history": [
+    "Pursuers at their arena speed (168 px/s, vs your 270) could never catch you in a forward flight: the evader won 20/20 in ~58s by holding right. Flight chasers now fly at 300 (configurable per stage): you can't outrun them, only shed them, as in reference moment 2.",
+    "Field ~2x denser and sectors 2400 -> 3600px so the flight takes minutes (P9), not a 60s sprint.",
+    "Apparent 'death wall' deaths turned out to be a bot artifact (its swirl always turned the same way, steering into the bottom wall). Fixed in the bot; wall deaths dropped to ~1 in 30.",
+    "A/B difficulty: at equal density, drifting (A) reached sector 3.4 vs tumbling (B) 5.6. A thinner A field made A *worse* (2.65): rocks are lure tools, and fast streams sweep pursuers away. A got a 1.5x denser field instead. Remaining gap 3.6 vs 5.0; B is still somewhat easier for the bot."
+  ],
+  "notes": [
+    "A full flight takes the bot ~100-125s; Mikael will likely weave more and take longer (his v5 run reached sector 4 in 144s).",
+    "Mikael has out-performed the evader in every version. Treat these numbers as a floor for him.",
+    "Death causes for the bot are now mostly rocks and chasers (the core loop), with few walls or wave deaths. The wave is pressure, not the usual killer."
+  ]
+}

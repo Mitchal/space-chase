@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-02T11:00:00Z",
+  "runs": [
+    {
+      "run": 28,
+      "variant": "B",
+      "playAgain": { "yes": 0.78, "meh": 0.17, "no": 0.05 },
+      "vsPrevious": { "better": 0.12, "same": 0.08, "worse": 0.22, "first run": 0.58 },
+      "tags": { "learning": 0.4, "tense": 0.3, "too hard": 0.2, "confusing": 0.2 },
+      "tagsLeftBlank": 0.35,
+      "gutSentence": "Whoa, thrusters are a whole different game. Kept drifting into asteroids I saw coming. Need to get the hang of this.",
+      "themes": [
+        "the thrusters dominate: inertia/coasting is hard to control at first (a felt struggle, not yet a verdict)",
+        "early death he blames on his own handling (drifted into a rock, wall or gap)",
+        "retry energy / 'I need to learn this'"
+      ],
+      "arenaReached": { "median": 1, "range": [1, 3] },
+      "killedBy": { "a rock": 0.33, "a chaser": 0.24, "a death wall": 0.17, "the death wave": 0.08, "a mine blast": 0.07, "a laser": 0.04, "a charger dash": 0.04, "none (won)": 0.03 }
+    },
+    {
+      "run": 29,
+      "variant": "A",
+      "playAgain": { "yes": 0.8, "meh": 0.15, "no": 0.05 },
+      "vsPrevious": { "better": 0.42, "same": 0.25, "worse": 0.18, "first run": 0.15 },
+      "tags": { "learning": 0.35, "tense": 0.35, "satisfying": 0.2 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "Better. Now I actually see the chasers, that's what I wanted! Still fighting the ship a bit when they're on me.",
+      "themes": [
+        "chasers back on his screen (positive, possibly credited to fewer asteroids rather than flank spawns)",
+        "thrusters: improving, but dodging pursuers now means fighting momentum",
+        "progress compared to the previous run"
+      ],
+      "arenaReached": { "median": 2, "range": [1, 5] },
+      "killedBy": { "a chaser": 0.32, "a rock": 0.25, "a death wall": 0.14, "a laser": 0.08, "the death wave": 0.06, "a mine blast": 0.06, "a charger dash": 0.05, "none (won)": 0.04 }
+    },
+    {
+      "run": 30,
+      "variant": "B",
+      "playAgain": { "yes": 0.8, "meh": 0.15, "no": 0.05 },
+      "vsPrevious": { "better": 0.33, "same": 0.33, "worse": 0.3, "first run": 0.04 },
+      "tags": { "tense": 0.35, "learning": 0.25, "too hard": 0.25, "satisfying": 0.2 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "The walls of asteroids are cool but threading the gaps is really hard when I'm sliding around. Chasers everywhere now.",
+      "themes": [
+        "asteroid walls / moving gaps noticed, framed against the thrusters (hard to thread with inertia)",
+        "pursuer pressure now high (many on screen, maybe 'came out of nowhere' from the sides)",
+        "difficulty: v8 harder than v7"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a rock": 0.32, "a chaser": 0.26, "a death wall": 0.13, "a laser": 0.08, "a mine blast": 0.06, "a charger dash": 0.05, "the death wave": 0.04, "none (won)": 0.06 }
+    },
+    {
+      "run": 31,
+      "variant": "A",
+      "playAgain": { "yes": 0.78, "meh": 0.17, "no": 0.05 },
+      "vsPrevious": { "better": 0.35, "same": 0.38, "worse": 0.25, "first run": 0.02 },
+      "tags": { "tense": 0.3, "satisfying": 0.25, "learning": 0.2, "flow": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Getting the hang of it. Thrusters feel like flying a ship, but I do miss being able to just dodge exactly where I want.",
+      "themes": [
+        "an emerging, mixed verdict on thrusters: thematically right vs lost precision",
+        "out-turning chasers with momentum (clever when it works)",
+        "deeper run / possibly from the sector 5 checkpoint"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.26, "a rock": 0.22, "a laser": 0.12, "a death wall": 0.12, "none (won)": 0.1, "a charger dash": 0.07, "a mine blast": 0.06, "the death wave": 0.05 }
+    },
+    {
+      "run": 32,
+      "variant": "B",
+      "playAgain": { "yes": 0.75, "meh": 0.2, "no": 0.05 },
+      "vsPrevious": { "better": 0.3, "same": 0.38, "worse": 0.3, "first run": 0.02 },
+      "tags": { "tense": 0.35, "too hard": 0.2, "satisfying": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "Maybe less drift when I let go, or a stronger brake. The asteroid walls are fun when I make it through a gap.",
+      "themes": [
+        "a concrete tweak proposal for the controls (less coast/more grip, hybrid, stronger brake)",
+        "asteroid walls / field shape (positive when he threads them)",
+        "a death he blames on controls or a gap closing"
+      ],
+      "arenaReached": { "median": 4, "range": [1, 6] },
+      "killedBy": { "a rock": 0.3, "a chaser": 0.22, "a laser": 0.11, "a death wall": 0.1, "none (won)": 0.1, "a charger dash": 0.07, "a mine blast": 0.06, "the death wave": 0.04 }
+    },
+    {
+      "run": 33,
+      "variant": "A",
+      "playAgain": { "yes": 0.72, "meh": 0.22, "no": 0.06 },
+      "vsPrevious": { "better": 0.3, "same": 0.42, "worse": 0.26, "first run": 0.02 },
+      "tags": { "satisfying": 0.3, "tense": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "Okay, I think thrusters are more fun with the chasers, but it needs tuning. Not sure yet, would want to compare with no momentum.",
+      "themes": [
+        "a summary verdict on thrusters vs direct control, hedged (or asks for a side-by-side)",
+        "chasers being the fun part again",
+        "possibly a new idea about the field or the ending"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.24, "a rock": 0.22, "none (won)": 0.14, "a laser": 0.12, "a death wall": 0.1, "a charger dash": 0.07, "a mine blast": 0.06, "the death wave": 0.05 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P12", "verdict": "will hold", "why": "Thrusters with a flame and real coasting are unmistakably a ship; this is the axis he raised, and the change is big enough to perceive (unlike grip 4)." },
+    { "pillar": "P1", "verdict": "at risk", "why": "Out-turning still works on paper (85px vs 130px), but only while thrusting toward the new heading; with coast drag 0.4 his dodges become committed slides, so the 'clever dodging' may turn into fighting the ship." },
+    { "pillar": "P7", "verdict": "at risk", "why": "Still movement only, but rotate+throttle+brake puts attention on the controller, especially early; the 'I may miss this level of control' worry is likely to surface." },
+    { "pillar": "Reference moment 2 (chasers are the star)", "verdict": "will hold", "why": "Flank spawns put pursuers on screen about half the run and the wave no longer eats them; he will notice chasers, though he may credit the fewer asteroids." },
+    { "pillar": "P5", "verdict": "at risk", "why": "Side/ahead spawns at the screen edge plus inertia into death walls and moving wall gaps invite 'came out of nowhere' or 'couldn't stop in time' deaths." },
+    { "pillar": "P2", "verdict": "will hold", "why": "The steady wave draws no complaint (fixes vanish silently); intensity now comes from on-screen pursuers, possibly tipping into 'too hard'." }
+  ],
+  "biggestRisk": "The thrusters' very low coast drag (speed falls only about a third per second) in narrowing lanes with death walls, moving wall gaps and faster on-screen pursuers: his favourite act, out-turning chasers, becomes a committed slide, deaths feel like the ship's fault, and he concludes he misses direct control ('go back to no momentum'), possibly while saying chasers on screen are much better.",
+  "abVerdict": "He mostly won't name A vs B as a variant difference; his attention goes to thrusters and chasers. B (walls) is more likely to be mentioned by content ('walls of asteroids are cool / hard to thread with drift') and to kill him by rock; A runs go further. If he expresses a preference it leans B in sentiment (he already said a wall was fun) and A in results, with a real chance he asks for walls plus less drift."
+}

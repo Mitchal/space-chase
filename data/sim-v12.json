@@ -1,0 +1,9 @@
+{
+  "version": 12,
+  "note": "Evader bot from sector 1, direct control. Slow-mo is applied only in the real-time loop, so bots measure B without it.",
+  "tuning": [
+    { "change": "blasts for all, no self-damage, pace 0.35 / extra 4 for both, near-miss graze 18px", "A": { "runs": 18, "arena": 3.67, "kills": 31.3, "pursuersSeenShare": 0.66 }, "B": { "runs": 18, "arena": 3.39, "kills": 24.1, "nearMissesPerRun": 0.06, "pursuersSeenShare": 0.64 } },
+    { "change": "graze 18 → 22px (final); verified by a forced pass: CLOSE!, ring, +50, slow-mo 0.45s" }
+  ],
+  "verdict": "Same difficulty as v11 (3.35-3.65). Bots don't graze, so the near-miss rate for him is unknown; telemetry now records nearMisses."
+}

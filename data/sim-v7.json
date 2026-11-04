@@ -1,0 +1,10 @@
+{
+  "version": 7,
+  "note": "Evader bot, full runs from sector 1. Three batches after the final tuning are pooled per variant where noted.",
+  "tuning": [
+    { "change": "momentum grip 4, ramp 8s, rocks through walls, wave A leash 620 / B surge 420 for 3s", "evaderA": { "runs": 40, "arena": 4.2, "wins": 7 }, "evaderB": { "runs": 40, "arena": 3.9, "wins": 3 } },
+    { "change": "B surge 450 for 3.2s (so a surge reaches the screen even when fleeing)", "evaderA": { "runs": 20, "arena": 4.8, "wins": 8, "diedInSector1": 0 }, "evaderB": { "runs": 20, "arena": 4.4, "wins": 3, "diedInSector1": 0 } }
+  ],
+  "random": { "A": { "arena": 1, "durS": 7.3 }, "B": { "arena": 1, "durS": 7.0 } },
+  "verdict": "Reach is matched (about sector 4–5 each); B wins less often (surges punish the last sectors). Sector-1 deaths dropped from common to ~1 in 40."
+}

@@ -1,0 +1,22 @@
+{
+  "about": "Headless bot playtests of Lure v2 (game/sim.js). Bots are skill proxies, not taste proxies. 'random' = no-skill floor; 'evader' = crude competent player (flee + swirl, dodges telegraphs). Averages over 10 runs per cell. kps = lured kills/s, c3 = 3+ chains per minute, firstKill/noKill in seconds, nm = near-misses per minute, deaths = what landed the final hit.",
+  "summary": {
+    "random/A": { "runs": 10, "wins": 0, "wave": 2.6, "dur": 9.73, "kps": 0.29, "c3": 2.12, "firstKill": 5.33, "noKill": 6.1, "nm": 38.3, "deaths": { "chaser": 10 } },
+    "random/B": { "runs": 10, "wins": 0, "wave": 2.5, "dur": 9.75, "kps": 0.38, "c3": 2.24, "firstKill": 4.74, "noKill": 5.37, "nm": 30.15, "deaths": { "chaser": 10 } },
+    "evader/A": { "runs": 10, "wins": 0, "wave": 7.2, "dur": 51.54, "kps": 0.78, "c3": 6.45, "firstKill": 5.97, "noKill": 6.57, "nm": 5.2, "deaths": { "chaser": 8, "mine": 2 } },
+    "evader/B": { "runs": 10, "wins": 1, "wave": 6.9, "dur": 51.32, "kps": 0.78, "c3": 6.61, "firstKill": 4.96, "noKill": 6.69, "nm": 5.9, "deaths": { "charger": 1, "chaser": 5, "laser": 1, "mine": 3 } }
+  },
+  "evaderB_runs_outcome_dur_wave_longestNoKill": [
+    ["dead", 43.4, 7, 5.2], ["dead", 33.2, 5, 7], ["dead", 28.9, 5, 5.6], ["dead", 54.5, 7, 13.6], ["dead", 87.4, 9, 6.9], ["dead", 42.1, 6, 6.2],
+    ["dead", 10, 2, 9.3], ["dead", 95.6, 10, 13.8], ["dead", 77.7, 9, 13.8], ["dead", 40.3, 6, 4.3], ["dead", 86.9, 10, 7.5], ["dead", 45, 7, 6]
+  ],
+  "evaderB_withDecoyAndPocketMine_outcome_dur_wave_kills": [
+    ["dead", 23.3, 5, 22], ["dead", 61.4, 8, 54], ["win", 97.6, 10, 92], ["win", 170, 10, 92],
+    ["dead", 70.9, 9, 67], ["win", 111.9, 10, 91], ["dead", 55.3, 8, 45], ["dead", 78.1, 9, 64]
+  ],
+  "notes": [
+    "Before the in-path assist-mine fix, 1 of 12 evader runs stalled on the final wave for 400s (lone enemy, nothing to lure it into). After the fix: 0 of 32.",
+    "The evader bot uses dash only as a panic button, so dash vs no-dash bot results say nothing about how dash feels to a human.",
+    "For reference, Mikael in v1 reached wave 7 at ~100s, with 0.28-0.59 kills/s."
+  ]
+}

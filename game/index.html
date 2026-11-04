@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lure</title>
+<style>
+:root{--bg:#0b0d12;--fg:#e8ecf3;--dim:#8a93a6;--panel:#151925;--accent:#7cf2c8;--line:#2a3142;--warn:#ff6b5b}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;overflow:hidden}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{background:#0e1118;border:1px solid var(--line);border-radius:6px;touch-action:none}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,.74)}
+.overlay.show{display:flex}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box}
+h1{margin:0 0 4px;font-size:30px;letter-spacing:.08em}
+h2{margin:0 0 6px;font-size:20px}
+.dim{color:var(--dim)}
+.small{font-size:12px}
+label{display:block;margin:14px 0 6px;font-weight:600}
+textarea{width:100%;box-sizing:border-box;background:#0e1118;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;resize:vertical}
+.chips,.seg{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#0e1118;border:1px solid var(--line);color:var(--fg);border-radius:999px;padding:4px 11px;cursor:pointer;font:inherit;font-size:13px}
+.chip.on{background:var(--accent);color:#06110d;border-color:var(--accent)}
+.chip.warn.on{background:var(--warn);border-color:var(--warn);color:#1a0603}
+.chip:disabled{opacity:.35;cursor:default}
+.row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+button.main{background:var(--accent);color:#06110d;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 16px;font:inherit;cursor:pointer}
+a{color:var(--accent)}
+kbd{background:#0e1118;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+ul{padding-left:18px;margin:8px 0}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>

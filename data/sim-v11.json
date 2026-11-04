@@ -1,0 +1,12 @@
+{
+  "version": 11,
+  "note": "Evader bot from sector 1, direct control (thrusters removed).",
+  "tuning": [
+    { "change": "direct control, turn 2.3, all from behind, speed 300, no pace", "A": { "arena": 4.71, "wins": "2/14" }, "B": { "arena": 5.0, "wins": "7/14" } },
+    { "change": "pace A 0.6 / B 0.5, extra A 1 / B 2", "A": { "arena": 4.21 }, "B": { "arena": 4.29, "wins": "6/14" } },
+    { "change": "speed 330, pace B 0.45, extra B 3", "A": { "arena": 2.56 }, "B": { "arena": 2.44 } },
+    { "change": "speed 315", "A": { "arena": 3.33 }, "B": { "arena": 4.39 } },
+    { "change": "pace B 0.35, extra B 4 (final)", "A": { "runs": 20, "arena": 3.35, "kills": 14.8, "pursuersSeenShare": 0.63, "waveKillsPerRun": 0.35 }, "B": { "runs": 40, "arena": 3.58, "kills": 27.9, "pursuersSeenShare": 0.66, "waveKillsPerRun": 0.5 } }
+  ],
+  "verdict": "Matched within noise (A 3.35, B 3.5-3.65). B is busier: more pursuers on screen (1.4-1.5 vs 1.16) and nearly twice the kills. Bots never died to a pursuer blast; their deaths are mostly chasers (15/20)."
+}

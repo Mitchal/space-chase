@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-03T15:30:00Z",
+  "runs": [
+    {
+      "run": 53,
+      "variant": "A",
+      "playAgain": { "yes": 0.83, "meh": 0.12, "no": 0.05 },
+      "vsPrevious": { "better": 0.28, "same": 0.08, "worse": 0.08, "first run": 0.56 },
+      "tags": { "satisfying": 0.5, "tense": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.2,
+      "gutSentence": "Nice, the blasts don't hurt me anymore, I flew straight through a chain going off! Then one of them caught me on a quick turn though.",
+      "themes": [
+        "blast immunity / chains in this run (his own request, may get one clause like 'direct controls back' did, or silence)",
+        "one moment where a chaser caught him (the main killer since v11)",
+        "retry energy / self-blame"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.5, "a rock": 0.15, "a laser": 0.1, "a death wall": 0.06, "the death wave": 0.06, "a mine blast": 0.04, "a charger dash": 0.03, "none (won)": 0.06 }
+    },
+    {
+      "run": 54,
+      "variant": "B",
+      "playAgain": { "yes": 0.82, "meh": 0.12, "no": 0.06 },
+      "vsPrevious": { "better": 0.4, "same": 0.28, "worse": 0.22, "first run": 0.1 },
+      "tags": { "satisfying": 0.5, "tense": 0.3, "clever": 0.2 },
+      "tagsLeftBlank": 0.2,
+      "gutSentence": "Whoa, the slow motion when one roared right past me was so cool! Felt like a movie. Chains were great too.",
+      "themes": [
+        "the near-miss slow-mo / CLOSE! (first contact; positive ~60%, 'felt like lag / threw me off' ~25%)",
+        "a close dodge as a story ('roared past me')",
+        "chains / blasts"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.5, "a rock": 0.15, "a laser": 0.1, "a death wall": 0.06, "the death wave": 0.06, "a mine blast": 0.04, "a charger dash": 0.03, "none (won)": 0.06 }
+    },
+    {
+      "run": 55,
+      "variant": "A",
+      "playAgain": { "yes": 0.8, "meh": 0.14, "no": 0.06 },
+      "vsPrevious": { "better": 0.3, "same": 0.35, "worse": 0.3, "first run": 0.05 },
+      "tags": { "satisfying": 0.45, "tense": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.25,
+      "gutSentence": "Got pretty far that time. Gathering a bunch of them and setting them all off is the best. Still feel like something's missing though, not sure what.",
+      "themes": [
+        "a deeper run / possibly from the sector 4 checkpoint",
+        "the chain payoff as the peak",
+        "reflection: the 'one more thing' gap still open (A has no slow-mo; ~20% he notices no CLOSE! this time)"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.45, "a rock": 0.13, "a laser": 0.12, "a death wall": 0.06, "the death wave": 0.06, "a mine blast": 0.05, "a charger dash": 0.04, "none (won)": 0.09 }
+    },
+    {
+      "run": 56,
+      "variant": "B",
+      "playAgain": { "yes": 0.8, "meh": 0.14, "no": 0.06 },
+      "vsPrevious": { "better": 0.35, "same": 0.3, "worse": 0.28, "first run": 0.07 },
+      "tags": { "satisfying": 0.45, "tense": 0.3, "clever": 0.2 },
+      "tagsLeftBlank": 0.25,
+      "gutSentence": "The CLOSE! thing makes me want to let them pass really near on purpose. Risky but fun. Though when a whole bunch go by it gets a bit stuttery.",
+      "themes": [
+        "near misses as a goal he now chases (risky quick turn becomes the highlight)",
+        "a qualifier: repeated slow-mo in a pack feels choppy / breaks flow",
+        "a concrete tweak (shorter slow-mo, or tie it to chains / score)"
+      ],
+      "arenaReached": { "median": 4, "range": [2, 6] },
+      "killedBy": { "a chaser": 0.47, "a rock": 0.13, "a laser": 0.12, "a death wall": 0.06, "the death wave": 0.05, "a mine blast": 0.05, "a charger dash": 0.04, "none (won)": 0.08 }
+    },
+    {
+      "run": 57,
+      "variant": "A",
+      "playAgain": { "yes": 0.74, "meh": 0.18, "no": 0.08 },
+      "vsPrevious": { "better": 0.25, "same": 0.35, "worse": 0.35, "first run": 0.05 },
+      "tags": { "tense": 0.35, "satisfying": 0.35, "learning": 0.2 },
+      "tagsLeftBlank": 0.3,
+      "gutSentence": "Aaah, so close! Got swarmed in the asteroid belt, couldn't find a rock in time.",
+      "themes": [
+        "a short or frustrating death to chasers (sector 1 restart)",
+        "self-blame / so close",
+        "possibly a new idea that amplifies chains or the dodge"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.5, "a rock": 0.14, "a laser": 0.1, "a death wall": 0.06, "the death wave": 0.06, "a mine blast": 0.04, "a charger dash": 0.03, "none (won)": 0.07 }
+    },
+    {
+      "run": 58,
+      "variant": "B",
+      "playAgain": { "yes": 0.68, "meh": 0.22, "no": 0.1 },
+      "vsPrevious": { "better": 0.3, "same": 0.3, "worse": 0.35, "first run": 0.05 },
+      "tags": { "satisfying": 0.35, "tense": 0.35, "chaotic": 0.2 },
+      "tagsLeftBlank": 0.35,
+      "gutSentence": "I like the slow-mo dodges, they make it feel epic. But I'm getting tired, they got me good that time.",
+      "themes": [
+        "the slow-mo / near misses (comparison or verdict at session end)",
+        "fatigue / ending tired or sad, as in run 52",
+        "a proposal for the next thing"
+      ],
+      "arenaReached": { "median": 3, "range": [1, 6] },
+      "killedBy": { "a chaser": 0.5, "a rock": 0.14, "a laser": 0.1, "a death wall": 0.06, "the death wave": 0.06, "a mine blast": 0.04, "a charger dash": 0.03, "none (won)": 0.07 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P10", "verdict": "will hold", "why": "Blast immunity is his own hero exception; expect it to be absorbed with at most one clause of approval, and no complaint that it's unfair in his favour." },
+    { "pillar": "P1", "verdict": "will hold", "why": "Chains in every run keep his favourite payoff; near misses reward the out-turn itself, which he already perceives as the clever act." },
+    { "pillar": "P7", "verdict": "at risk", "why": "Slow-mo changes the game's clock under his thumbs. Fired once it reads as a highlight; fired repeatedly as a pack streams past from behind it can read as stutter or lag and pull attention to the timing." },
+    { "pillar": "P11", "verdict": "at risk", "why": "With blasts in every run and none hurting him, crowds clear more easily; a deep run may draw 'a bit easy' early (he said so in run 50), though chasers still kill him most runs." },
+    { "pillar": "Pursuers are the star", "verdict": "will hold", "why": "Same v11 B pressure from behind; near misses put even more focus on them roaring past." },
+    { "pillar": "P9", "verdict": "will hold", "why": "Difficulty matches v11 (bots 3.4-3.7); expect at least one sector-6 run or a win, likely via the sector 4 checkpoint." }
+  ],
+  "biggestRisk": "The near-miss slow-mo stuttering the flow. Pursuers come from behind and stream past him, so in a crowd several grazes can fire back-to-back: time keeps dropping to 30% in the middle of the risky quick turn he likes. If that reads as lag rather than as a cinematic beat, the thing meant to answer 'one more thing' becomes an interruption of his favourite movement (P7), and he'll ask to shorten or remove it.",
+  "abVerdict": "Mild preference for B, and about half the time he names it: slow-mo and CLOSE! are loud and visible, but they're our idea, not his, so expect less certainty than v11's blasts. Most likely: praise on the first B run ('the slow motion when one roared past was cool'), then a qualifier on a later B run (stuttery in packs, or a tweak to its length). ~20% he notices its absence on an A run; ~30% he never mentions it and results are a tie."
+}

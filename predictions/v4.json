@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "madeAt": "2026-11-02T06:59:32Z",
+  "notes": "N = 4. Runs 14-18 (B, A, B, A, B). arenaReached replaces waveReached. 'killedBy' includes 'nobody (won)' because wins were common in v3. 'vsPrevious' includes 'blank' because he left it empty once (run 4).",
+  "runs": [
+    {
+      "run": 14,
+      "variant": "B",
+      "playAgain": { "yes": 0.85, "meh": 0.12, "no": 0.03 },
+      "vsPrevious": { "better": 0.22, "same": 0.06, "worse": 0.07, "first run": 0.6, "blank": 0.05 },
+      "tags": { "tense": 0.45, "learning": 0.35, "clever": 0.3, "satisfying": 0.3, "flow": 0.25, "too hard": 0.2 },
+      "tagsLeftBlank": 0.35,
+      "gutSentence": "Nice, the keys with the lines make total sense, I immediately knew what to do. It's a lot harder now with two hearts and the rocks hurting, I died pretty fast, but it feels fair.",
+      "themes": ["keys + dotted lines read clearly (his own design)", "harder: two hearts, rocks now hurt him, feels fair / real danger", "short first run, wants to go again"],
+      "arenaReached": { "median": 2, "range": [1, 4] },
+      "killedBy": { "a chaser": 0.55, "a rock": 0.2, "a mine blast": 0.12, "a laser": 0.05, "nobody (won)": 0.03, "a charger": 0.05 }
+    },
+    {
+      "run": 15,
+      "variant": "A",
+      "playAgain": { "yes": 0.85, "meh": 0.12, "no": 0.03 },
+      "vsPrevious": { "better": 0.42, "same": 0.25, "worse": 0.18, "first run": 0.03, "blank": 0.12 },
+      "tags": { "tense": 0.35, "learning": 0.35, "clever": 0.35, "satisfying": 0.3, "flow": 0.3 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "Got further this time. I like that there's more room now to lure them into stuff, it feels more like planning again. Dodging between the rocks while they can hit me too is much better.",
+      "themes": ["improving / getting further", "room to set traps again (P1 returning) or still too hectic", "rocks dangerous to him = the asteroid-field feeling"],
+      "arenaReached": { "median": 3, "range": [2, 5] },
+      "killedBy": { "a chaser": 0.45, "a rock": 0.22, "a laser": 0.12, "a mine blast": 0.08, "a charger": 0.05, "nobody (won)": 0.08 }
+    },
+    {
+      "run": 16,
+      "variant": "B",
+      "playAgain": { "yes": 0.82, "meh": 0.14, "no": 0.04 },
+      "vsPrevious": { "better": 0.4, "same": 0.25, "worse": 0.2, "first run": 0.02, "blank": 0.13 },
+      "tags": { "clever": 0.4, "satisfying": 0.35, "tense": 0.35, "flow": 0.3, "learning": 0.25 },
+      "tagsLeftBlank": 0.4,
+      "gutSentence": "The levels are really short now which is cool, but the whole run went by quickly. Would be cool if the keys were placed somewhere more dangerous, like inside the rocks, so I have to plan a route through it.",
+      "themes": ["short arenas / short run (P9 tension)", "proposes a change to key placement or arena layout", "planning a route and dragging pursuers through danger"],
+      "arenaReached": { "median": 5, "range": [3, 6] },
+      "killedBy": { "a chaser": 0.33, "a rock": 0.2, "a laser": 0.12, "a charger": 0.08, "a mine blast": 0.07, "nobody (won)": 0.2 }
+    },
+    {
+      "run": 17,
+      "variant": "A",
+      "playAgain": { "yes": 0.85, "meh": 0.12, "no": 0.03 },
+      "vsPrevious": { "better": 0.35, "same": 0.3, "worse": 0.2, "first run": 0.02, "blank": 0.13 },
+      "tags": { "clever": 0.4, "satisfying": 0.4, "tense": 0.3, "flow": 0.3, "learning": 0.2 },
+      "tagsLeftBlank": 0.45,
+      "gutSentence": "That was a close one in the drifting rocks, really the TIE fighter feeling. Not sure if I noticed any difference between the runs, but sometimes it suddenly gets crazy and I don't really know why.",
+      "themes": ["asteroid-field moment (reference moment 2) delivered", "A/B difference mostly unnoticed; pressure surges feel unexplained", "close escapes / tension"],
+      "arenaReached": { "median": 6, "range": [4, 6] },
+      "killedBy": { "a chaser": 0.3, "a rock": 0.2, "a laser": 0.12, "a charger": 0.08, "a mine blast": 0.05, "nobody (won)": 0.25 }
+    },
+    {
+      "run": 18,
+      "variant": "B",
+      "playAgain": { "yes": 0.85, "meh": 0.12, "no": 0.03 },
+      "vsPrevious": { "better": 0.35, "same": 0.3, "worse": 0.18, "first run": 0.02, "blank": 0.15 },
+      "tags": { "clever": 0.4, "satisfying": 0.4, "flow": 0.3, "tense": 0.25 },
+      "tagsLeftBlank": 0.5,
+      "gutSentence": "I'm loving this. Now I think it needs something between runs, like a reason to come back, or new kinds of arenas. Maybe the enemies could also go for the keys.",
+      "themes": ["proposes a new idea (meta loop / progression or new arena twist)", "overall enjoyment rising", "run length or variety after winning"],
+      "arenaReached": { "median": 6, "range": [4, 6] },
+      "killedBy": { "a chaser": 0.28, "a rock": 0.18, "a laser": 0.12, "a charger": 0.08, "a mine blast": 0.06, "nobody (won)": 0.28 }
+    }
+  ],
+  "pillarForecast": [
+    { "pillar": "P8", "verdict": "will hold", "why": "Keys with dotted lines are his own design and directly fix 'I did not see the exit'; the dotted lines make them hard to miss. Most likely the most praised change, early in the session." },
+    { "pillar": "P10", "verdict": "will hold", "why": "Rocks hurting him was his explicit request and makes the asteroid-field moment real. Small risk that drifting rocks hitting him from off-screen angles feel cheap (P5), not unfair-in-his-favor." },
+    { "pillar": "P11", "verdict": "at risk", "why": "Two hearts plus rocks that hurt plus more starting pursuers stack three difficulty increases at once; early runs may end in arena 1-2 and read as 'too hard' before he adapts. Expect him to adapt within 2-3 runs." },
+    { "pillar": "P1", "verdict": "at risk", "why": "The breathing cadence should give trap-setting room, but 5-7 starting chasers with lull pressure 0.55 is not really calm; he may still find kills accidental, especially in A peaks and in the full-pressure getaway." },
+    { "pillar": "P2", "verdict": "at risk", "why": "The warming border is the kind of designed signal past critics over-credited; he will likely not perceive the cadence as a rhythm, only as unexplained 'suddenly it gets crazy' moments, if at all." },
+    { "pillar": "P9", "verdict": "at risk", "why": "Player-paced arenas of ~10-20s make a full run ~60-110s; he pre-approved shorter levels, but once he wins, the run may feel over too quickly and he may ask for more arenas or something between runs." },
+    { "pillar": "P7", "verdict": "will hold", "why": "Movement only is what he asked for; expect no complaint and possibly no mention at all." }
+  ],
+  "biggestRisk": "Front-loaded difficulty: two hearts, rocks that hurt and more pursuers all land together, so run 14 likely ends fast and he spends the remaining runs scrambling for keys under pressure instead of setting traps; the result would echo run 10 ('I just had to escape, kills were accidental') rather than the clever asteroid-field dance the build is aiming for.",
+  "abVerdict": "Most likely (~55%) he does not name a difference between A and B at all; the warming border and surge timing are subtle. If he does react, lean B (~60/40): calm until he takes a key fits 'set the pace myself', and he would express it as 'I could plan more' or 'it felt more in my control', not by naming the variant. ~20% he proposes a third option (e.g. pressure tied to enemy count or to the exit, or no cadence at all)."
+}

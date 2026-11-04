@@ -1,0 +1,30 @@
+{
+ "version": 14,
+ "note": "Evader bot, direct control, from sector 1. Bot runs use a fresh random course each (the daily seed is for his runs). Ghost is visual only, so A and B are the same game for bots.",
+ "tuning": [
+  {
+   "change": "chargers removed; late rocks 16/1000px",
+   "from1": {
+    "A": {
+     "runs": 12,
+     "arena": 3.92,
+     "wins": 2,
+     "deaths": {
+      "a chaser": 7,
+      "a rock": 3
+     }
+    },
+    "B": {
+     "runs": 12,
+     "arena": 4,
+     "wins": 2,
+     "deaths": {
+      "a chaser": 10
+     }
+    }
+   }
+  }
+ ],
+ "determinism": "Same seed, two very different flight paths: identical 71 rocks and mines in the same order over 25s.",
+ "verdict": "Slightly easier than v13 (3.67-3.83) without chargers. Not tuned: the daily score is the measure now."
+}
