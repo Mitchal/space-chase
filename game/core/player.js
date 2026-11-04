@@ -57,15 +57,5 @@ addDrawer(LAYER.player, ctx => {
   if (player.inv > 0 && Math.floor(world.t * 16) % 2) return;
   drawSprite(ctx, glowSprite('player', player.r, 16, '#7cf2c8', g => {
     g.beginPath(); g.arc(0, 0, player.r, 0, Math.PI * 2); g.fillStyle = '#7cf2c8'; g.fill();
-  }), player.x, player.y);
-  ctx.fillStyle = '#7cf2c8';
-  // A nose: the ship's heading if it has one, else the direction of travel.
-  const s = Math.hypot(player.vx, player.vy);
-  if (player.heading !== undefined || s > 30) {
-    const ux = player.heading !== undefined ? Math.cos(player.heading) : player.vx / s;
-    const uy = player.heading !== undefined ? Math.sin(player.heading) : player.vy / s, n = player.r + 7;
-    ctx.beginPath(); ctx.moveTo(player.x + ux * n, player.y + uy * n);
-    ctx.lineTo(player.x - uy * 6 + ux * 4, player.y + ux * 6 + uy * 4); ctx.lineTo(player.x + uy * 6 + ux * 4, player.y - ux * 6 + uy * 4);
-    ctx.closePath(); ctx.fill();
-  }
+  }), player.x, player.y); // just the dot (v17: "remove the arrow… cleaner with just being the dot")
 });

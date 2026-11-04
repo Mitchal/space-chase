@@ -1,10 +1,11 @@
 // After a run (for players; playtest mode uses the reaction form instead): your score, whether it beat today's best,
-// and one tap to fly again. Share puts a short, spoiler-free line on the clipboard or the phone's share sheet.
+// and one tap to fly again. Share sends a short, spoiler-free line and a link to the game (see share-run.js).
 import { world } from '../../core/world.js';
 import { on, emit } from '../../core/events.js';
 import { content, collectSummary } from '../../core/registry.js';
 import { startRun } from '../../core/run.js';
 import { playtest } from '../../core/mode.js';
+import { shareRun, GAME_URL } from './share-run.js';
 
 if (!playtest) {
   content.runOverScreen = true;
@@ -16,7 +17,8 @@ if (!playtest) {
   <p id="xLine" class="dim"></p>
   <div class="row center"><button class="main big" id="xAgain">Fly again</button></div>
   <div class="row center"><button class="ghost" id="xMenu">Menu</button><button class="ghost" id="xShare">Share</button></div>
-  <p id="xShared" class="dim small" hidden>Copied to the clipboard.</p>
+  <p id="xShared" class="dim small" hidden>Copied: paste it anywhere.</p>
+  <textarea id="xShareText" rows="3" style="margin-top:8px" readonly hidden></textarea>
 </div></div>`);
   const $ = id => document.getElementById(id);
   let shareText = '';
@@ -37,7 +39,7 @@ if (!playtest) {
     $('xLine').textContent = bits.join(' · ');
     const where = run.outcome === 'win' ? 'escaped' : `sector ${run.ai + 1}/${sectors}`;
     shareText = `SPACE CHASE daily ${d?.day ?? ''}\n${score.toLocaleString()} · ${where}${s.score?.maxChain > 1 ? ` · chain ×${s.score.maxChain}` : ''}`;
-    $('xShared').hidden = true;
+    $('xShared').hidden = $('xShareText').hidden = true;
     $('results').classList.add('show');
   });
 
@@ -46,8 +48,12 @@ if (!playtest) {
   $('xMenu').onclick = toMenu;
   on('back', e => { if (!e.handled && $('results').classList.contains('show')) { e.handled = true; toMenu(); } });
   $('xShare').onclick = async () => {
-    try { if (navigator.share) return await navigator.share({ text: shareText }); } catch { return; }
-    try { await navigator.clipboard.writeText(shareText); $('xShared').hidden = false; } catch {}
+    const how = await shareRun(shareText);
+    $('xShared').hidden = how !== 'copied';
+    if (how === 'failed') { // nothing could copy it: show it, selected, to copy by hand
+      const box = $('xShareText');
+      box.value = shareText + '\n' + GAME_URL; box.hidden = false; box.focus(); box.select();
+    }
   };
   on('keyPressed', code => { if ($('results').classList.contains('show') && (code === 'Space' || code === 'Enter')) again(); });
 }
