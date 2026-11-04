@@ -1,5 +1,5 @@
 // Draws the app icon (the ship with pursuers on its tail) and writes PNGs, with no dependencies.
-// Usage: node tools/make-icons.js   → game/icons/icon-{192,512}.png, icon-maskable-512.png, app/icon-1024.png
+// Usage: node tools/make-icons.js   → game/icons/*.png (web), and the Android launcher icons and splash logo if android/ exists
 const fs = require('fs'), path = require('path'), zlib = require('zlib');
 
 const BG = [11, 13, 18], SHIP = [124, 242, 200], CHASER = [255, 122, 89], BLAST = [255, 122, 89];
@@ -23,7 +23,7 @@ function arrow(cx, cy, size, angle) {
   };
 }
 
-function render(size, { pad = 0 } = {}) {
+function render(size, { pad = 0, transparent = false } = {}) {
   const k = 1 - pad * 2, at = v => pad + v * k; // maskable icons keep the art inside a safe zone
   const ship = { x: at(0.66), y: at(0.42), r: 0.085 * k };
   const layers = [
@@ -36,17 +36,20 @@ function render(size, { pad = 0 } = {}) {
   ];
   const SS = 4, px = Buffer.alloc(size * size * 4);
   for (let j = 0; j < size; j++) for (let i = 0; i < size; i++) {
-    let r = 0, g = 0, b = 0;
+    let r = 0, g = 0, b = 0, a = 0;
     for (let sj = 0; sj < SS; sj++) for (let si = 0; si < SS; si++) {
       const x = (i + (si + 0.5) / SS) / size, y = (j + (sj + 0.5) / SS) / size;
+      // Premultiplied "over" compositing, starting from the background (or nothing, for a transparent layer).
+      let P = transparent ? [0, 0, 0] : [...BG], A = transparent ? 0 : 1;
+      const over = (color, s) => { P = P.map((v, n) => color[n] * s + v * (1 - s)); A = s + A * (1 - s); };
       // Glow around the ship: a soft falloff, like the game's sprite glow.
       const d = Math.hypot(x - ship.x, y - ship.y), glow = Math.max(0, 1 - (d - ship.r) / (0.16 * k)) ** 2 * 0.55;
-      let c = BG.map((v, n) => v + (SHIP[n] - v) * glow);
-      for (const L of layers) if (L.test(x, y)) c = c.map((v, n) => v + (L.color[n] - v) * L.alpha);
-      r += c[0]; g += c[1]; b += c[2];
+      over(SHIP, glow);
+      for (const L of layers) if (L.test(x, y)) over(L.color, L.alpha);
+      r += P[0]; g += P[1]; b += P[2]; a += A;
     }
-    const o = (j * size + i) * 4, n = SS * SS;
-    px[o] = r / n; px[o + 1] = g / n; px[o + 2] = b / n; px[o + 3] = 255;
+    const o = (j * size + i) * 4, n = SS * SS, al = a / n;
+    px[o] = al ? r / n / al : 0; px[o + 1] = al ? g / n / al : 0; px[o + 2] = al ? b / n / al : 0; px[o + 3] = Math.round(al * 255);
   }
   return png(size, size, px);
 }
@@ -71,4 +74,16 @@ const out = (rel, buf) => { const p = path.join(root, rel); fs.mkdirSync(path.di
 out('game/icons/icon-192.png', render(192));
 out('game/icons/icon-512.png', render(512));
 out('game/icons/icon-maskable-512.png', render(512, { pad: 0.12 }));
-out('app/icon-1024.png', render(1024, { pad: 0.16 }));
+
+// Android: legacy square icons, and adaptive-icon foregrounds (108dp, art inside the 66dp safe zone) over a
+// background colour set in res/values/ic_launcher_background.xml.
+const RES = path.join(root, 'android', 'app', 'src', 'main', 'res');
+if (fs.existsSync(RES)) {
+  for (const [dpi, k] of Object.entries({ mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 })) {
+    const dir = `android/app/src/main/res/mipmap-${dpi}`, icon = render(48 * k, { pad: 0.06 });
+    out(`${dir}/ic_launcher.png`, icon);
+    out(`${dir}/ic_launcher_round.png`, icon);
+    out(`${dir}/ic_launcher_foreground.png`, render(108 * k, { pad: 0.2, transparent: true }));
+  }
+  out('android/app/src/main/res/drawable-nodpi/splash_logo.png', render(288, { pad: 0.1, transparent: true }));
+}

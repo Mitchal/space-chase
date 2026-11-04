@@ -3,6 +3,7 @@ import { on } from './events.js';
 import { addSystem, addDrawer, ORDER, LAYER } from './registry.js';
 import { rand } from './geometry.js';
 import { W, H, world } from './world.js';
+import { hudFont } from './canvas.js';
 
 export const fx = { shake: 0, hitstop: 0, slowmo: 0, slowScale: 1 };
 let parts = [], texts = [];
@@ -16,7 +17,7 @@ export function burst(x, y, col, n = 16) {
 
 // floatText sits at a world position; bigText is a screen-centred banner.
 export function floatText(x, y, s, { col = '#e8ecf3', t = 0.9 } = {}) { texts.push({ x, y, s, col, t, big: false }); }
-export function bigText(s, { y = H / 2 - 110, col = '#e8ecf3', t = 1.6 } = {}) { texts.push({ x: W / 2, y, s, col, t, big: true }); }
+export function bigText(s, { y = H / 2 - 110, col = '#e8ecf3', t = 1.6 } = {}) { texts.push({ x: null, y, s, col, t, big: true }); }
 export function clearEffects() { parts = []; texts = []; }
 
 // Every death gets a burst in the dead entity's own colour.
@@ -39,8 +40,8 @@ addDrawer(LAYER.overlay, ctx => {
   ctx.textAlign = 'center';
   for (const t of texts) {
     ctx.globalAlpha = Math.min(1, t.t * 2); ctx.fillStyle = t.col;
-    ctx.font = t.big ? '700 30px system-ui,sans-serif' : '700 15px system-ui,sans-serif';
-    if (t.big) ctx.fillText(t.s, t.x, t.y);
+    ctx.font = t.big ? hudFont(30, 700) : hudFont(15, 700);
+    if (t.big) ctx.fillText(t.s, W / 2, t.y); // centred on the view as it is now
     else ctx.fillText(t.s, t.x - world.cam.x, t.y - world.cam.y);
   }
   ctx.globalAlpha = 1;

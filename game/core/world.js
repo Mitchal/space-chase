@@ -2,7 +2,11 @@
 // Entities live in world coordinates. The screen is a W×H view onto the world through the camera.
 import { emit } from './events.js';
 
-export const W = 960, H = 640;
+// The view is always H tall; its width W follows the screen's shape (a phone on its side is ~2:1), between MIN_W and MAX_W.
+// W is a live binding: importers always see the current width.
+export const H = 640, MIN_W = 960, MAX_W = 1440;
+export let W = MIN_W;
+export function setViewWidth(w) { W = Math.round(Math.max(MIN_W, Math.min(MAX_W, w))); }
 
 export const world = {
   t: 0,

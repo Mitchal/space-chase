@@ -3,6 +3,7 @@ import { world, W } from '../../core/world.js';
 import { on } from '../../core/events.js';
 import { addSystem, addDrawer, addSummary, ORDER, LAYER } from '../../core/registry.js';
 import { floatText, fx } from '../../core/effects.js';
+import { hudFont, view } from '../../core/canvas.js';
 
 const CHAIN_WINDOW = 1.2;
 let score = 0, chain = 0, chainT = 0, maxChain = 0, chainsOf3 = 0;
@@ -28,7 +29,7 @@ addSystem(ORDER.late, dt => { if (chainT > 0 && (chainT -= dt) <= 0) chain = 0; 
 addSummary('score', () => ({ score, maxChain, chainsOf3 }));
 
 addDrawer(LAYER.hud, ctx => {
-  ctx.font = '600 15px system-ui,sans-serif'; ctx.textAlign = 'right'; ctx.fillStyle = '#e8ecf3';
-  ctx.fillText(String(score), W - 16, 26);
-  if (chain > 1) { ctx.fillStyle = '#7cf2c8'; ctx.fillText(`chain ×${chain}`, W - 16, 46); }
+  ctx.font = hudFont(15); ctx.textAlign = 'right'; ctx.fillStyle = '#e8ecf3';
+  ctx.fillText(String(score), W - 16, 26 * view.hud);
+  if (chain > 1) { ctx.fillStyle = '#7cf2c8'; ctx.fillText(`chain ×${chain}`, W - 16, 46 * view.hud); }
 });

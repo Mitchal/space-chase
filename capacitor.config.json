@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.mitchal.lure",
+  "appName": "Lure",
+  "webDir": "dist",
+  "backgroundColor": "#0b0d12",
+  "android": {
+    "backgroundColor": "#0b0d12"
+  }
+}

@@ -1,8 +1,11 @@
 node_modules/
 dist/
-app/android/.gradle/
-app/android/app/build/
-app/android/build/
-app/android/local.properties
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/app/src/main/assets/public/
+android/capacitor-cordova-android-plugins/
 *.apk
 .claude/
+release/

@@ -3,6 +3,7 @@
 import { world, W, H } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
+import { hudFont } from '../../core/canvas.js';
 
 const WALL = '#ff4d6d';
 
@@ -47,7 +48,7 @@ function drawWaveWarning(ctx, wave) {
   const g = ctx.createLinearGradient(0, 0, 80, 0);
   g.addColorStop(0, `rgba(255,77,109,${0.15 + 0.5 * k})`); g.addColorStop(1, 'rgba(255,77,109,0)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, 80, H);
-  ctx.font = '700 12px system-ui,sans-serif'; ctx.textAlign = 'left'; ctx.fillStyle = '#ff9aa8';
+  ctx.font = hudFont(12, 700); ctx.textAlign = 'left'; ctx.fillStyle = '#ff9aa8';
   ctx.fillText(`WAVE ◀ ${Math.round(player.x - wave.x)}`, 10, H / 2);
 }
 
@@ -60,7 +61,7 @@ function drawProgress(ctx, wave, sectorLen, end) {
   for (let i = 1; i < n; i++) ctx.fillRect(at(i * sectorLen) - 1, y - 2, 2, 8);
   ctx.fillStyle = WALL; ctx.fillRect(at(wave.x) - 2, y - 5, 4, 14);
   ctx.beginPath(); ctx.arc(at(player.x), y + 2, 5, 0, Math.PI * 2); ctx.fillStyle = '#7cf2c8'; ctx.fill();
-  ctx.font = '600 12px system-ui,sans-serif'; ctx.fillStyle = '#8a93a6';
+  ctx.font = hudFont(12); ctx.fillStyle = '#8a93a6';
   ctx.textAlign = 'right'; ctx.fillText('START', x0 - 8, y + 5);
   ctx.textAlign = 'left'; ctx.fillText('FINISH', x1 + 8, y + 5);
 }

@@ -2,13 +2,14 @@
 import { world, W } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
+import { hudFont, view } from '../../core/canvas.js';
 
 addDrawer(LAYER.hud, ctx => {
-  ctx.font = '600 15px system-ui,sans-serif'; ctx.fillStyle = '#e8ecf3';
+  ctx.font = hudFont(15); ctx.fillStyle = '#e8ecf3';
   ctx.textAlign = 'left';
-  ctx.fillText('♥'.repeat(Math.max(0, player.hp)) + '♡'.repeat(player.maxHp - Math.max(0, player.hp)), 16, 26);
+  ctx.fillText('♥'.repeat(Math.max(0, player.hp)) + '♡'.repeat(player.maxHp - Math.max(0, player.hp)), 16, 26 * view.hud);
   ctx.textAlign = 'center';
-  ctx.fillText(`${content.stageLabel} ${world.run.ai + 1} / ${content.arenas.length} · ${world.arena.def.name}`, W / 2, 26);
+  ctx.fillText(`${content.stageLabel} ${world.run.ai + 1} / ${content.arenas.length} · ${world.arena.def.name}`, W / 2, 26 * view.hud);
 });
 
 addDrawer(LAYER.effects, ctx => {

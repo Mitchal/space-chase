@@ -9,6 +9,7 @@ import { content, addSystem, addDrawer, addSummary, collectSummary, ORDER, LAYER
 import { setCourseSeed } from '../../core/course-seed.js';
 import { today, dayLabel, loadRecord, saveRecord, streak, notePlayed } from './daily-record.js';
 import { recordSample, ghostAt, drawGhost } from './ghost.js';
+import { hudFont, view } from '../../core/canvas.js';
 
 let rec = loadRecord(), track = [], result = null, days = streak();
 
@@ -54,6 +55,6 @@ addDrawer(LAYER.player - 1, ctx => {
 
 addDrawer(LAYER.hud, ctx => {
   if (world.botPolicy || rec.best === null) return;
-  ctx.font = '600 13px system-ui,sans-serif'; ctx.textAlign = 'right'; ctx.fillStyle = '#b9c4ff';
-  ctx.fillText(`best today ${rec.best.toLocaleString()}`, W - 16, 66);
+  ctx.font = hudFont(13); ctx.textAlign = 'right'; ctx.fillStyle = '#b9c4ff';
+  ctx.fillText(`best today ${rec.best.toLocaleString()}`, W - 16, 66 * view.hud);
 });

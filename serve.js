@@ -39,8 +39,9 @@ http.createServer((req, res) => {
 function serveFile(req, res) {
   let p = decodeURIComponent(req.url.split('?')[0]);
   if (p === '/') p = '/index.html';
-  const file = path.join(ROOT, p);
-  if (!file.startsWith(ROOT)) return res.writeHead(403).end();
+  // The Android build (npm run android) is offered for download next to the game: open /lure.apk on the phone.
+  const file = p === '/lure.apk' ? path.join(__dirname, 'release', 'lure.apk') : path.join(ROOT, p);
+  if (!file.startsWith(ROOT) && p !== '/lure.apk') return res.writeHead(403).end();
   fs.readFile(file, (err, data) => {
     if (err) return res.writeHead(404).end();
     res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });

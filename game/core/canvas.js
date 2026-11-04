@@ -1,5 +1,5 @@
 // The canvas, its scaling to the window, and the per-frame draw pass.
-import { W, H, world } from './world.js';
+import { W, H, world, setViewWidth } from './world.js';
 import { runDrawers, LAYER } from './registry.js';
 import { fx } from './effects.js';
 import { rand } from './geometry.js';
@@ -13,11 +13,16 @@ export const ctx = cvs.getContext('2d', { alpha: false });
 // Render scale: backing pixels per game pixel. Phones have dense screens (3x is common), and filling ~9x the pixels
 // was most of the frame cost (v14 on his phone: "Lagging on my phone"). Capped at MAX_SCALE: sharp enough, and cheap.
 const MAX_SCALE = 1.5;
-export const view = { scale: 1 };
+// hud: text size multiplier for screen-space text; on a phone the whole view is scaled down, so text needs to grow.
+export const view = { scale: 1, hud: 1 };
+const touch = matchMedia('(pointer: coarse)').matches;
+export const hudFont = (px, weight = 600) => `${weight} ${Math.round(px * view.hud)}px system-ui,sans-serif`;
 
 function fit() {
-  const dpr = window.devicePixelRatio || 1;
-  const s = Math.min(innerWidth / W, innerHeight / H) * (matchMedia('(pointer: coarse)').matches ? 1 : 0.97);
+  const dpr = window.devicePixelRatio || 1, margin = touch ? 1 : 0.97;
+  setViewWidth(H * innerWidth / innerHeight); // fill the screen's width instead of letterboxing
+  const s = Math.min(innerWidth / W, innerHeight / H) * margin;
+  view.hud = touch ? Math.min(1.6, Math.max(1, 0.75 / s)) : 1;
   cvs.style.width = W * s + 'px'; cvs.style.height = H * s + 'px';
   view.scale = Math.min(MAX_SCALE, s * dpr);
   cvs.width = Math.round(W * view.scale); cvs.height = Math.round(H * view.scale);
