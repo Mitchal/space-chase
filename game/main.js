@@ -10,7 +10,7 @@ import { emit } from './core/events.js';
 
 // The dev server lists the pod folders on disk; a packaged build (web or app) ships the list as pods.json.
 let pods = [];
-try { pods = await (await fetch('/api/pods')).json(); } catch {
+try { pods = await (await fetch('api/pods')).json(); } catch {
   try { pods = await (await fetch('pods.json')).json(); } catch { console.warn('No pod list; running the bare kernel.'); }
 }
 for (const name of pods) {

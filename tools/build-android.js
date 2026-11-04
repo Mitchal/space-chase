@@ -1,6 +1,6 @@
 // Builds the Android app from the already-synced android/ project.
-//   npm run android           → release/lure.apk, a debug build you can install directly (or push with adb)
-//   npm run android:release   → release/lure.aab, the signed bundle Google Play wants (needs android/keystore.properties)
+//   npm run android           → release/space-chase.apk, a debug build you can install directly (or push with adb)
+//   npm run android:release   → release/space-chase.aab, the signed bundle Google Play wants (needs android/keystore.properties)
 // Needs Android Studio: its bundled Java and the SDK in the default places (override with JAVA_HOME / ANDROID_HOME).
 const fs = require('fs'), path = require('path'), { execSync } = require('child_process');
 const ROOT = path.join(__dirname, '..'), ANDROID = path.join(ROOT, 'android');
@@ -23,8 +23,8 @@ const gradlew = path.join(ANDROID, win ? 'gradlew.bat' : 'gradlew');
 execSync(`"${gradlew}" ${release ? 'bundleRelease' : 'assembleDebug'} --console=plain`, { cwd: ANDROID, stdio: 'inherit', env: { ...process.env, JAVA_HOME: javaHome } });
 
 const [from, to] = release
-  ? [path.join(ANDROID, 'app', 'build', 'outputs', 'bundle', 'release', 'app-release.aab'), 'lure.aab']
-  : [path.join(ANDROID, 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk'), 'lure.apk'];
+  ? [path.join(ANDROID, 'app', 'build', 'outputs', 'bundle', 'release', 'app-release.aab'), 'space-chase.aab']
+  : [path.join(ANDROID, 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk'), 'space-chase.apk'];
 fs.mkdirSync(path.join(ROOT, 'release'), { recursive: true });
 fs.copyFileSync(from, path.join(ROOT, 'release', to));
 console.log(`release/${to} (${(fs.statSync(from).size / 1e6).toFixed(1)} MB)`);

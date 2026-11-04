@@ -1,6 +1,6 @@
 {
   "appId": "io.github.mitchal.lure",
-  "appName": "Lure",
+  "appName": "Space Chase",
   "webDir": "dist",
   "backgroundColor": "#0b0d12",
   "android": {

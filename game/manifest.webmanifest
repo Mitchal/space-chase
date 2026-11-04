@@ -1,6 +1,6 @@
 {
-  "name": "Lure",
-  "short_name": "Lure",
+  "name": "Space Chase",
+  "short_name": "Space Chase",
   "description": "You can't attack. Lead the missiles chasing you into rocks, walls and each other. A new daily course every day.",
   "start_url": "./",
   "scope": "./",

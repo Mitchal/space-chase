@@ -1,8 +1,8 @@
 {
-  "name": "lure",
+  "name": "space-chase",
   "version": "1.0.0",
   "private": true,
-  "description": "Lure: you can't attack. Lead your pursuers into rocks, walls and each other. A daily course every day.",
+  "description": "Space Chase: you can't attack. Lead your pursuers into rocks, walls and each other. A daily course every day.",
   "scripts": {
     "dev": "node serve.js",
     "lint": "node tools/check-pods.js",

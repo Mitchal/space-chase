@@ -34,14 +34,14 @@ http.createServer((req, res) => {
     return res.end(JSON.stringify(readLog()));
   }
   serveFile(req, res);
-}).listen(PORT, HOST, () => console.log(`Lure${DIST ? ' (player build)' : ''} on http://${HOST}:${PORT}`));
+}).listen(PORT, HOST, () => console.log(`Space Chase${DIST ? ' (player build)' : ''} on http://${HOST}:${PORT}`));
 
 function serveFile(req, res) {
   let p = decodeURIComponent(req.url.split('?')[0]);
   if (p === '/') p = '/index.html';
-  // The Android build (npm run android) is offered for download next to the game: open /lure.apk on the phone.
-  const file = p === '/lure.apk' ? path.join(__dirname, 'release', 'lure.apk') : path.join(ROOT, p);
-  if (!file.startsWith(ROOT) && p !== '/lure.apk') return res.writeHead(403).end();
+  // The Android build (npm run android) is offered for download next to the game: open /space-chase.apk on the phone.
+  const file = p === '/space-chase.apk' ? path.join(__dirname, 'release', 'space-chase.apk') : path.join(ROOT, p);
+  if (!file.startsWith(ROOT) && p !== '/space-chase.apk') return res.writeHead(403).end();
   fs.readFile(file, (err, data) => {
     if (err) return res.writeHead(404).end();
     res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });

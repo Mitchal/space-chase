@@ -41,9 +41,10 @@ def feature_graphic():
     d.ellipse([(540 - 16) * S, (260 - 16) * S, (540 + 16) * S, (260 + 16) * S], fill=SHIP)
     for x, y, a in [(470, 235, 0.25), (410, 300, -0.4), (350, 210, 0.15), (300, 320, -0.3)]:
         missile(d, x * S, y * S, a, 2.1 * S)
-    d.text((650 * S, 170 * S), 'LURE', font=font(104 * S), fill=(232, 236, 243))
-    d.text((656 * S, 292 * S), 'Lead the missiles. Outrun the wave.', font=font(21 * S, bold=False), fill=(170, 178, 196))
-    d.text((656 * S, 324 * S), 'A new daily course every day.', font=font(21 * S, bold=False), fill=(185, 196, 255))
+    d.text((650 * S, 112 * S), 'SPACE', font=font(92 * S), fill=(232, 236, 243))
+    d.text((650 * S, 202 * S), 'CHASE', font=font(92 * S), fill=(232, 236, 243))
+    d.text((656 * S, 318 * S), 'Lead the missiles. Outrun the wave.', font=font(21 * S, bold=False), fill=(170, 178, 196))
+    d.text((656 * S, 350 * S), 'A new daily course every day.', font=font(21 * S, bold=False), fill=(185, 196, 255))
     img.resize((1024, 500), Image.LANCZOS).save(os.path.join(OUT, 'feature-graphic.png'))
 
 # Play allows at most 2:1 for screenshots; phones are wider, so crop the middle.

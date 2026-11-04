@@ -10,7 +10,7 @@ import { renderCheckpointChips } from '../../core/checkpoint-chips.js';
 content.startScreen = true;
 document.body.insertAdjacentHTML('beforeend', `
 <div id="title" class="overlay show"><div class="card menu">
-  <h1>LURE</h1>
+  <h1>SPACE CHASE</h1>
   <p class="dim">You can't attack. They can. Get out alive.</p>
   <div id="tNotes"></div>
   <button class="main big" id="startBtn">Play</button>

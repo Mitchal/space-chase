@@ -36,7 +36,7 @@ if (!playtest) {
     if (d?.streak > 1) bits.push(`🔥 ${d.streak} days`);
     $('xLine').textContent = bits.join(' · ');
     const where = run.outcome === 'win' ? 'escaped' : `sector ${run.ai + 1}/${sectors}`;
-    shareText = `LURE daily ${d?.day ?? ''}\n${score.toLocaleString()} · ${where}${s.score?.maxChain > 1 ? ` · chain ×${s.score.maxChain}` : ''}`;
+    shareText = `SPACE CHASE daily ${d?.day ?? ''}\n${score.toLocaleString()} · ${where}${s.score?.maxChain > 1 ? ` · chain ×${s.score.maxChain}` : ''}`;
     $('xShared').hidden = true;
     $('results').classList.add('show');
   });

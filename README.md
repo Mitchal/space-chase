@@ -1,4 +1,4 @@
-# Lure
+# Space Chase
 
 You can't attack. Fly right through an asteroid field ahead of a death wave, with missiles on your tail. Lead them
 into rocks, walls, mines, lasers and each other. Every death explodes, and a missile roaring past within a hair slows time.
@@ -12,9 +12,9 @@ into rocks, walls, mines, lasers and each other. Every death explodes, and a mis
 | Dev server (the game straight from `game/`) | `npm run dev` | http://127.0.0.1:8765 |
 | …on your phone over Wi-Fi | `LURE_HOST=0.0.0.0 npm run dev` | `http://<this PC's IP>:8765` |
 | Player build (offline-capable web app in `dist/`) | `npm run build` | serve `dist/` from any static host |
-| …served locally | `LURE_DIST=1 LURE_HOST=0.0.0.0 node serve.js` | `http://<IP>:8766`, APK at `/lure.apk` |
-| Android app (debug APK) | `npm run android` | `release/lure.apk` |
-| Android app for Google Play (signed bundle) | `npm run android:release` | `release/lure.aab` |
+| …served locally | `LURE_DIST=1 LURE_HOST=0.0.0.0 node serve.js` | `http://<IP>:8766`, APK at `/space-chase.apk` |
+| Android app (debug APK) | `npm run android` | `release/space-chase.apk` |
+| Android app for Google Play (signed bundle) | `npm run android:release` | `release/space-chase.aab` |
 | Architecture lint | `npm run lint` | |
 
 `npm run android` needs Android Studio installed (it uses its bundled Java and the Android SDK).

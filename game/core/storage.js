@@ -14,7 +14,7 @@ function saveLocal(log) { mem.log = log; try { localStorage.setItem(LOG_KEY, JSO
 export async function loadServerLog() {
   let entries = loadLocal();
   // The highest run number, not the count: runs started but never saved leave gaps.
-  try { entries = await (await fetch('/api/log')).json(); progress.serverRuns = Math.max(entries.length, ...entries.map(e => e.run || 0)); } catch {}
+  try { entries = await (await fetch('api/log')).json(); progress.serverRuns = Math.max(entries.length, ...entries.map(e => e.run || 0)); } catch {}
   for (const e of entries) if (e.version === VERSION && !e.invalid) noteArenaReached(e.telemetry.arenaReached);
   return entries;
 }
@@ -38,7 +38,7 @@ export function nextRunIndex() {
 export function appendEntry(entry) {
   saveLocal([...loadLocal(), entry]);
   progress.serverRuns = Math.max(progress.serverRuns, entry.run);
-  fetch('/api/log', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(entry) }).catch(() => {});
+  fetch('api/log', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(entry) }).catch(() => {});
 }
 
 export const runsLogged = () => Math.max(loadLocal().length, progress.serverRuns);

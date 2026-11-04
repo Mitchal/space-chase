@@ -1,4 +1,4 @@
-# Getting Lure onto Google Play
+# Getting Space Chase onto Google Play
 
 The app is ready to package. Everything below is a step **you** take (accounts, keys, payment, publishing). The project
 already has:
@@ -22,47 +22,46 @@ Google re-signs your app with its own key (Play App Signing); you sign uploads w
 terminal, choose a password when it asks, and keep the file **outside this project**:
 
 ```bash
-mkdir -p ~/keys && "/c/Program Files/Android/Android Studio/jbr/bin/keytool.exe" -genkeypair -v -keystore ~/keys/lure-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+mkdir -p ~/keys && "/c/Program Files/Android/Android Studio/jbr/bin/keytool.exe" -genkeypair -v -keystore ~/keys/space-chase-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 ```
 
 Then create `android/keystore.properties` (it's git-ignored, so it never gets committed):
 
 ```properties
-storeFile=C:/Users/user/keys/lure-upload.jks
+storeFile=C:/Users/user/keys/space-chase-upload.jks
 storePassword=YOUR_PASSWORD
 keyAlias=upload
 keyPassword=YOUR_PASSWORD
 ```
 
-**Back up `lure-upload.jks` and the password** (e.g. in a password manager). If it's lost, Play support can reset the
+**Back up `space-chase-upload.jks` and the password** (e.g. in a password manager). If it's lost, Play support can reset the
 upload key, but that takes days.
 
 ## 3. Build the bundle
 ```bash
 npm run android:release
 ```
-This builds the web version, copies it into the app, and writes **`release/lure.aab`**, signed with your upload key.
+This builds the web version, copies it into the app, and writes **`release/space-chase.aab`**, signed with your upload key.
 Every upload needs a higher version: bump `"version"` in `package.json` (e.g. 1.0.0 → 1.0.1) before building again.
 The Android version code follows it automatically (1.0.1 → 10001).
 
 ## 4. Put the privacy policy online
 Play requires a public URL for it.
 1. Replace `CONTACT_EMAIL` in `game/privacy.html` with the address you want people to write to.
-2. Host the web build. The simplest way is GitHub Pages: create a repo (e.g. `lure`), run `npm run build`, push the
-   contents of `dist/` to a `gh-pages` branch, and turn Pages on.
-3. The policy is then at `https://mitchal.github.io/lure/privacy.html`, and the game itself is playable at `https://mitchal.github.io/lure/`.
-4. (I can set this up if you want; it publishes the game.)
+2. Host the web build at **spacechase.mikaelbrandt.com** (see `HOSTING.md`).
+3. The policy is then at `https://spacechase.mikaelbrandt.com/privacy.html`, and the game itself is playable at
+   `https://spacechase.mikaelbrandt.com/`.
 
 ## 5. Create the app in Play Console
 **Create app**, then fill in:
-- App name **Lure**, default language, **Game**, **Free**;
+- App name **Space Chase**, default language, **Game**, **Free**;
 - accept the declarations.
 
 **Free is permanent:** a free app can't later become paid. In-app purchases (cosmetics) are still possible.
 
 Then work through **Dashboard → Set up your app**:
 
-| Section | Answer for Lure |
+| Section | Answer for Space Chase |
 |---|---|
 | Privacy policy | Your hosted `privacy.html` URL |
 | App access | All functionality is available without special access |
@@ -86,7 +85,7 @@ python tools/make-store-art.py shot1.png shot2.png
 I can capture the screenshots from your phone over wireless debugging.
 
 ## 6. Test, then go live
-1. **Internal testing** (Testing → Internal testing): upload `release/lure.aab` and add your own email as a tester. It's
+1. **Internal testing** (Testing → Internal testing): upload `release/space-chase.aab` and add your own email as a tester. It's
    available in minutes. Install it from the Play link and check it.
 2. **Closed testing** is required for new personal accounts:
    - at least **12 testers** must opt in and stay opted in for **14 days in a row**;
@@ -99,11 +98,11 @@ I can capture the screenshots from your phone over wireless debugging.
 ## Updating later
 1. Bump the version in `package.json`.
 2. Run `npm run android:release`.
-3. Upload `release/lure.aab` as a new release in Play Console.
+3. Upload `release/space-chase.aab` as a new release in Play Console.
 
 Updates to the web version are just `npm run build` plus re-uploading `dist/`.
 
 ## Worth knowing
 - The app targets Android 16 (API 36), which meets Play's current target-API requirement. Google raises it about yearly, so expect to update Capacitor (`npm i @capacitor/*@latest`) about once a year.
 - Before adding an online leaderboard, analytics, ads or purchases, update the privacy policy and the Data safety form first.
-- The debug `release/lure.apk` is for sideloading and testing only; Play only accepts the signed `.aab`.
+- The debug `release/space-chase.apk` is for sideloading and testing only; Play only accepts the signed `.aab`.

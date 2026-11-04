@@ -1,9 +1,9 @@
-# Google Play store listing: Lure
+# Google Play store listing: Space Chase
 
 Paste these into Play Console → Grow → Store presence → Main store listing.
 
 ## App name (max 30)
-Lure
+Space Chase
 
 ## Short description (max 80)
 You can't attack. Lead the missiles into rocks, walls and each other.
