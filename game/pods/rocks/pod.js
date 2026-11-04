@@ -2,12 +2,12 @@
 // They float straight through the death walls and away (run 20), so the field also exists beyond the walls.
 // Scattered, fewer and larger than v8 (run 31); their size is v9's A/B (field-patterns.js).
 // One set of rules (P10): they smash pursuers, and they hurt you too.
-import { world, addEntity, lurables, kill, W } from '../../core/world.js';
+import { world, addEntity, lurables, kill } from '../../core/world.js';
 import { on } from '../../core/events.js';
 import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
 import { player, hurt } from '../../core/player.js';
 import { dist, pushOut } from '../../core/geometry.js';
-import { inView } from '../../core/camera.js';
+import { inView, playFrame } from '../../core/camera.js';
 import { courseRng } from '../../core/course-seed.js';
 import { SPILL, scatter, fieldShare } from './field-patterns.js';
 
@@ -31,7 +31,7 @@ on('arenaEnter', a => { if (a.index === world.run.startArena) { genX = player.x 
 addSystem(ORDER.spawn, () => {
   const def = world.arena.def.rocks;
   if (!def) return;
-  while (genX < world.cam.x + W + LOOKAHEAD) { generateSlice(genX, def); genX += SLICE; }
+  while (genX < playFrame().right + LOOKAHEAD) { generateSlice(genX, def); genX += SLICE; }
 });
 
 const rocks = () => world.ents.filter(e => e.type === 'rock' && !e.dead);

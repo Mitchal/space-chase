@@ -1,6 +1,6 @@
 // Mines: scattered through the field ahead of you. Lure a pursuer into one and the blast takes out
 // everything nearby, you included (P10). Other pods can set one off by calling its detonate().
-import { world, addEntity, live, lurables, kill, W } from '../../core/world.js';
+import { world, addEntity, live, lurables, kill } from '../../core/world.js';
 import { on } from '../../core/events.js';
 import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
 import { player, hurt } from '../../core/player.js';
@@ -8,7 +8,7 @@ import { fieldPoint } from '../../core/spawn-points.js';
 import { dist } from '../../core/geometry.js';
 import { courseRng } from '../../core/course-seed.js';
 import { glowSprite, drawSprite } from '../../core/sprites.js';
-import { inView } from '../../core/camera.js';
+import { inView, playFrame } from '../../core/camera.js';
 import { burst, fx } from '../../core/effects.js';
 
 const BLAST = 64, HURT_RADIUS = BLAST * 0.85, SLICE = 250, LOOKAHEAD = 700;
@@ -34,7 +34,7 @@ on('arenaEnter', a => { if (a.index === world.run.startArena) { genX = player.x 
 
 addSystem(ORDER.spawn, () => {
   const def = world.arena.def.mines;
-  while (genX < world.cam.x + W + LOOKAHEAD) {
+  while (genX < playFrame().right + LOOKAHEAD) {
     if (def) for (owed += def.perKpx * SLICE / 1000; owed >= 1; owed--) placeMine(genX);
     genX += SLICE;
   }
