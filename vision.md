@@ -130,6 +130,8 @@ Run 49: "one more thing could somehow make it even more exciting." The first can
 - **Meta loop 3 picked (2026-11-03): Daily flight** ("simple and pure skill"), built as v14. Hearts per day (his idea, "like Candy crush") are noted in meta-loop.md and not built yet. Not judged yet: v14 was played on his phone, and lag drowned it.
 - **First phone session (v14):** "Lagging on my phone. Also controls have a built in inertia on phone, i think the joystick radius might be too large" (63); "Fun even though laggy" (64). On touch, P7 means a small thumb movement gives full speed with no felt smoothing, and the game must run smoothly on a phone before anything else is judged there.
 
+- **Decision (2026-11-03, after v14): ship it.** "Actually, smash it out into the most performant mobile app you can. We are going with this. I love all of it, including the ghosts. A simple main menu with a simple daily challenge, that's gonna be the main hook. Keep it on the web as well." v15 is the mobile app (changes-v15.md). **The Daily Challenge is the main hook; ghosts are settled.** On a phone: smooth first (P5/P7), the stick answers at once, and the game must be fair on any screen shape (spawns and course use a fixed play frame).
+
 ## Not validated
 - **Door slam** (reference moment 1 as a mechanic): 8 slams in 15 escapes, never mentioned. Either it doesn't read or it doesn't matter. Don't build more on it until it earns a reaction.
 
