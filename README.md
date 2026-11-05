@@ -5,7 +5,7 @@ into rocks, walls, mines, lasers and each other. Every death explodes, and a mis
 
 **The hook is the daily challenges,** two a day, the same for everyone:
 - **Escape:** fly right through the course to the finish. Beat your best score; the ghost of your best run flies with you.
-- **Survive:** a round arena that only gets busier. Your score is how long you last, to the millisecond. The day seeds every missile, rock and laser, so you can practise it.
+- **Survive:** a round arena that only gets busier. Your score is how long you last, to the millisecond. The day seeds every missile and rock, so you can practise it.
 
 ## Run it
 

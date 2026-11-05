@@ -1,7 +1,7 @@
 // What comes into the arena, when and where. Every piece is drawn from the day's seed, keyed by what it is and its
 // number (the 7th missile, the 12th rock), and the schedule depends only on the clock. So every run that day gets the
-// same missiles, rocks and lasers at the same moments, whatever happened before, and you can practise it.
-// Only aim depends on you: a laser cuts through where you are when it's fired (at the day's angle).
+// same missiles and rocks at the same moments, whatever happened before, and you can practise it.
+// (Lasers, if switched back on, are the one thing aimed at you: one cuts through where you are, at the day's angle.)
 import { world } from '../../core/world.js';
 import { spawn } from '../../core/registry.js';
 import { courseRng } from '../../core/course-seed.js';

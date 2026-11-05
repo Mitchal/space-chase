@@ -1,7 +1,7 @@
 // Survive, the second daily challenge (his spec, 2026-11-05): no flying right, just a round arena about four screens
-// big. Missiles and rocks come in from its edge, lasers cut across, and it builds up: more rocks, more missiles,
-// lasers more often, then crossed. The day seeds all of it, so every run that day meets the same missiles, rocks and
-// lasers at the same moments (timeline.js) and you can practise. The score is how long you last, to the millisecond.
+// big. Missiles and rocks come in from its edge and it builds up: more rocks, more missiles, sooner and faster (no
+// lasers since v3: he died to them too often). The day seeds all of it, so every run that day meets the same missiles
+// and rocks at the same moments (timeline.js) and you can practise. The score is how long you last, to the millisecond.
 // Delete this folder and the game is the Escape challenge alone.
 import { world, lurables, kill } from '../../core/world.js';
 import { on } from '../../core/events.js';
@@ -24,7 +24,7 @@ const tries = n => `${n} ${n === 1 ? 'try' : 'tries'}`;
 addMode({
   id: MODE, label: 'Survive', color: COLOR, tagline: 'Last as long as you can',
   howToPlay: [
-    `Stay alive in the <b style="color:${COLOR}">arena</b> as long as you can. Its <b style="color:#ff4d6d">wall</b> hurts. It only gets busier, and every run today meets the same missiles, rocks and lasers.`,
+    `Stay alive in the <b style="color:${COLOR}">arena</b> as long as you can. Its <b style="color:#ff4d6d">wall</b> hurts. It only gets busier, and every run today meets the same missiles and rocks.`,
     "Two hits and you're down.",
   ],
   score: () => runMs(),
