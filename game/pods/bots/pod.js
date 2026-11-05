@@ -10,11 +10,12 @@ import { randomPolicy, evaderPolicy } from './bot-policies.js';
 const POLICIES = { random: randomPolicy, evader: evaderPolicy };
 
 // direct: bypass any installed steering (e.g. thrusters) so bots compare layouts, not their own piloting.
-function run({ policy = 'evader', variant = 'A', startArena = 0, maxS = 600, direct = false } = {}) {
+// mode: a game mode's id (left out: the current one).
+function run({ policy = 'evader', variant = 'A', startArena = 0, maxS = 600, direct = false, mode } = {}) {
   const steer = handling.steer;
   if (direct) handling.steer = null;
   world.botPolicy = POLICIES[policy]();
-  startRun({ variant, startArena, index: -1 });
+  startRun({ mode, variant, startArena, index: -1 });
   for (let i = 0; i < maxS * 60 && !world.run.over; i++) step(1 / 60);
   if (!world.run.over) { world.run.outcome = 'timeout'; emit('arenaExit', world.arena); world.run.endedAt = world.t - world.run.startedAt; }
   const s = collectSummary().telemetry;

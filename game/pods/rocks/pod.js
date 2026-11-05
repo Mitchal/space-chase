@@ -4,7 +4,7 @@
 // One set of rules (P10): they smash pursuers, and they hurt you too.
 import { world, addEntity, lurables, kill } from '../../core/world.js';
 import { on } from '../../core/events.js';
-import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
+import { addSystem, addDrawer, addSpawner, ORDER, LAYER } from '../../core/registry.js';
 import { player, hurt } from '../../core/player.js';
 import { dist, pushOut } from '../../core/geometry.js';
 import { inView, playFrame } from '../../core/camera.js';
@@ -16,6 +16,8 @@ const SLICE = 250, LOOKAHEAD = 700, GONE = 900;
 const V8_DENSITY = 0.6;
 let genX = 0, owed = 0;
 const addRock = rock => addEntity({ type: 'rock', ...rock, field: true, cull: true });
+// A mode may place its own: spawn('rock', { x, y, r, vx, vy }).
+addSpawner('rock', ({ x, y, r, vx, vy }) => addRock({ x, y, r, vx, vy }));
 
 // One vertical slice: perKpx rocks per 1000px inside the lane, spread over the lane plus the spill beyond it.
 function generateSlice(x0, def) {
@@ -36,12 +38,13 @@ addSystem(ORDER.spawn, () => {
 
 const rocks = () => world.ents.filter(e => e.type === 'rock' && !e.dead);
 
-// Rocks drift on through the walls; once far outside the lane and heading away, they're gone.
+// Rocks drift on through the walls; once far outside the lane and heading away, or out of the world, they're gone.
+const outOfWorld = (k, b = world.bounds) => k.x + k.r < b.minX || k.x - k.r > b.maxX || k.y + k.r < b.minY || k.y - k.r > b.maxY;
 addSystem(ORDER.move, dt => {
   for (const k of rocks()) {
     k.x += k.vx * dt; k.y += k.vy * dt;
     const lane = world.laneAt(k.x);
-    if ((k.y < lane.top - GONE && k.vy < 0) || (k.y > lane.bottom + GONE && k.vy > 0)) k.dead = true;
+    if ((k.y < lane.top - GONE && k.vy < 0) || (k.y > lane.bottom + GONE && k.vy > 0) || outOfWorld(k)) k.dead = true;
   }
 });
 

@@ -1,34 +1,38 @@
-// Your lifetime numbers, kept in this browser (or app): the all-time high score and the day it was set, runs flown,
-// escapes, and your best score on each of the last few weeks of days.
-const KEY = 'spacechase.stats.v1', KEEP_DAYS = 35;
+// Your lifetime numbers, kept in this browser (or app): runs played, escapes, and per game mode the all-time best and
+// the day it was set, plus your best on each of the last few weeks of days.
+// v1 records from before game modes (one flat high score) were all Escape runs: they're read as the 'flight' mode's.
+const KEY = 'spacechase.stats.v1', KEEP_DAYS = 35, LEGACY_MODE = 'flight';
 
 const pad = n => String(n).padStart(2, '0');
 export const dayOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
-const empty = () => ({ best: null, bestDay: null, runs: 0, escapes: 0, days: {} });
+const emptyMode = () => ({ best: null, bestDay: null, days: {} });
 
 export function loadStats() {
-  try { return { ...empty(), ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return empty(); }
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(KEY)); } catch {}
+  const s = { runs: raw?.runs ?? 0, escapes: raw?.escapes ?? 0, modes: raw?.modes ?? {} };
+  if (!raw?.modes && raw?.best != null) s.modes[LEGACY_MODE] = { best: raw.best, bestDay: raw.bestDay, days: raw.days || {} };
+  return s;
 }
 
-// Adds one finished run; returns the updated record.
-export function noteRun(score, escaped, day = dayOf(new Date())) {
-  const s = loadStats();
+// Adds one finished run in a mode (higher scores are better); returns the updated record.
+export function noteRun(mode, score, escaped, day = dayOf(new Date())) {
+  const s = loadStats(), m = s.modes[mode] ||= emptyMode();
   s.runs++;
   if (escaped) s.escapes++;
-  if (s.best === null || score > s.best) { s.best = score; s.bestDay = day; }
-  s.days[day] = Math.max(s.days[day] ?? 0, score);
-  const keep = Object.keys(s.days).sort().slice(-KEEP_DAYS);
-  s.days = Object.fromEntries(keep.map(d => [d, s.days[d]]));
+  if (m.best === null || score > m.best) { m.best = score; m.bestDay = day; }
+  m.days[day] = Math.max(m.days[day] ?? 0, score);
+  const keep = Object.keys(m.days).sort().slice(-KEEP_DAYS);
+  m.days = Object.fromEntries(keep.map(d => [d, m.days[d]]));
   try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
   return s;
 }
 
-// The last n days ending today, oldest first: [{ day, date, best (null if not flown) }].
-export function lastDays(s, n = 7, now = new Date()) {
+// The last n days ending today, oldest first: [{ day, date }].
+export function lastDays(n = 7, now = new Date()) {
   return Array.from({ length: n }, (_, i) => {
     const date = new Date(now); date.setHours(12, 0, 0, 0); date.setDate(date.getDate() - (n - 1 - i));
-    const day = dayOf(date);
-    return { day, date, best: s.days[day] ?? null };
+    return { day: dayOf(date), date };
   });
 }

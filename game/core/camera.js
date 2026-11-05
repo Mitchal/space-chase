@@ -1,5 +1,5 @@
 // The camera: centred on the player when a mode asks for it (his spec: "centred on me all the time").
-// Entities flagged `cull` are dropped quietly once they are far behind the view.
+// In a forward flight (world.cullBehind), entities flagged `cull` are dropped quietly once they are far behind the view.
 import { world, W, H, MIN_W } from './world.js';
 import { on } from './events.js';
 import { addSystem, ORDER } from './registry.js';
@@ -22,6 +22,7 @@ export const playFrame = () => { const left = world.cam.x + (W - MIN_W) / 2; ret
 
 addSystem(ORDER.late, () => {
   follow();
+  if (!world.cullBehind) return;
   const behind = playFrame().left - CULL_BEHIND;
   for (const e of world.ents) if (e.cull && !e.dead && e.x < behind) e.dead = true;
 }, { always: true });

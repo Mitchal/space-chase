@@ -4,6 +4,7 @@ import { world } from '../../core/world.js';
 import { on, emit } from '../../core/events.js';
 import { content, collectSummary } from '../../core/registry.js';
 import { startRun } from '../../core/run.js';
+import { currentMode } from '../../core/game-modes.js';
 import { playtest } from '../../core/mode.js';
 import { shareRun, GAME_URL } from './share-run.js';
 
@@ -24,21 +25,31 @@ if (!playtest) {
   let shareText = '';
 
   const hide = () => $('results').classList.remove('show');
-  const again = () => { hide(); startRun({ startArena: 0 }); };
+  const again = () => { hide(); startRun({ startArena: 0 }); }; // same mode as the run just played
 
-  on('runSettled', run => {
-    const s = collectSummary(), score = s.score?.score ?? 0, d = s.daily, sectors = content.arenas.length;
-    $('xTitle').textContent = run.outcome === 'win' ? 'You got out!' : `Down in ${content.stageLabel.toLowerCase()} ${run.ai + 1} of ${sectors}`;
-    $('xScore').textContent = score.toLocaleString();
-    $('xBadge').hidden = !d?.newBest;
-    const bits = [];
+  // A points run through stages (the Escape challenge). A game mode may describe its runs itself (mode.result).
+  function stagesCard(run, s) {
+    const score = s.score?.score ?? 0, d = s.daily, sectors = content.arenas.length, bits = [];
     if (d && !d.newBest && d.best !== null) bits.push(`Today's best ${d.best.toLocaleString()}`);
     if (s.score?.maxChain > 1) bits.push(`chain ×${s.score.maxChain}`);
     if (s.telemetry?.nearMisses) bits.push(`${s.telemetry.nearMisses} close call${s.telemetry.nearMisses === 1 ? '' : 's'}`);
     if (d?.streak > 1) bits.push(`🔥 ${d.streak} days`);
-    $('xLine').textContent = bits.join(' · ');
     const where = run.outcome === 'win' ? 'escaped' : `sector ${run.ai + 1}/${sectors}`;
-    shareText = `SPACE CHASE daily ${d?.day ?? ''}\n${score.toLocaleString()} · ${where}${s.score?.maxChain > 1 ? ` · chain ×${s.score.maxChain}` : ''}`;
+    return {
+      title: run.outcome === 'win' ? 'You got out!' : `Down in ${content.stageLabel.toLowerCase()} ${run.ai + 1} of ${sectors}`,
+      score: score.toLocaleString(), newBest: !!d?.newBest, line: bits.join(' · '),
+      share: `SPACE CHASE daily ${d?.day ?? ''}\n${score.toLocaleString()} · ${where}${s.score?.maxChain > 1 ? ` · chain ×${s.score.maxChain}` : ''}`,
+    };
+  }
+
+  on('runSettled', run => {
+    const s = collectSummary(), mode = currentMode(), card = mode?.result?.(run, s) || stagesCard(run, s);
+    $('xTitle').textContent = card.title;
+    $('xScore').textContent = card.score;
+    $('xScore').style.color = mode?.color || '';
+    $('xBadge').hidden = !card.newBest;
+    $('xLine').textContent = card.line;
+    shareText = card.share;
     $('xShared').hidden = $('xShareText').hidden = true;
     $('results').classList.add('show');
   });

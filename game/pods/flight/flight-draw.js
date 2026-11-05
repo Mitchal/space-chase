@@ -67,13 +67,13 @@ function drawProgress(ctx, wave, sectorLen, end) {
   ctx.textAlign = 'left'; ctx.fillText('FINISH', x1 + 8, y + 5);
 }
 
-export function drawFlight(waveOf, { SECTOR_LEN, COURSE_END }) {
-  addDrawer(LAYER.floor, ctx => { drawWalls(ctx); drawFinish(ctx, COURSE_END); });
-  addDrawer(LAYER.effects + 1, ctx => { const w = waveOf(); if (w) drawWave(ctx, w); });
+export function drawFlight(waveOf, { SECTOR_LEN, COURSE_END, mode }) {
+  addDrawer(LAYER.floor, ctx => { drawWalls(ctx); drawFinish(ctx, COURSE_END); }, { mode });
+  addDrawer(LAYER.effects + 1, ctx => { const w = waveOf(); if (w) drawWave(ctx, w); }, { mode });
   addDrawer(LAYER.hud, ctx => {
     const w = waveOf();
     if (!w) return;
     drawWaveWarning(ctx, w);
     drawProgress(ctx, w, SECTOR_LEN, COURSE_END);
-  });
+  }, { mode });
 }

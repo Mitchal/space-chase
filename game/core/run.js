@@ -6,15 +6,18 @@ import { player, resetPlayer } from './player.js';
 import { nextRunIndex } from './storage.js';
 import { clearEffects, bigText } from './effects.js';
 import { clamp } from './geometry.js';
+import { useMode } from './game-modes.js';
 
 const SETTLE_S = 1.4;
 
-// opts: { startArena, variant, index } (index/variant are given by bots so they don't consume run numbers)
+// opts: { mode, startArena, variant, index } (index/variant are given by bots so they don't consume run numbers).
+// mode: a game mode's id; left out, the run is in the same mode as the last one.
 export function startRun(opts = {}) {
+  useMode(opts.mode);
   const index = opts.index ?? nextRunIndex();
   const startArena = clamp(opts.startArena ?? 0, 0, content.arenas.length - 1);
   world.run = {
-    index, variant: opts.variant || (index % 2 === 0 ? 'A' : 'B'), startArena, ai: -1, startedAt: world.t,
+    mode: world.mode, index, variant: opts.variant || (index % 2 === 0 ? 'A' : 'B'), startArena, ai: -1, startedAt: world.t,
     over: false, outcome: null, endedAt: null, endT: 0, killer: null, settled: false,
   };
   world.paused = false;
@@ -31,7 +34,8 @@ function enterArena(i, first = false) {
   world.arena = { index: i, def: content.arenas[i], t: 0, startedAt: world.t };
   resetPlayer(i > world.run.startArena, first || flow.recenter);
   emit('arenaEnter', world.arena);
-  bigText(`${content.stageLabel.toUpperCase()} ${i + 1} · ${world.arena.def.name.toUpperCase()}`, { t: 1.8 });
+  const def = world.arena.def;
+  bigText(def.banner ?? `${content.stageLabel.toUpperCase()} ${i + 1} · ${def.name.toUpperCase()}`, { t: 1.8 });
 }
 
 export function endRun(outcome) {

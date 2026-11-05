@@ -3,7 +3,9 @@
 You can't attack. Fly right through an asteroid field ahead of a death wave, with missiles on your tail. Lead them
 into rocks, walls, mines, lasers and each other. Every death explodes, and a missile roaring past within a hair slows time.
 
-**The hook is the Daily Challenge:** one course a day, the same for everyone. Beat your best score; the ghost of your best run flies with you.
+**The hook is the daily challenges,** two a day, the same for everyone:
+- **Escape:** fly right through the course to the finish. Beat your best score; the ghost of your best run flies with you.
+- **Survive:** a round arena that only gets busier. Your score is how long you last, to the millisecond. The day seeds every missile, rock and laser, so you can practise it.
 
 ## Run it
 
@@ -25,6 +27,7 @@ Open the dev server with `?playtest=1` to turn it on (it sticks in that browser)
 ## How it's built
 
 - `game/core/`: the kernel. It holds the loop, world, player, input, camera, canvas, events, registries, course seed, sprites and storage.
+- Game modes (`core/game-modes.js`): each daily challenge is a mode pod (`flight` is Escape, `survive` is Survive). A run starts in one mode; systems and drawers can be limited to a mode, and hazard pods offer spawners (`spawn('rock', …)`) so a mode can place its own.
 - `game/pods/<feature>/`: one folder per feature. Each pod registers itself with the core (systems, drawers, events,
   `content` hooks) and never imports another pod, so **deleting a pod folder removes the feature and everything else
   keeps working**. `npm run lint` (`tools/check-pods.js`) checks this statically.

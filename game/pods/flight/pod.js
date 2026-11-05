@@ -4,36 +4,47 @@
 import { world, addEntity, lurables, kill } from '../../core/world.js';
 import { on, emit } from '../../core/events.js';
 import { content, addSystem, ORDER } from '../../core/registry.js';
+import { addMode } from '../../core/game-modes.js';
 import { player, hurt } from '../../core/player.js';
 import { SECTORS, SECTOR_LEN, COURSE_END, laneShape } from './course.js';
 import { drawFlight } from './flight-draw.js';
 import { stepWave } from './death-wave.js';
 
 const WAVE_START_GAP = 700;
+const MODE = 'flight';
 
-content.arenas = SECTORS;
-content.stageLabel = 'Sector';
-content.stageFlow = { clearBetween: false, pauseS: 0, recenter: false, clearedText: 'YOU MADE IT' };
-content.forward = { x: 1, y: 0 }; // for bots: progress is to the right
-content.howToPlay = [
-  'Fly right to the <b style="color:#7cf2c8">finish</b>. The <b style="color:#ff4d6d">death wave</b> rolls in from behind; the <b style="color:#ff4d6d">walls</b> above and below kill on touch.',
-  "Missiles are faster than you but turn wider, so lead them into rocks, walls and the wave. A red arrow on the edge of the screen shows where one is coming in.",
-];
-world.cameraFollows = true;
-world.bounds = { minX: -1e6, maxX: COURSE_END + 300, minY: -1e6, maxY: 1e6 };
-world.laneAt = (x, t = world.t) => laneShape(x, t);
+// The Escape challenge. Its shape is set when a run starts in it, so it can sit beside other modes.
+addMode({
+  id: MODE, label: 'Escape', color: '#7cf2c8', tagline: 'Fly right to the finish',
+  howToPlay: [
+    'Fly right to the <b style="color:#7cf2c8">finish</b>. The <b style="color:#ff4d6d">death wave</b> rolls in from behind; the <b style="color:#ff4d6d">walls</b> above and below kill on touch.',
+    "Two hits and you're down. Each new sector gives one back.",
+  ],
+  score: summary => summary.score?.score ?? 0,
+  format: n => n.toLocaleString(),
+  setup() {
+    content.arenas = SECTORS;
+    content.stageLabel = 'Sector';
+    content.stageFlow = { clearBetween: false, pauseS: 0, recenter: false, clearedText: 'YOU MADE IT' };
+    content.forward = { x: 1, y: 0 }; // for bots: progress is to the right
+    world.cameraFollows = true;
+    world.cullBehind = true;
+    world.bounds = { minX: -1e6, maxX: COURSE_END + 300, minY: -1e6, maxY: 1e6 };
+    world.laneAt = (x, t = world.t) => laneShape(x, t);
+  },
+});
 
 let wave = null;
 
 // The first sector of a run places you at its start with the wave behind you; later sectors just flow on.
 on('arenaEnter', a => {
-  if (a.index !== world.run.startArena) return;
+  if (world.mode !== MODE || a.index !== world.run.startArena) return;
   const startX = a.index * SECTOR_LEN + 300, lane = world.laneAt(startX);
   Object.assign(player, { x: startX, y: (lane.top + lane.bottom) / 2, vx: 0, vy: 0 });
   wave = addEntity({ type: 'wave', x: startX - WAVE_START_GAP, y: player.y, r: 0 });
 });
 
-addSystem(ORDER.move, dt => { stepWave(wave, dt); world.rearX = wave.x; });
+addSystem(ORDER.move, dt => { stepWave(wave, dt); world.rearX = wave.x; }, { mode: MODE });
 
 // A wall hit knocks you back into the lane (run 34: "Two deaths from the same cause, I never got free in between":
 // with thrusters you kept your speed into the wall and stayed pinned there).
@@ -52,11 +63,11 @@ addSystem(ORDER.collide, () => {
     const lane = world.laneAt(e.x);
     if (e.y - e.r < lane.top || e.y + e.r > lane.bottom) kill(e, 'wall');
   }
-});
+}, { mode: MODE });
 
 addSystem(ORDER.rules, () => {
   const sectorEnd = Math.min(COURSE_END, (world.run.ai + 1) * SECTOR_LEN);
   if (player.x >= sectorEnd) emit('arenaCleared');
-});
+}, { mode: MODE });
 
-drawFlight(() => wave, { SECTOR_LEN, COURSE_END });
+drawFlight(() => wave, { SECTOR_LEN, COURSE_END, mode: MODE });

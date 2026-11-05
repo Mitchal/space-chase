@@ -1,7 +1,7 @@
-// Score and chains: kills close together multiply.
-import { world, W } from '../../core/world.js';
+// Score and chains: kills close together multiply. In a mode scored by time (content.scoring), only the chains show.
+import { W } from '../../core/world.js';
 import { on } from '../../core/events.js';
-import { addSystem, addDrawer, addSummary, ORDER, LAYER } from '../../core/registry.js';
+import { content, addSystem, addDrawer, addSummary, ORDER, LAYER } from '../../core/registry.js';
 import { floatText, fx } from '../../core/effects.js';
 import { hudFont, view } from '../../core/canvas.js';
 
@@ -20,7 +20,8 @@ on('kill', ({ e, cause }) => {
   score += 100 * chain;
   maxChain = Math.max(maxChain, chain);
   if (chain === 3) chainsOf3++;
-  floatText(e.x, e.y - 14, chain > 1 ? `CHAIN ×${chain}` : '+100', { col: chain > 1 ? '#7cf2c8' : '#e8ecf3' });
+  const points = content.scoring === 'points';
+  if (chain > 1 || points) floatText(e.x, e.y - 14, chain > 1 ? `CHAIN ×${chain}` : '+100', { col: chain > 1 ? '#7cf2c8' : '#e8ecf3' });
   fx.shake = Math.max(fx.shake, 2 + chain);
 });
 
@@ -29,6 +30,7 @@ addSystem(ORDER.late, dt => { if (chainT > 0 && (chainT -= dt) <= 0) chain = 0; 
 addSummary('score', () => ({ score, maxChain, chainsOf3 }));
 
 addDrawer(LAYER.hud, ctx => {
+  if (content.scoring !== 'points') return;
   ctx.font = hudFont(15); ctx.textAlign = 'right'; ctx.fillStyle = '#e8ecf3';
   const x = W - view.inset.right - 16, top = view.inset.top;
   ctx.fillText(String(score), x, top + 26 * view.hud);

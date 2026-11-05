@@ -1,7 +1,7 @@
 // Lasers: a telegraphed beam across your position. It cuts through pursuers, mines and you alike.
 import { world, addEntity, live, lurables, kill } from '../../core/world.js';
 import { on } from '../../core/events.js';
-import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
+import { addSystem, addDrawer, addSpawner, ORDER, LAYER } from '../../core/registry.js';
 import { player, hurt } from '../../core/player.js';
 import { lineDist } from '../../core/geometry.js';
 import { courseRng } from '../../core/course-seed.js';
@@ -12,12 +12,16 @@ let laserT = 0, fired = 0;
 on('runStart', () => { fired = 0; });
 on('arenaEnter', () => { laserT = 0; });
 
+// A beam through (x, y) at angle `angle`, telegraphed first. A mode may fire its own: spawn('laser', { x, y, angle }).
+const addLaser = ({ x, y, angle }) => addEntity({ type: 'laser', x, y, c: Math.cos(angle), s: Math.sin(angle), tele: TELEGRAPH, active: ACTIVE });
+addSpawner('laser', addLaser);
+
 addSystem(ORDER.spawn, dt => {
   const l = world.arena.def.lasers;
   if (!l || (laserT += dt * world.pressure) < l.every) return;
   laserT = 0;
-  const ang = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4][Math.floor(courseRng('laser', fired++)() * 4)];
-  addEntity({ type: 'laser', x: player.x, y: player.y, c: Math.cos(ang), s: Math.sin(ang), tele: TELEGRAPH, active: ACTIVE });
+  const angle = [0, Math.PI / 2, Math.PI / 4, -Math.PI / 4][Math.floor(courseRng('laser', fired++)() * 4)];
+  addLaser({ x: player.x, y: player.y, angle });
 });
 
 addSystem(ORDER.collide, dt => {

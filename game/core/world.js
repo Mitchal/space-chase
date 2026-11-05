@@ -10,6 +10,7 @@ export function setViewWidth(w) { W = Math.round(Math.max(MIN_W, Math.min(MAX_W,
 
 export const world = {
   t: 0,
+  mode: null, // the game mode being played (core/game-modes.js)
   run: null, // { index, variant, startArena, ai, over, outcome, ... }
   arena: null, // { index, def, t, startedAt }
   ents: [],
@@ -21,6 +22,7 @@ export const world = {
   cameraFollows: false, // a mode pod sets this to keep the view centred on the player
   bounds: { minX: 0, maxX: W, minY: 0, maxY: H }, // hard limits for anything that moves
   rearX: -Infinity, // nothing should appear behind this x (e.g. a death wave)
+  cullBehind: false, // drop entities flagged `cull` once they're far left of the view (a forward flight)
   // The open lane at a given x (and time t, default now): { top, bottom }. A mode pod can replace this with a shaped corridor.
   laneAt: () => ({ top: world.bounds.minY, bottom: world.bounds.maxY }),
 };
