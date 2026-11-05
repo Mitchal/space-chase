@@ -9,12 +9,13 @@ import { player } from '../../core/player.js';
 import { RADIUS } from './arena-shape.js';
 
 // How it builds up (t: seconds into the run). A good run is ~30s, a great one ~60s, an extreme one ~90s.
-// v2 (his playtest, 2026-11-05: the first 10–20s were "too calm in the beginning. Definitely"): a busier start
-// (more missiles sooner, more rocks, lasers from 4s instead of 8s); from about a minute in it's as before.
+// v2 (his playtest, 2026-11-05: the first 10–20s were "too calm in the beginning. Definitely"): a busier start.
+// v3 trial (2026-11-05: "I die too often from lasers"): no lasers at all; missiles carry the build-up instead,
+// more of them, coming sooner and faster as the clock runs. Uncomment `laser` to bring lasers back.
 export const PACE = {
-  chaser: { first: 0.8, every: t => Math.max(0.8, 2.3 - t * 0.02), max: t => 4 + Math.floor(t / 11), speed: 315 },
+  chaser: { first: 0.6, every: t => Math.max(0.45, 2.0 - t * 0.025), max: t => 5 + Math.floor(t / 7), speed: t => Math.min(420, 300 + t * 1.5) },
   rock: { first: 0.5, every: t => Math.max(0.5, 1.5 - t * 0.014), max: t => 14 + Math.floor(t / 4.5), field: 10 },
-  laser: { first: 4, every: t => Math.max(1.3, 4.2 - t * 0.04), crossFrom: 50 },
+  // laser: { first: 4, every: t => Math.max(1.3, 4.2 - t * 0.04), crossFrom: 50 },
 };
 const KINDS = Object.keys(PACE);
 const TAU = Math.PI * 2;
@@ -29,7 +30,7 @@ function chaser(r, t) {
   let a = r() * TAU;
   const pt = onCircle(a, RADIUS - 40);
   if (Math.hypot(pt.x - player.x, pt.y - player.y) < 320) a += Math.PI;
-  if (alive('chaser') < PACE.chaser.max(t)) spawn('chaser', { ...onCircle(a, RADIUS - 40), speed: PACE.chaser.speed });
+  if (alive('chaser') < PACE.chaser.max(t)) spawn('chaser', { ...onCircle(a, RADIUS - 40), speed: PACE.chaser.speed(t) });
 }
 
 const rockSize = r => 24 + 46 * r() ** 1.5;
