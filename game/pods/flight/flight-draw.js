@@ -4,6 +4,7 @@ import { world, W, H } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
 import { hudFont, view } from '../../core/canvas.js';
+import { viewInset, uprightText, arrows } from '../../core/screen-mapping.js';
 
 const WALL = '#ff4d6d';
 
@@ -40,21 +41,29 @@ function drawFinish(ctx, end) {
   }
 }
 
-// Screen-space warning on the left edge when the wave is close but not visible.
+// A warning glow on the trailing edge of the view (left, or the bottom of an upright screen) when the wave is close
+// but not visible. Drawn in the world, through the camera, so it sits on whichever edge is behind.
 function drawWaveWarning(ctx, wave) {
-  const gap = world.cam.x - wave.x;
+  const c = world.cam, gap = c.x - wave.x;
   if (gap <= 0) return;
   const k = Math.max(0, 1 - gap / 900);
-  const g = ctx.createLinearGradient(0, 0, 80, 0);
+  const g = ctx.createLinearGradient(c.x, 0, c.x + 80, 0);
   g.addColorStop(0, `rgba(255,77,109,${0.15 + 0.5 * k})`); g.addColorStop(1, 'rgba(255,77,109,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 80, H);
-  ctx.font = hudFont(12, 700); ctx.textAlign = 'left'; ctx.fillStyle = '#ff9aa8';
-  ctx.fillText(`WAVE ◀ ${Math.round(player.x - wave.x)}`, view.inset.left + 10, H / 2);
+  ctx.fillStyle = g; ctx.fillRect(c.x - 20, c.y - 20, 100, H + 40);
+  ctx.font = hudFont(12, 700); ctx.fillStyle = '#ff9aa8';
+  ctx.textAlign = view.portrait ? 'center' : 'left';
+  const label = `WAVE ${arrows().behind} ${Math.round(player.x - wave.x)}`;
+  // Upright, it sits above the progress bar at the bottom of the screen.
+  uprightText(ctx, label, c.x + viewInset().left + (view.portrait ? 64 : 10), c.y + H / 2);
 }
 
 function drawProgress(ctx, wave, sectorLen, end) {
-  // Inside the safe area, with room on the right for the on-screen pause button.
-  const n = content.arenas.length, x0 = view.inset.left + 160, x1 = W - view.inset.right - 200, y = H - view.inset.bottom - 16;
+  // Screen space, inside the safe area, with room for its labels and, on the right, the on-screen pause button
+  // (44 CSS px, 10 from the edge: see index.html).
+  ctx.font = hudFont(12);
+  const pauseRoom = 62 / view.css, n = content.arenas.length, y = view.h - view.inset.bottom - 16;
+  const x0 = view.inset.left + 24 + ctx.measureText('START').width;
+  const x1 = view.w - view.inset.right - pauseRoom - 16 - ctx.measureText('FINISH').width;
   const at = x => x0 + (x1 - x0) * Math.max(0, Math.min(1, x / end));
   ctx.fillStyle = '#2a3142'; ctx.fillRect(x0, y, x1 - x0, 4);
   ctx.fillStyle = '#7cf2c8'; ctx.fillRect(x0, y, at(player.x) - x0, 4);
@@ -62,18 +71,13 @@ function drawProgress(ctx, wave, sectorLen, end) {
   for (let i = 1; i < n; i++) ctx.fillRect(at(i * sectorLen) - 1, y - 2, 2, 8);
   ctx.fillStyle = WALL; ctx.fillRect(at(wave.x) - 2, y - 5, 4, 14);
   ctx.beginPath(); ctx.arc(at(player.x), y + 2, 5, 0, Math.PI * 2); ctx.fillStyle = '#7cf2c8'; ctx.fill();
-  ctx.font = hudFont(12); ctx.fillStyle = '#8a93a6';
+  ctx.fillStyle = '#8a93a6';
   ctx.textAlign = 'right'; ctx.fillText('START', x0 - 8, y + 5);
   ctx.textAlign = 'left'; ctx.fillText('FINISH', x1 + 8, y + 5);
 }
 
 export function drawFlight(waveOf, { SECTOR_LEN, COURSE_END, mode }) {
   addDrawer(LAYER.floor, ctx => { drawWalls(ctx); drawFinish(ctx, COURSE_END); }, { mode });
-  addDrawer(LAYER.effects + 1, ctx => { const w = waveOf(); if (w) drawWave(ctx, w); }, { mode });
-  addDrawer(LAYER.hud, ctx => {
-    const w = waveOf();
-    if (!w) return;
-    drawWaveWarning(ctx, w);
-    drawProgress(ctx, w, SECTOR_LEN, COURSE_END);
-  }, { mode });
+  addDrawer(LAYER.effects + 1, ctx => { const w = waveOf(); if (w) { drawWave(ctx, w); drawWaveWarning(ctx, w); } }, { mode });
+  addDrawer(LAYER.hud, ctx => { const w = waveOf(); if (w) drawProgress(ctx, w, SECTOR_LEN, COURSE_END); }, { mode });
 }

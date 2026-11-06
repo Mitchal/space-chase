@@ -23,10 +23,10 @@ function drawClock(ctx, { ms, best }, fmt) {
   const top = view.inset.top;
   ctx.textAlign = 'center';
   ctx.font = hudFont(26, 800); ctx.fillStyle = COLOR;
-  ctx.fillText((ms / 1000).toFixed(3), W / 2, top + 32 * view.hud);
+  ctx.fillText((ms / 1000).toFixed(3), view.w / 2, top + 32 * view.hud);
   if (best === null) return;
   ctx.font = hudFont(12); ctx.fillStyle = best > ms ? '#8a93a6' : COLOR;
-  ctx.fillText(`best today ${fmt(best)}`, W / 2, top + 50 * view.hud);
+  ctx.fillText(`best today ${fmt(best)}`, view.w / 2, top + 50 * view.hud);
 }
 
 export function drawArena(clock, fmt, mode) {

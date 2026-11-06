@@ -15,9 +15,9 @@ const MODE = 'flight';
 
 // The Escape challenge. Its shape is set when a run starts in it, so it can sit beside other modes.
 addMode({
-  id: MODE, label: 'Escape', color: '#7cf2c8', tagline: 'Fly right to the finish',
+  id: MODE, label: 'Escape', color: '#7cf2c8', tagline: 'Fly to the finish',
   howToPlay: [
-    'Fly right to the <b style="color:#7cf2c8">finish</b>. The <b style="color:#ff4d6d">death wave</b> rolls in from behind; the <b style="color:#ff4d6d">walls</b> above and below kill on touch.',
+    'Fly to the <b style="color:#7cf2c8">finish</b>. The <b style="color:#ff4d6d">death wave</b> rolls in from behind; the <b style="color:#ff4d6d">walls</b> on either side kill on touch.',
     "Two hits and you're down. Each new sector gives one back.",
   ],
   score: summary => summary.score?.score ?? 0,

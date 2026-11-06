@@ -8,11 +8,12 @@
 // v17: after trying swipe steering (fly the way the thumb last moved), back to the joystick "with smaller radius than
 // before": 20px (was 30), so full speed and reversing both take an even shorter flick.
 // Delete this folder and touch falls back to the kernel's hold-to-steer.
-import { world, W, H } from '../../core/world.js';
+import { world } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { addInputSource } from '../../core/input.js';
 import { handling } from '../../core/player.js';
-import { cvs } from '../../core/canvas.js';
+import { view } from '../../core/canvas.js';
+import { clientToScreen } from '../../core/screen-mapping.js';
 
 const RADIUS = 20, DEADZONE = 0.1, CURVE = 0.7, TOUCH_GRIP = 30; // RADIUS in CSS pixels: the same on any screen
 const KEY_GRIP = handling.grip;
@@ -50,12 +51,12 @@ function drag() {
 
 addInputSource(() => stick.id === null ? null : drag());
 
-// Drawn in canvas space: the base where the stick is centred, the knob where the thumb is (at most on the rim).
+// Drawn in screen space: the base where the stick is centred, the knob where the thumb is (at most on the rim).
+// The drag is a direction on the screen; the kernel turns it into the world's frame (core/input.js).
 addDrawer(LAYER.hud, ctx => {
   if (stick.id === null || world.botPolicy) return;
-  const r = cvs.getBoundingClientRect(), sx = W / r.width, sy = H / r.height;
-  const bx = (stick.ox - r.left) * sx, by = (stick.oy - r.top) * sy, rad = RADIUS * sx;
-  const kx = (stick.x - r.left) * sx, ky = (stick.y - r.top) * sy;
+  const { x: bx, y: by } = clientToScreen(stick.ox, stick.oy), { x: kx, y: ky } = clientToScreen(stick.x, stick.y);
+  const rad = RADIUS / view.css;
   ctx.beginPath(); ctx.arc(bx, by, rad, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(232,236,243,.06)'; ctx.fill();
   ctx.strokeStyle = 'rgba(232,236,243,.25)'; ctx.lineWidth = 2; ctx.stroke();
