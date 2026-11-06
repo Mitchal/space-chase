@@ -8,7 +8,7 @@ binding = "DB"
 database_name = "space-chase-leaderboard"
 # Paste the database_id that `npx wrangler d1 create space-chase-leaderboard` prints (README step 3).
 # Local development (`npm run dev`) works with the placeholder.
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "cfcaacb9-7cc6-478a-8ed8-851e74c1b55e"
 migrations_dir = "migrations"
 
 # Per address, per minute (src/rate-limits.js). One home network counts as one address, so these leave room for a
