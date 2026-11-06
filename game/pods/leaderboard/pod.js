@@ -1,5 +1,5 @@
-// Family leaderboard (his ask, 2026-11-06: a board "to have fun with my family"): today's best in each daily challenge,
-// per player, on the main menu and under the results. Scores go to a tiny Cloudflare Worker (leaderboard-worker/) whose
+// Leaderboard (his ask, 2026-11-06: first "to have fun with my family", then to share with anyone): today's best in
+// each daily challenge, per player, on the main menu and under the results. Scores go to a tiny Cloudflare Worker (leaderboard-worker/) whose
 // address is in leaderboard-url.js; until it's set, this pod does nothing. Bots and playtest runs never post (playtest
 // runs fly A/B variants, so they aren't comparable). Delete this folder and the game has no board, as before.
 import { world } from '../../core/world.js';

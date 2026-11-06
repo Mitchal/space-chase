@@ -1,7 +1,7 @@
 {
   "name": "space-chase-leaderboard",
   "private": true,
-  "description": "Space Chase's family leaderboard: one Cloudflare Worker and a D1 database (free tier).",
+  "description": "Space Chase's leaderboard: one Cloudflare Worker and a D1 database (free tier).",
   "scripts": {
     "dev": "wrangler dev --port 8787",
     "db:local": "wrangler d1 migrations apply space-chase-leaderboard --local",

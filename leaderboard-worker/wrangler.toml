@@ -1,4 +1,4 @@
-# Space Chase's family leaderboard. See README.md for the steps to put it online.
+# Space Chase's leaderboard. See README.md for the steps to put it online.
 name = "space-chase-leaderboard"
 main = "src/worker.js"
 compatibility_date = "2026-10-01"

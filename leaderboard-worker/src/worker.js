@@ -1,4 +1,4 @@
-// Space Chase's family leaderboard: today's best runs per daily challenge.
+// Space Chase's leaderboard: today's best runs per daily challenge.
 //   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day;
 //                was: the name used before a rename, whose row for that day is dropped
 //   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{name, score}]}

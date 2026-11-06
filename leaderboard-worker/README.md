@@ -1,8 +1,8 @@
-# Space Chase family leaderboard
+# Space Chase leaderboard
 
 A small Cloudflare Worker with a D1 (SQLite) database. It keeps each player's best score per daily challenge per day,
 and the game shows today's top scores on the main menu and under the results. It runs on Cloudflare's free plan
-(100,000 requests a day; a family uses a few hundred) and never goes to sleep.
+(100,000 requests a day, which is roughly a thousand daily players) and never goes to sleep.
 
 Until its address is in `game/pods/leaderboard/leaderboard-url.js`, the game has no board and works exactly as before.
 
@@ -62,8 +62,9 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
 - **Who can post:** browsers only from the game's own addresses (spacechase.mikaelbrandt.com, mitchal.github.io, the
   Android app and localhost); the list is in `src/cors.js`. If the game moves to another address, add it there and deploy.
 - **Checks:** a known date (within a day of today), a name of 1 to 16 characters, and a whole-number score from 0 to
-  10,000,000. There's no anti-cheat: anyone in the family who wants to type a fake score in the terminal can.
-- **Remove a row** (say a test name):
+  10,000,000. There's no anti-cheat: anyone who looks at the game's code can send a made-up score from a terminal,
+  and names aren't filtered. If that happens, remove the row (below).
+- **Remove a row** (a test name, a made-up score, a rude name, or someone asking to be removed):
   ```bash
   npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM scores WHERE name_key = 'test'"
   ```

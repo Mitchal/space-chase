@@ -1,4 +1,4 @@
-// Light sanity checks for a family board: well-formed input and plausible numbers. Not anti-cheat.
+// Light sanity checks only: well-formed input and plausible numbers. Not anti-cheat.
 // Each check returns the cleaned value, or null when it doesn't pass.
 export const MAX_SCORE = 10_000_000; // points in Escape; milliseconds in Survive (that's 2¾ hours)
 export const NAME_MAX = 16;
