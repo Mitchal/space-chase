@@ -4,7 +4,7 @@ import { world, W, H } from '../../core/world.js';
 import { player } from '../../core/player.js';
 import { clamp } from '../../core/geometry.js';
 import { view } from '../../core/canvas.js';
-import { viewInset, uprightText, arrows } from '../../core/screen-mapping.js';
+import { viewInset, uprightText, arrows, worldDir } from '../../core/screen-mapping.js';
 
 export const SAMPLE_S = 0.1;
 const COLOR = '185,196,255';
@@ -31,19 +31,16 @@ export function drawGhost(ctx, g) {
   if (inside) {
     ctx.beginPath(); ctx.arc(g.x, g.y, player.r, 0, Math.PI * 2); ctx.stroke();
     ctx.font = '600 11px system-ui,sans-serif'; ctx.textAlign = 'center';
-    if (view.portrait) uprightText(ctx, 'best', g.x + 16, g.y); // just above it on the screen
-    else ctx.fillText('best', g.x, g.y - 16);
+    const up = worldDir(0, -16); // just above it on the screen
+    uprightText(ctx, 'best', g.x + up.x, g.y + up.y);
     return;
   }
   const n = viewInset(), x = clamp(g.x, c.x + n.left + 18, c.x + W - n.right - 18), y = clamp(g.y, c.y + n.top + 18, c.y + H - n.bottom - 18);
   ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
-  const ahead = g.x > player.x, a = arrows();
-  ctx.font = '600 11px system-ui,sans-serif';
-  if (view.portrait) { // the marker is on the top or bottom edge: the label goes just inside it
-    ctx.textAlign = 'center';
-    uprightText(ctx, ahead ? `best ${a.ahead}` : `best ${a.behind}`, x + (ahead ? -20 : 20), y);
-  } else {
-    ctx.textAlign = ahead ? 'right' : 'left';
-    ctx.fillText(ahead ? `best ${a.ahead}` : `${a.behind} best`, x + (ahead ? -10 : 10), y + 4);
-  }
+  const ahead = g.x > player.x, label = `best ${ahead ? arrows().ahead : arrows().behind}`;
+  ctx.font = '600 11px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  // Just inside the marker, along the course, so it never runs off the screen's edge whichever way the view is turned.
+  const into = view.portrait ? 18 : 12 + ctx.measureText(label).width / 2;
+  uprightText(ctx, label, x + (ahead ? -into : into), y);
+  ctx.textBaseline = 'alphabetic';
 }

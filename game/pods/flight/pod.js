@@ -28,6 +28,9 @@ addMode({
     content.stageFlow = { clearBetween: false, pauseS: 0, recenter: false, clearedText: 'YOU MADE IT' };
     content.forward = { x: 1, y: 0 }; // for bots: progress is to the right
     world.cameraFollows = true;
+    // Shown end for end: the wave and the pursuers coming in behind you sit at the top (or right) of the screen, away
+    // from the thumb steering at the bottom (his ask, 2026-11-06: "you risk blocking them with your thumb").
+    world.flipView = true;
     world.cullBehind = true;
     world.bounds = { minX: -1e6, maxX: COURSE_END + 300, minY: -1e6, maxY: 1e6 };
     world.laneAt = (x, t = world.t) => laneShape(x, t);

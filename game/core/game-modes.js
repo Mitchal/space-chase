@@ -8,7 +8,7 @@ import { setCourseSeed } from './course-seed.js';
 
 // What a mode may change. Snapshotted here, before any pod loads.
 const CONTENT_KEYS = ['arenas', 'stageLabel', 'stageFlow', 'forward', 'scoring'];
-const WORLD_KEYS = ['cameraFollows', 'bounds', 'laneAt', 'rearX', 'cullBehind'];
+const WORLD_KEYS = ['cameraFollows', 'flipView', 'bounds', 'laneAt', 'rearX', 'cullBehind'];
 const pick = (o, keys) => Object.fromEntries(keys.map(k => [k, o[k]]));
 const defaults = { content: pick(content, CONTENT_KEYS), world: pick(world, WORLD_KEYS) };
 

@@ -4,6 +4,7 @@ import { runDrawers, LAYER } from './registry.js';
 import { fx } from './effects.js';
 import { rand } from './geometry.js';
 import { measureSafeArea } from './safe-area.js';
+import { viewTransform } from './screen-mapping.js';
 
 const BG = '#0e1118';
 
@@ -17,10 +18,11 @@ const MAX_SCALE = 1.5;
 // hud: text size multiplier for screen-space text; on a phone the whole view is scaled down, so text needs to grow.
 // inset: how far screen-space UI must stay from each edge of the screen (game pixels), clear of notches and rounded
 // corners (core/safe-area.js). HUD drawers place things relative to it.
-// portrait: the screen is taller than wide, so the view is turned a quarter turn and the course runs up the screen
-// (core/screen-mapping.js). w × h: the screen in game pixels (W × H, or H × W when turned); HUD drawers lay out in it.
+// portrait: the screen is taller than wide, so the view is turned a quarter turn and the course runs along its length.
+// turn: quarter turns from the view to the screen (core/screen-mapping.js): portrait, plus a mode's world.flipView.
+// w × h: the screen in game pixels (W × H, or H × W when upright); HUD drawers lay out in it.
 // css: CSS pixels per game pixel, for UI sized in CSS pixels (the joystick, the HTML pause button).
-export const view = { scale: 1, hud: 1, css: 1, portrait: false, w: W, h: H, inset: { top: 0, right: 0, bottom: 0, left: 0 } };
+export const view = { scale: 1, hud: 1, css: 1, portrait: false, turn: 0, w: W, h: H, inset: { top: 0, right: 0, bottom: 0, left: 0 } };
 const touch = matchMedia('(pointer: coarse)').matches;
 export const hudFont = (px, weight = 600) => `${weight} ${Math.round(px * view.hud)}px system-ui,sans-serif`;
 
@@ -58,10 +60,11 @@ function drawGrid() {
 }
 
 // World layers are drawn through the camera and shake; HUD and overlay layers are screen-space and stay put.
-// Turned for portrait: view point (x, y) lands on screen point (y, W - x), so ahead (+x) is up the screen.
+// The world is drawn turned (view.turn); a mode's flip can change between runs, so it's settled every frame.
 export function drawFrame() {
+  view.turn = (view.portrait ? 1 : 0) + (world.flipView ? 2 : 0);
   ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
-  if (view.portrait) ctx.transform(0, -1, 1, 0, 0, W);
+  ctx.transform(...viewTransform());
   ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
   ctx.save();
   if (fx.shake > 0.3) ctx.translate(rand(-fx.shake, fx.shake), rand(-fx.shake, fx.shake));

@@ -20,6 +20,7 @@ export const world = {
   botPolicy: null, // when set, a bot drives the player instead of the keyboard
   cam: { x: 0, y: 0 }, // top-left of the view, in world coordinates
   cameraFollows: false, // a mode pod sets this to keep the view centred on the player
+  flipView: false, // a mode pod sets this to show the world end for end (ahead to the left, or down an upright screen)
   bounds: { minX: 0, maxX: W, minY: 0, maxY: H }, // hard limits for anything that moves
   rearX: -Infinity, // nothing should appear behind this x (e.g. a death wave)
   cullBehind: false, // drop entities flagged `cull` once they're far left of the view (a forward flight)
