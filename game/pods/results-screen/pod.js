@@ -11,15 +11,31 @@ import { shareRun, GAME_URL } from './share-run.js';
 if (!playtest) {
   content.runOverScreen = true;
   document.body.insertAdjacentHTML('beforeend', `
+<style>
+/* A phone on its side is short but wide: a pod's panel (content.resultPanels) goes beside the score instead of under
+   it, so the score and the buttons stay on screen without scrolling. Upright, or with no panel, it's one column. */
+@media (max-height:480px) and (min-width:560px){
+  #results .card:has(#xPanels > :not(:empty)){width:min(820px,calc(100vw - 32px));display:grid;column-gap:20px;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head panels" "actions panels";align-items:center}
+  #results .x-head{grid-area:head;align-self:end}
+  #results .x-actions{grid-area:actions;align-self:start}
+  #results #xPanels{grid-area:panels}
+}
+</style>
 <div id="results" class="overlay"><div class="card menu">
-  <div id="xBadge" class="badge" hidden>NEW BEST</div>
-  <h2 id="xTitle"></h2>
-  <div id="xScore" class="score-big"></div>
-  <p id="xLine" class="dim"></p>
-  <div class="row center"><button class="main big" id="xAgain">Fly again</button></div>
-  <div class="row center"><button class="ghost" id="xMenu">Menu</button><button class="ghost" id="xShare">Share</button></div>
-  <p id="xShared" class="dim small" hidden>Copied: paste it anywhere.</p>
-  <textarea id="xShareText" rows="3" style="margin-top:8px" readonly hidden></textarea>
+  <div class="x-head">
+    <div id="xBadge" class="badge" hidden>NEW BEST</div>
+    <h2 id="xTitle"></h2>
+    <div id="xScore" class="score-big"></div>
+    <p id="xLine" class="dim"></p>
+  </div>
+  <div id="xPanels"></div>
+  <div class="x-actions">
+    <div class="row center"><button class="main big" id="xAgain">Fly again</button></div>
+    <div class="row center"><button class="ghost" id="xMenu">Menu</button><button class="ghost" id="xShare">Share</button></div>
+    <p id="xShared" class="dim small" hidden>Copied: paste it anywhere.</p>
+    <textarea id="xShareText" rows="3" style="margin-top:8px" readonly hidden></textarea>
+  </div>
 </div></div>`);
   const $ = id => document.getElementById(id);
   let shareText = '';
@@ -49,10 +65,20 @@ if (!playtest) {
     $('xScore').style.color = mode?.color || '';
     $('xBadge').hidden = !card.newBest;
     $('xLine').textContent = card.line;
+    showPanels(run);
     shareText = card.share;
     $('xShared').hidden = $('xShareText').hidden = true;
     $('results').classList.add('show');
   });
+
+  // Other pods' boxes under the card (content.resultPanels), each in its own element; one failing leaves the rest.
+  function showPanels(run) {
+    $('xPanels').replaceChildren(...content.resultPanels.map(fill => {
+      const el = document.createElement('div');
+      try { fill(el, run); } catch (err) { console.error('Results panel failed', err); }
+      return el;
+    }));
+  }
 
   $('xAgain').onclick = again;
   const toMenu = () => { hide(); world.run = null; emit('showTitle'); };

@@ -43,6 +43,10 @@ export function appendEntry(entry) {
 
 export const runsLogged = () => Math.max(loadLocal().length, progress.serverRuns);
 
+// A small value a pod keeps in this browser (or app), as JSON. Reads give null when it's missing or storage is blocked.
+export function readSaved(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
+export function writeSaved(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
+
 export function exportLog() {
   const json = JSON.stringify(loadLocal(), null, 2);
   const a = document.createElement('a');

@@ -21,6 +21,7 @@ export const content = {
   titleNotes: [], // () => HTML lines a pod adds to the title screen
   dailyNotes: [], // () => short text a pod adds to the header of the menu's daily challenges (e.g. a streak)
   resultNotes: [], // run => text a pod adds to the end-of-run stats
+  resultPanels: [], // (el, run) => void: a pod fills its own box under the results card, now or later (e.g. after a fetch)
 };
 
 // mode: only while a run is in that game mode (core/game-modes.js); unset, in every mode.
