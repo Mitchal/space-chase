@@ -4,7 +4,7 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 .lb{margin:12px 0 2px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#10141f;text-align:left}
 .lb-head{display:flex;justify-content:space-between;gap:8px;color:var(--ghost);font-weight:800;letter-spacing:.1em;font-size:11px;margin-bottom:4px}
 .lb-head .dim{font-weight:400;letter-spacing:0;white-space:nowrap}
-.lb-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 18px}
+.lb-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px 14px} /* side by side at 375px */
 .lb-mode{font-weight:800;letter-spacing:.1em;font-size:11px;margin-top:2px}
 .lb-row{display:flex;gap:6px;font-size:13px;line-height:1.55}
 .lb-rank{min-width:1.3em;text-align:right;color:var(--dim)}
@@ -23,6 +23,11 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 /* Short and narrow, the results board sits under the score: only the top three (and you). Short and wide, it sits
    beside the score (results-screen) with room for all five. */
 @media (max-height:480px) and (max-width:559px){.lb-extra{display:none}}
+/* A phone on its side has no room for the menu's board under the challenges: one line of today's leaders instead. */
+.lb-line{display:none;gap:14px;align-items:baseline;margin-top:6px;font-size:12px;text-align:left}
+.lb-leader{flex:1;min-width:0;display:flex;gap:5px;align-items:baseline}
+.lb-leader b{font-size:11px;letter-spacing:.1em}
+@media (max-height:480px){.lb-full{display:none}.lb-line{display:flex}}
 </style>`);
 
 const ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -47,7 +52,15 @@ export function menuCard(columns, you) {
     <div class="lb-mode" style="color:${mode.color}">${esc(mode.label.toUpperCase())}</div>
     ${!board ? '<div class="lb-empty">–</div>' : board.top.length ? rows(board.top, { fmt: mode.fmt, you, limit: 3 })
       : '<div class="lb-empty">nobody yet today</div>'}</div>`).join('');
-  return `<div class="lb"><div class="lb-head">TODAY'S LEADERBOARD</div><div class="lb-cols">${cols}</div></div>`;
+  return `<div class="lb lb-full"><div class="lb-head">TODAY'S LEADERBOARD</div><div class="lb-cols">${cols}</div></div>
+    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}</div>`;
+}
+
+// One challenge's leader for the short-screen line: "ESCAPE Anna 7,300".
+function leaderLine({ mode, board }) {
+  const top = board?.top[0], who = top ? `<span class="lb-name">${esc(top.name)}</span><span class="lb-score">${esc(mode.fmt(top.score))}</span>`
+    : `<span class="lb-empty">${board ? 'nobody yet' : '–'}</span>`;
+  return `<span class="lb-leader"><b style="color:${mode.color}">${esc(mode.label.toUpperCase())}</b>${who}</span>`;
 }
 
 // board: {players, top, rank?, best?} for the challenge just played; foot: HTML under it (the name form, or who you are).
