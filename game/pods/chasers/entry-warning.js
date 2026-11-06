@@ -5,14 +5,14 @@ import { world, W, H } from '../../core/world.js';
 import { player } from '../../core/player.js';
 import { clamp } from '../../core/geometry.js';
 import { glowSprite, drawSprite } from '../../core/sprites.js';
-import { view } from '../../core/canvas.js';
+import { viewInset } from '../../core/screen-mapping.js';
 
 export const WARN_S = 1.5;
 const INSET = 22;
 
 export function drawEntryWarning(ctx, e, color) {
   const c = world.cam, pulse = 0.75 + 0.25 * Math.sin(world.t * 18), s = 1.6 + 0.3 * pulse;
-  const n = view.inset; // clear of notches and rounded corners
+  const n = viewInset(); // clear of notches and rounded corners
   const mx = clamp(e.x, c.x + n.left + INSET, c.x + W - n.right - INSET), my = clamp(e.y, c.y + n.top + INSET, c.y + H - n.bottom - INSET);
   const a = Math.atan2(player.y - my, player.x - mx);
   const arrow = glowSprite('entry-arrow' + color, 14, 10, color, g => {

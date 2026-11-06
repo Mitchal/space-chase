@@ -2,8 +2,9 @@
 import { on } from './events.js';
 import { addSystem, addDrawer, ORDER, LAYER } from './registry.js';
 import { rand } from './geometry.js';
-import { W, H, world } from './world.js';
-import { hudFont } from './canvas.js';
+import { H } from './world.js';
+import { hudFont, view } from './canvas.js';
+import { toScreen } from './screen-mapping.js';
 
 export const fx = { shake: 0, hitstop: 0, slowmo: 0, slowScale: 1 };
 let parts = [], texts = [];
@@ -15,7 +16,7 @@ export function burst(x, y, col, n = 16) {
   }
 }
 
-// floatText sits at a world position; bigText is a screen-centred banner.
+// floatText sits at a world position; bigText is a screen-centred banner (y in view pixels, 0..H: scaled to the screen).
 export function floatText(x, y, s, { col = '#e8ecf3', t = 0.9 } = {}) { texts.push({ x, y, s, col, t, big: false }); }
 export function bigText(s, { y = H / 2 - 110, col = '#e8ecf3', t = 1.6 } = {}) { texts.push({ x: null, y, s, col, t, big: true }); }
 export function clearEffects() { parts = []; texts = []; }
@@ -36,13 +37,20 @@ addDrawer(LAYER.effects, ctx => {
   ctx.globalAlpha = 1;
 });
 
+// Centred on the screen as it is now; shrunk to fit a narrow (upright) screen.
+function bigLine(ctx, t) {
+  const room = view.w - view.inset.left - view.inset.right - 32, w = ctx.measureText(t.s).width;
+  if (w > room) ctx.font = hudFont(30 * room / w, 700);
+  ctx.fillText(t.s, view.w / 2, t.y / H * view.h);
+}
+
 addDrawer(LAYER.overlay, ctx => {
   ctx.textAlign = 'center';
   for (const t of texts) {
     ctx.globalAlpha = Math.min(1, t.t * 2); ctx.fillStyle = t.col;
     ctx.font = t.big ? hudFont(30, 700) : hudFont(15, 700);
-    if (t.big) ctx.fillText(t.s, W / 2, t.y); // centred on the view as it is now
-    else ctx.fillText(t.s, t.x - world.cam.x, t.y - world.cam.y);
+    if (t.big) bigLine(ctx, t);
+    else { const p = toScreen(t.x, t.y); ctx.fillText(t.s, p.x, p.y); }
   }
   ctx.globalAlpha = 1;
 });

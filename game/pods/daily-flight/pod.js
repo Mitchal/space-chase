@@ -3,7 +3,7 @@
 // starts at sector 1, today's best score is the number to beat, and the ghost of your best run flies with you
 // ("I love all of it, including the ghosts"). A streak counts the days in a row you've flown.
 // Delete this folder and every Escape run gets a fresh random course with checkpoints again.
-import { world, W } from '../../core/world.js';
+import { world } from '../../core/world.js';
 import { on } from '../../core/events.js';
 import { content, addSystem, addDrawer, addSummary, collectSummary, ORDER, LAYER } from '../../core/registry.js';
 import { addModeNote } from '../../core/game-modes.js';
@@ -58,5 +58,5 @@ addDrawer(LAYER.player - 1, ctx => {
 addDrawer(LAYER.hud, ctx => {
   if (world.botPolicy || rec.best === null) return;
   ctx.font = hudFont(13); ctx.textAlign = 'right'; ctx.fillStyle = '#b9c4ff';
-  ctx.fillText(`best today ${rec.best.toLocaleString()}`, W - view.inset.right - 16, view.inset.top + 66 * view.hud);
+  ctx.fillText(`best today ${rec.best.toLocaleString()}`, view.w - view.inset.right - 16, view.inset.top + 66 * view.hud);
 }, { mode: MODE });

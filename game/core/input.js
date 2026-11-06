@@ -2,7 +2,7 @@
 import { world } from './world.js';
 import { emit } from './events.js';
 import { cvs } from './canvas.js';
-import { W, H } from './world.js';
+import { clientToScreen, screenToWorld, worldDir } from './screen-mapping.js';
 
 const keys = {};
 const mouse = { down: false, x: 0, y: 0 };
@@ -16,17 +16,14 @@ addEventListener('keydown', e => {
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
 
-function setMouse(e) {
-  const r = cvs.getBoundingClientRect();
-  mouse.x = (e.clientX - r.left) / r.width * W;
-  mouse.y = (e.clientY - r.top) / r.height * H;
-}
+function setMouse(e) { Object.assign(mouse, clientToScreen(e.clientX, e.clientY)); } // screen space
 cvs.addEventListener('pointerdown', e => { mouse.down = true; setMouse(e); });
 addEventListener('pointermove', e => { if (mouse.down) setMouse(e); });
 addEventListener('pointerup', () => { mouse.down = false; });
 
 // Pods may add input sources (e.g. an on-screen joystick): fn() returns {ix, iy} while it's in use, else null.
-// The first source in use wins over keys and mouse.
+// The first source in use wins over keys and mouse. Sources and keys give a direction on the screen (up is up, as the
+// player sees it); it's turned into the world's frame here (core/screen-mapping.js). A bot policy steers in the world.
 const sources = [];
 export const addInputSource = fn => { sources.push(fn); };
 const fromSources = () => { for (const fn of sources) { const v = fn(); if (v) return v; } return null; };
@@ -35,13 +32,14 @@ const fromSources = () => { for (const fn of sources) { const v = fn(); if (v) r
 export function intent(player) {
   let ix, iy, src = null;
   if (world.botPolicy) ({ ix, iy } = world.botPolicy(player));
-  else if ((src = fromSources())) ({ ix, iy } = src);
+  else if ((src = fromSources())) ({ x: ix, y: iy } = worldDir(src.ix, src.iy));
   else {
-    ix = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-    iy = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
+    ({ x: ix, y: iy } = worldDir(
+      (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
+      (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0)));
     if (mouse.down) {
       // mouse is in screen space; the player is in world space
-      const dx = mouse.x + world.cam.x - player.x, dy = mouse.y + world.cam.y - player.y, d = Math.hypot(dx, dy);
+      const m = screenToWorld(mouse.x, mouse.y), dx = m.x - player.x, dy = m.y - player.y, d = Math.hypot(dx, dy);
       if (d > 4) { const k = Math.min(1, d / 40); ix = dx / d * k; iy = dy / d * k; } else ix = iy = 0;
     }
   }

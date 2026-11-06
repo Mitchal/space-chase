@@ -1,5 +1,5 @@
 // Hearts and the stage you're in (when there's more than one), plus a circle around whatever killed you.
-import { world, W } from '../../core/world.js';
+import { world } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
 import { hudFont, view } from '../../core/canvas.js';
@@ -11,7 +11,7 @@ addDrawer(LAYER.hud, ctx => {
   ctx.fillText('♥'.repeat(Math.max(0, player.hp)) + '♡'.repeat(player.maxHp - Math.max(0, player.hp)), left + 16, y);
   if (content.arenas.length < 2) return; // one stage: nothing to count
   ctx.textAlign = 'center';
-  ctx.fillText(`${content.stageLabel} ${world.run.ai + 1} / ${content.arenas.length} · ${world.arena.def.name}`, W / 2, y);
+  ctx.fillText(`${content.stageLabel} ${world.run.ai + 1} / ${content.arenas.length} · ${world.arena.def.name}`, view.w / 2, y);
 });
 
 addDrawer(LAYER.effects, ctx => {

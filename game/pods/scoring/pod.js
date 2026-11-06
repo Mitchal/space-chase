@@ -1,5 +1,4 @@
 // Score and chains: kills close together multiply. In a mode scored by time (content.scoring), only the chains show.
-import { W } from '../../core/world.js';
 import { on } from '../../core/events.js';
 import { content, addSystem, addDrawer, addSummary, ORDER, LAYER } from '../../core/registry.js';
 import { floatText, fx } from '../../core/effects.js';
@@ -32,7 +31,7 @@ addSummary('score', () => ({ score, maxChain, chainsOf3 }));
 addDrawer(LAYER.hud, ctx => {
   if (content.scoring !== 'points') return;
   ctx.font = hudFont(15); ctx.textAlign = 'right'; ctx.fillStyle = '#e8ecf3';
-  const x = W - view.inset.right - 16, top = view.inset.top;
+  const x = view.w - view.inset.right - 16, top = view.inset.top;
   ctx.fillText(String(score), x, top + 26 * view.hud);
   if (chain > 1) { ctx.fillStyle = '#7cf2c8'; ctx.fillText(`chain ×${chain}`, x, top + 46 * view.hud); }
 });
