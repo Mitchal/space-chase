@@ -3,7 +3,7 @@
 document.head.insertAdjacentHTML('beforeend', `<style>
 .lb{margin:12px 0 2px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#10141f;text-align:left}
 .lb-head{display:flex;justify-content:space-between;gap:8px;color:var(--ghost);font-weight:800;letter-spacing:.1em;font-size:11px;margin-bottom:4px}
-.lb-head .dim{font-weight:400;letter-spacing:0}
+.lb-head .dim{font-weight:400;letter-spacing:0;white-space:nowrap}
 .lb-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 18px}
 .lb-mode{font-weight:800;letter-spacing:.1em;font-size:11px;margin-top:2px}
 .lb-row{display:flex;gap:6px;font-size:13px;line-height:1.55}
@@ -18,7 +18,10 @@ document.head.insertAdjacentHTML('beforeend', `<style>
   font:inherit;-webkit-user-select:text;user-select:text}
 .lb-form button{padding:7px 14px}
 .lb-foot{margin-top:6px}
-@media (max-height:480px){.lb{margin:6px 0 0;padding:6px 12px}.lb-row{line-height:1.4}.lb-extra{display:none}}
+@media (max-height:480px){.lb{margin:6px 0 0;padding:6px 12px}.lb-row{line-height:1.4}}
+/* Short and narrow, the results board sits under the score: only the top three (and you). Short and wide, it sits
+   beside the score (results-screen) with room for all five. */
+@media (max-height:480px) and (max-width:559px){.lb-extra{display:none}}
 </style>`);
 
 const ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -32,9 +35,9 @@ function rows(top, { fmt, you, limit, rank = null, best = null }) {
   if (rank > limit && best !== null) shown.push('<div class="lb-more">⋯</div>', row(rank, you, fmt(best), true));
   return shown.join('');
 }
-// extra: a row past the top three, left out on short screens unless it's yours.
+// extra: a row past the top three, left out on short, narrow screens unless it's yours.
 const row = (rank, name, score, you, extra = false) => `<div class="lb-row${you ? ' you' : extra ? ' lb-extra' : ''}"><span class="lb-rank">${rank}</span>
-  <span class="lb-name">${esc(name)}</span><span class="lb-score">${esc(score)}</span></div>`;
+  <span class="lb-name" title="${esc(name)}">${esc(name)}</span><span class="lb-score">${esc(score)}</span></div>`;
 
 // columns: [{ mode: {label, color, fmt}, board: {players, top} | null }] in menu order. '' when the board can't be reached.
 export function menuCard(columns, you) {
@@ -43,7 +46,7 @@ export function menuCard(columns, you) {
     <div class="lb-mode" style="color:${mode.color}">${esc(mode.label.toUpperCase())}</div>
     ${!board ? '<div class="lb-empty">–</div>' : board.top.length ? rows(board.top, { fmt: mode.fmt, you, limit: 3 })
       : '<div class="lb-empty">nobody yet today</div>'}</div>`).join('');
-  return `<div class="lb"><div class="lb-head">FAMILY BOARD · TODAY</div><div class="lb-cols">${cols}</div></div>`;
+  return `<div class="lb"><div class="lb-head">TODAY'S LEADERBOARD</div><div class="lb-cols">${cols}</div></div>`;
 }
 
 // board: {players, top, rank?, best?} for the challenge just played; foot: HTML under it (the name form, or who you are).
@@ -51,6 +54,6 @@ export function resultCard(mode, board, you, foot) {
   const place = board.rank ? `<span class="dim">${ordinal(board.rank)} of ${board.players}</span>` : '';
   const list = board.top.length ? rows(board.top, { fmt: mode.fmt, you, limit: 5, rank: board.rank, best: board.best })
     : '<div class="lb-empty">nobody on the board yet today</div>';
-  return `<div class="lb"><div class="lb-head"><span style="color:${mode.color}">TODAY'S BOARD · ${esc(mode.label.toUpperCase())}</span>
+  return `<div class="lb"><div class="lb-head"><span style="color:${mode.color}">TODAY'S LEADERBOARD · ${esc(mode.label.toUpperCase())}</span>
     ${place}</div>${list}<div class="lb-foot">${foot}</div></div>`;
 }

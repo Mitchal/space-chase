@@ -1,4 +1,4 @@
-// Where the family leaderboard lives. Paste the Worker's address here once it's deployed (leaderboard-worker/README.md),
+// Where the leaderboard lives. Paste the Worker's address here once it's deployed (leaderboard-worker/README.md),
 // e.g. 'https://space-chase-leaderboard.your-name.workers.dev'. Left empty, there's no board and the game is as before.
 const DEPLOYED = '';
 
