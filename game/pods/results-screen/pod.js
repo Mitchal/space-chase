@@ -16,6 +16,7 @@ if (!playtest) {
   <h2 id="xTitle"></h2>
   <div id="xScore" class="score-big"></div>
   <p id="xLine" class="dim"></p>
+  <div id="xPanels"></div>
   <div class="row center"><button class="main big" id="xAgain">Fly again</button></div>
   <div class="row center"><button class="ghost" id="xMenu">Menu</button><button class="ghost" id="xShare">Share</button></div>
   <p id="xShared" class="dim small" hidden>Copied: paste it anywhere.</p>
@@ -49,10 +50,20 @@ if (!playtest) {
     $('xScore').style.color = mode?.color || '';
     $('xBadge').hidden = !card.newBest;
     $('xLine').textContent = card.line;
+    showPanels(run);
     shareText = card.share;
     $('xShared').hidden = $('xShareText').hidden = true;
     $('results').classList.add('show');
   });
+
+  // Other pods' boxes under the card (content.resultPanels), each in its own element; one failing leaves the rest.
+  function showPanels(run) {
+    $('xPanels').replaceChildren(...content.resultPanels.map(fill => {
+      const el = document.createElement('div');
+      try { fill(el, run); } catch (err) { console.error('Results panel failed', err); }
+      return el;
+    }));
+  }
 
   $('xAgain').onclick = again;
   const toMenu = () => { hide(); world.run = null; emit('showTitle'); };

@@ -1,0 +1,12 @@
+# Space Chase's family leaderboard. See README.md for the steps to put it online.
+name = "space-chase-leaderboard"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "space-chase-leaderboard"
+# Paste the database_id that `npx wrangler d1 create space-chase-leaderboard` prints (README step 3).
+# Local development (`npm run dev`) works with the placeholder.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
