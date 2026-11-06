@@ -4,7 +4,7 @@ You can't attack. Fly right through an asteroid field ahead of a death wave, wit
 into rocks, walls, mines, lasers and each other. Every death explodes, and a missile roaring past within a hair slows time.
 
 **The hook is the daily challenges,** two a day, the same for everyone:
-- **Escape:** fly right through the course to the finish. Beat your best score; the ghost of your best run flies with you.
+- **Escape:** fly through the course to the finish. Beat your best score; the ghost of your best run flies with you.
 - **Survive:** a round arena that only gets busier. Your score is how long you last, to the millisecond. The day seeds every missile and rock, so you can practise it.
 
 ## Run it
@@ -44,6 +44,10 @@ Open the dev server with `?playtest=1` to turn it on (it sticks in that browser)
 The view widens to fill wide screens (H is always 640, W goes from 960 to 1440). Everything that shapes the game uses a
 fixed 960-wide **play frame** (`playFrame()` in `core/camera.js`) instead of the visible width: where pursuers spawn,
 when the course ahead is generated, and what is culled. A wide phone shows more of the same game; it doesn't play a different one.
+
+Held upright (one-handed play), the view is turned a quarter turn rather than shrunk: the same W×H world, drawn so the
+course runs along the screen's length (`core/screen-mapping.js`). Screen-space UI lays out in `view.w × view.h`; touch
+and keys are screen directions, turned into the world in `core/input.js`.
 
 ## Shipping notes
 
