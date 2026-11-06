@@ -10,3 +10,19 @@ database_name = "space-chase-leaderboard"
 # Local development (`npm run dev`) works with the placeholder.
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
+
+# Per address, per minute (src/rate-limits.js). One home network counts as one address, so these leave room for a
+# whole household: a run sends one score, a menu visit reads two boards. namespace_id: any number unique in the account.
+[[ratelimits]]
+name = "SCORE_WRITES"
+namespace_id = "7101"
+simple = { limit = 20, period = 60 }
+
+[[ratelimits]]
+name = "SCORE_READS"
+namespace_id = "7102"
+simple = { limit = 120, period = 60 }
+
+# Once a day at 03:30 UTC, delete days older than 30 (src/cleanup.js).
+[triggers]
+crons = ["30 3 * * *"]

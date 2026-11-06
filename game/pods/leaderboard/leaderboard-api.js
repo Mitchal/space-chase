@@ -3,16 +3,18 @@
 import { LEADERBOARD_URL } from './leaderboard-url.js';
 
 const TIMEOUT_MS = 6000;
+const NAME_REFUSED = 422; // the Worker's answer to a name it won't show: {error: 'name'}, so the game can ask again
+export const nameRefused = answer => answer?.error === 'name';
 
 async function call(path, init) {
   const stop = new AbortController(), timer = setTimeout(() => stop.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(LEADERBOARD_URL + path, { ...init, signal: stop.signal });
-    return res.ok ? await res.json() : null;
+    return res.ok || res.status === NAME_REFUSED ? await res.json() : null;
   } catch { return null; } finally { clearTimeout(timer); }
 }
 
-// → { best, rank, players, top: [{name, score}] } or null. The board keeps each player's best of the day.
+// → { best, rank, players, top: [{name, score}] }, {error: 'name'} or null. The board keeps each player's best of the day.
 // was: the name before a rename, so that day's row moves to the new name instead of staying behind.
 export const postScore = ({ mode, day, name, score, was = null }) => call('/score', {
   method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mode, day, name, score, was }),

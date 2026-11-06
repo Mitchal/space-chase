@@ -1,20 +1,30 @@
 // Space Chase's leaderboard: today's best runs per daily challenge.
 //   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day;
-//                was: the name used before a rename, whose row for that day is dropped
+//                was: the name used before a rename, whose row for that day is dropped.
+//                422 {error: 'name'} when the name isn't allowed (name-filter.js), so the game can ask for another.
 //   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{name, score}]}
+// Too many calls from one address in a minute: 429 (rate-limits.js). Once a day, old days are deleted (cleanup.js).
 import { originAllowed, corsHeaders } from './cors.js';
 import { cleanMode, cleanDay, cleanName, cleanScore, nameKey } from './score-rules.js';
+import { nameAllowed } from './name-filter.js';
+import { overLimit } from './rate-limits.js';
+import { dropOldDays } from './cleanup.js';
 import { saveBest, dropRow, rankOf, topScores, playerCount } from './scores-db.js';
 
+const MAX_BODY = 1024; // bytes; a real score is about 100
 const json = (body, status, cors) => new Response(JSON.stringify(body), {
   status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...cors },
 });
 
 async function postScore(request, env, cors) {
+  const text = await request.text();
+  if (text.length > MAX_BODY) return json({ error: 'too big' }, 413, cors);
   let body;
-  try { body = await request.json(); } catch { return json({ error: 'expected JSON' }, 400, cors); }
-  const mode = cleanMode(body?.mode), day = cleanDay(body?.day), name = cleanName(body?.name), score = cleanScore(body?.score);
-  if (!mode || !day || !name || score === null) return json({ error: 'bad mode, day, name or score' }, 400, cors);
+  try { body = JSON.parse(text); } catch { return json({ error: 'expected JSON' }, 400, cors); }
+  const mode = cleanMode(body?.mode), day = cleanDay(body?.day), score = cleanScore(body?.score);
+  if (!mode || !day || score === null) return json({ error: 'bad mode, day or score' }, 400, cors);
+  const name = cleanName(body?.name);
+  if (!name || !nameAllowed(name)) return json({ error: 'name' }, 422, cors);
   const where = { mode, day }, key = nameKey(name), was = cleanName(body?.was);
   if (was && nameKey(was) !== key) await dropRow(env.DB, { ...where, key: nameKey(was) });
   const best = await saveBest(env.DB, { ...where, key, name, score });
@@ -30,19 +40,25 @@ async function getTop(url, env, cors) {
   return json({ mode, day, players, top }, 200, cors);
 }
 
+const ROUTES = { 'POST /score': [postScore, 'write'], 'GET /top': [(req, env, cors, url) => getTop(url, env, cors), 'read'] };
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('origin'), cors = corsHeaders(origin);
     if (!originAllowed(origin)) return json({ error: 'origin not allowed' }, 403, {});
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    const url = new URL(request.url);
+    const url = new URL(request.url), route = ROUTES[`${request.method} ${url.pathname}`];
+    if (!route) return json({ error: 'not found' }, 404, cors);
     try {
-      if (url.pathname === '/score' && request.method === 'POST') return await postScore(request, env, cors);
-      if (url.pathname === '/top' && request.method === 'GET') return await getTop(url, env, cors);
-      return json({ error: 'not found' }, 404, cors);
+      if (await overLimit(request, env, route[1])) return json({ error: 'slow down' }, 429, cors);
+      return await route[0](request, env, cors, url);
     } catch (err) {
       console.error(err);
       return json({ error: 'server error' }, 500, cors);
     }
+  },
+
+  async scheduled(event, env) {
+    console.log(`cleanup: removed ${await dropOldDays(env.DB)} old rows`);
   },
 };

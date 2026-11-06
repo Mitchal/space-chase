@@ -3,7 +3,9 @@
 import { esc } from './board-view.js';
 import { NAME_MAX, loadName, saveName } from './player-record.js';
 
-export const nameFormHtml = (prompt, current = '') => `<form class="lb-form" data-lb-name>
+// problem: why the last name didn't go through, shown above the box.
+export const nameFormHtml = (prompt, current = '', problem = '') => `${problem ? `<div class="lb-problem">${esc(problem)}</div>` : ''}
+  <form class="lb-form" data-lb-name>
   <input name="n" maxlength="${NAME_MAX}" placeholder="${esc(prompt)}" value="${esc(current)}" autocomplete="nickname"
     enterkeyhint="done" aria-label="Your name on the board">
   <button class="main" type="submit">Join</button></form>`;

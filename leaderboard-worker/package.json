@@ -1,6 +1,7 @@
 {
   "name": "space-chase-leaderboard",
   "private": true,
+  "type": "module",
   "description": "Space Chase's leaderboard: one Cloudflare Worker and a D1 database (free tier).",
   "scripts": {
     "dev": "wrangler dev --port 8787",

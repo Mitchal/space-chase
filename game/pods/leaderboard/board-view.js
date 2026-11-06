@@ -18,6 +18,7 @@ document.head.insertAdjacentHTML('beforeend', `<style>
   font:inherit;-webkit-user-select:text;user-select:text}
 .lb-form button{padding:7px 14px}
 .lb-foot{margin-top:6px}
+.lb-problem{color:var(--warn);font-size:12px;margin-top:6px}
 @media (max-height:480px){.lb{margin:6px 0 0;padding:6px 12px}.lb-row{line-height:1.4}}
 /* Short and narrow, the results board sits under the score: only the top three (and you). Short and wide, it sits
    beside the score (results-screen) with room for all five. */

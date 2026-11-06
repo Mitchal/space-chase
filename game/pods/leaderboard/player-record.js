@@ -12,6 +12,8 @@ export const today = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() 
 export const loadName = () => { const n = readSaved(NAME_KEY); return typeof n === 'string' && n ? n : null; };
 export const cleanName = n => [...String(n).replace(/\s+/g, ' ').trim()].slice(0, NAME_MAX).join('');
 export function saveName(n) { const name = cleanName(n); if (name) writeSaved(NAME_KEY, name); return name || null; }
+// Puts back the name from before a refused one (or none: the board asks again).
+export const restoreName = was => writeSaved(NAME_KEY, was || null);
 
 function loadBests(day) {
   const b = readSaved(BESTS_KEY);
