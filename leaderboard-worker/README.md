@@ -55,7 +55,7 @@ npm run db:local
 npm run dev
 ```
 
-To run the hourly job by hand while it's running: `curl "http://127.0.0.1:8787/__scheduled?cron=5+*+*+*+*"`.
+To run the hourly job by hand while it's running: `curl "http://127.0.0.1:8787/__scheduled?cron=35+*+*+*+*"`.
 
 Then start the game as usual (`npm run dev` in the repo root) and open
 http://localhost:8765/?leaderboard=http://127.0.0.1:8787 to play against the local board. The `?leaderboard=` switch
@@ -74,9 +74,10 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   household on one Wi-Fi counts as one address, which these numbers allow for. Requests refused this way still count
   towards the free plan's 100,000 a day; if that's ever used up, the board stops showing until the next day and the
   game carries on without it.
-- **When a day closes:** players send their own local date, so a date is being played somewhere for about 50 hours.
-  A day takes scores until 14:00 UTC the next day (15:00 in Sweden in winter), then it's final (`src/day-close.js`).
-- **Every hour** (`[triggers]` in `wrangler.toml`): each closed day's top five per challenge is copied into the
+- **When a day closes:** the game's day is Sweden's date for everyone, so each day's course and board turn over at
+  midnight in Sweden. A run already flying at midnight still counts for the day it started if it lands within 30
+  minutes; then the day is final (`src/day-close.js`, and `game/core/game-day.js` in the game).
+- **Every hour at half past** (`[triggers]` in `wrangler.toml`): each closed day's top five per challenge is copied into the
   `podium` table and kept for good (`src/podium-db.js`); then scores rows older than 30 days are deleted
   (`src/cleanup.js`). The privacy page describes both, so change them together.
 - **No anti-cheat:** anyone who looks at the game's code can send a made-up score from a terminal. If that happens,

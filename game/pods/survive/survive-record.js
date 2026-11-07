@@ -1,9 +1,10 @@
 // Today's Survive challenge: the date that seeds it, your tries, and your longest run today (in milliseconds).
 // Kept in this browser (or app). Lifetime bests are the stats pod's job.
+import { gameToday } from '../../core/game-day.js';
+
 const KEY = 'spacechase.survive.v1';
 
-const pad = n => String(n).padStart(2, '0');
-export const today = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+export const today = gameToday; // the game's day: it turns over at midnight in Sweden (core/game-day.js)
 
 export function loadRecord(day = today()) {
   try {

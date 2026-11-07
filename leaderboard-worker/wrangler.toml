@@ -23,7 +23,8 @@ name = "SCORE_READS"
 namespace_id = "7102"
 simple = { limit = 120, period = 60 }
 
-# Every hour: keep the top five of each day that has closed (src/podium-db.js), then delete days older than 30
-# (src/cleanup.js).
+# Every hour at half past: keep the top five of each day that has closed (src/podium-db.js), then delete days older
+# than 30 (src/cleanup.js). A day closes at midnight in Sweden plus 30 minutes for runs still flying (src/day-close.js),
+# so the night's run at :35 keeps it right away.
 [triggers]
-crons = ["5 * * * *"]
+crons = ["35 * * * *"]

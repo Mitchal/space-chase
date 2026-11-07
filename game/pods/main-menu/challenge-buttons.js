@@ -2,6 +2,7 @@
 // mode's own notes (today's best, tries). Two challenges a day, side by side (his pick, 2026-11-05).
 import { content } from '../../core/registry.js';
 import { modeList, modeNotes } from '../../core/game-modes.js';
+import { gameToday, dayDate } from '../../core/game-day.js';
 
 document.head.insertAdjacentHTML('beforeend', `<style>
 .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
@@ -15,7 +16,7 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 @media (max-height:480px){.modes{margin-top:6px;gap:8px}.mode-play{padding:7px 8px}.mode-name{font-size:17px}.mode-tag{display:none}}
 </style>`);
 
-const dayLabel = () => new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short' }).toUpperCase();
+const dayLabel = () => dayDate(gameToday()).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }).toUpperCase();
 
 // Fills el with the card; onPlay(modeId) when a button is pressed. Without any mode pod, a plain Play button.
 export function renderChallenges(el, onPlay) {

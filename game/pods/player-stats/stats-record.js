@@ -3,8 +3,7 @@
 // v1 records from before game modes (one flat high score) were all Escape runs: they're read as the 'flight' mode's.
 const KEY = 'spacechase.stats.v1', KEEP_DAYS = 35, LEGACY_MODE = 'flight';
 
-const pad = n => String(n).padStart(2, '0');
-export const dayOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+import { gameToday, shiftDay, dayDate } from '../../core/game-day.js';
 
 const emptyMode = () => ({ best: null, bestDay: null, days: {} });
 
@@ -17,7 +16,7 @@ export function loadStats() {
 }
 
 // Adds one finished run in a mode (higher scores are better); returns the updated record.
-export function noteRun(mode, score, escaped, day = dayOf(new Date())) {
+export function noteRun(mode, score, escaped, day = gameToday()) {
   const s = loadStats(), m = s.modes[mode] ||= emptyMode();
   s.runs++;
   if (escaped) s.escapes++;
@@ -29,10 +28,10 @@ export function noteRun(mode, score, escaped, day = dayOf(new Date())) {
   return s;
 }
 
-// The last n days ending today, oldest first: [{ day, date }].
-export function lastDays(n = 7, now = new Date()) {
+// The last n game days ending today, oldest first: [{ day, date }].
+export function lastDays(n = 7, today = gameToday()) {
   return Array.from({ length: n }, (_, i) => {
-    const date = new Date(now); date.setHours(12, 0, 0, 0); date.setDate(date.getDate() - (n - 1 - i));
-    return { day: dayOf(date), date };
+    const day = shiftDay(today, i - (n - 1));
+    return { day, date: dayDate(day) };
   });
 }

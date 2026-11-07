@@ -58,6 +58,14 @@ function grid(month, ctx) {
   return `<div class="lbc-grid">${WEEKDAYS.map(w => `<div class="lbc-wd">${esc(w)}</div>`).join('')}${cells.join('')}</div>`;
 }
 
+// An open day closes at midnight in Sweden: "midnight" where that's local midnight, else the local time.
+function openUntil(closes) {
+  const at = new Date(closes);
+  if (at <= Date.now()) return 'closing';
+  if (!at.getHours() && !at.getMinutes()) return 'open until midnight';
+  return `open until ${at.toLocaleString(undefined, { weekday: 'short', hour: '2-digit', minute: '2-digit' })}`;
+}
+
 const rank = i => i < 3 ? MEDALS[i] : i + 1;
 function modeColumn(mode, rows, you) {
   const list = rows?.length ? rows.map((r, i) => `<div class="lb-row${sameName(r.name, you) ? ' you' : ''}"><span class="lb-rank">${rank(i)}</span>
@@ -70,8 +78,7 @@ function dayBoard(day, { data, modes, you, today }) {
   if (data === undefined) return '<div class="lbc-day lb-empty">Loading…</div>';
   if (data === null) return '<div class="lbc-day lb-empty">Can\'t reach the board right now.</div>';
   const entry = data.days[day];
-  const when = entry && !entry.final ? `open until ${new Date(entry.closes).toLocaleString(undefined, { weekday: 'short', hour: '2-digit', minute: '2-digit' })}`
-    : entry ? 'final' : '';
+  const when = entry && !entry.final ? openUntil(entry.closes) : entry ? 'final' : '';
   const body = entry ? `<div class="lb-cols">${modes.map(m => modeColumn(m, entry.modes[m.id], you)).join('')}</div>`
     : `<div class="lb-empty">${day === today ? 'nobody yet today' : 'nobody played that day'}</div>`;
   return `<div class="lbc-day"><div class="lb-head"><span>${esc(longDay(day).toUpperCase())}</span><span class="dim">${esc(when)}</span></div>${body}</div>`;

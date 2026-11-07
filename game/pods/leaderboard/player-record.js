@@ -2,12 +2,12 @@
 // sent (the board keeps the higher of what it has and what it gets), so a run that didn't reach the board, offline or
 // before a name was picked, still counts the next time anything is sent.
 import { readSaved, writeSaved } from '../../core/storage.js';
+import { gameToday } from '../../core/game-day.js';
 
 const NAME_KEY = 'spacechase.boardName.v1', BESTS_KEY = 'spacechase.boardBests.v1';
 export const NAME_MAX = 16; // the Worker allows the same
 
-const pad = n => String(n).padStart(2, '0');
-export const today = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+export const today = gameToday; // the game's day: it turns over at midnight in Sweden (core/game-day.js)
 
 export const loadName = () => { const n = readSaved(NAME_KEY); return typeof n === 'string' && n ? n : null; };
 export const cleanName = n => [...String(n).replace(/\s+/g, ' ').trim()].slice(0, NAME_MAX).join('');

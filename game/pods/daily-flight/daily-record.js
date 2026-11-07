@@ -2,11 +2,11 @@
 // days played in a row. Kept in this browser (or app).
 const KEY = 'lure.daily.v1', STREAK_KEY = 'lure.dailyStreak.v1';
 
-const pad = n => String(n).padStart(2, '0');
-const dayOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-export const today = () => dayOf(new Date());
-export const dayLabel = day => new Date(day + 'T12:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-const dayBefore = day => { const d = new Date(day + 'T12:00'); d.setDate(d.getDate() - 1); return dayOf(d); };
+import { gameToday, shiftDay, dayDate } from '../../core/game-day.js';
+
+export const today = gameToday; // the game's day: it turns over at midnight in Sweden (core/game-day.js)
+export const dayLabel = day => dayDate(day).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const dayBefore = day => shiftDay(day, -1);
 
 const read = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
 const write = (key, v) => { try { localStorage.setItem(key, JSON.stringify(v)); } catch {} };
