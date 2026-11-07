@@ -54,10 +54,10 @@ export function menuCard(columns, you, { medals = '', news = '' } = {}) {
     ${!board ? '<div class="lb-empty">–</div>' : board.top.length ? rows(board.top, { fmt: mode.fmt, you, limit: 3 })
       : '<div class="lb-empty">nobody yet today</div>'}</div>`).join('');
   const calendar = `<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅${medals ? '' : ' Past days'}</a>`;
-  // On short screens there's only the leaders line: just the calendar, so the leaders keep their room.
+  // On short screens there's only the leaders line: your medal count (which opens the calendar too), or else the 📅.
   return `<div class="lb lb-full">${news}<div class="lb-head"><span>TODAY'S LEADERBOARD</span><span class="dim">${medals} ${calendar}</span></div>
     <div class="lb-cols">${cols}</div></div>
-    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅</a></div>`;
+    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}${medals || `<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅</a>`}</div>`;
 }
 
 // One challenge's leader for the short-screen line: "ESCAPE Anna 7,300".
