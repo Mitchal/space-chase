@@ -46,14 +46,18 @@ const row = (rank, name, score, you, extra = false) => `<div class="lb-row${you 
   <span class="lb-name" title="${esc(name)}">${esc(name)}</span><span class="lb-score">${esc(score)}</span></div>`;
 
 // columns: [{ mode: {label, color, fmt}, board: {players, top} | null }] in menu order. '' when the board can't be reached.
-export function menuCard(columns, you) {
+// medals: your medal count (HTML, may be ''); news: a line about new trophies (HTML, may be '').
+export function menuCard(columns, you, { medals = '', news = '' } = {}) {
   if (!columns.some(c => c.board)) return '';
   const cols = columns.map(({ mode, board }) => `<div>
     <div class="lb-mode" style="color:${mode.color}">${esc(mode.label.toUpperCase())}</div>
     ${!board ? '<div class="lb-empty">–</div>' : board.top.length ? rows(board.top, { fmt: mode.fmt, you, limit: 3 })
       : '<div class="lb-empty">nobody yet today</div>'}</div>`).join('');
-  return `<div class="lb lb-full"><div class="lb-head">TODAY'S LEADERBOARD</div><div class="lb-cols">${cols}</div></div>
-    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}</div>`;
+  const calendar = `<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅${medals ? '' : ' Past days'}</a>`;
+  // On short screens there's only the leaders line: just the calendar, so the leaders keep their room.
+  return `<div class="lb lb-full">${news}<div class="lb-head"><span>TODAY'S LEADERBOARD</span><span class="dim">${medals} ${calendar}</span></div>
+    <div class="lb-cols">${cols}</div></div>
+    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅</a></div>`;
 }
 
 // One challenge's leader for the short-screen line: "ESCAPE Anna 7,300".

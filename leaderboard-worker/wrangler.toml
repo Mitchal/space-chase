@@ -23,6 +23,7 @@ name = "SCORE_READS"
 namespace_id = "7102"
 simple = { limit = 120, period = 60 }
 
-# Once a day at 03:30 UTC, delete days older than 30 (src/cleanup.js).
+# Every hour: keep the top five of each day that has closed (src/podium-db.js), then delete days older than 30
+# (src/cleanup.js).
 [triggers]
-crons = ["30 3 * * *"]
+crons = ["5 * * * *"]

@@ -23,6 +23,9 @@ export function cleanName(n) {
   return s.length >= 1 && [...s].length <= NAME_MAX ? s : null;
 }
 
+// A calendar month, YYYY-MM.
+export const cleanMonth = m => typeof m === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(m) ? m : null;
+
 export const cleanScore = s => Number.isInteger(s) && s >= 0 && s <= MAX_SCORE ? s : null;
 
 export const nameKey = name => name.toLocaleLowerCase('en');

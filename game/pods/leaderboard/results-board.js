@@ -8,6 +8,8 @@ import { postScore, fetchTop, nameRefused } from './leaderboard-api.js';
 import { loadName, restoreName, bestsOn } from './player-record.js';
 import { resultCard } from './board-view.js';
 import { nameFormHtml, whoHtml, wireNameForm } from './name-form.js';
+import { trophies } from './trophy-record.js';
+import { medalCounts } from './trophy-view.js';
 
 const REFUSED = "That name can't be used on the board. Try another.";
 let pending = null, panel = null;
@@ -31,7 +33,7 @@ function show(el, board) {
   const def = modeById(board.mode), name = loadName(), retry = board.retry;
   const mode = { label: def?.label ?? board.mode, color: def?.color ?? 'var(--ghost)', fmt: n => formatScore(n, def) };
   const foot = retry ? nameFormHtml('Your name', retry.typed, retry.problem)
-    : name ? whoHtml(name) : nameFormHtml('Your name, to join the board');
+    : name ? whoHtml(name, medalCounts(trophies())) : nameFormHtml('Your name, to join the board');
   el.innerHTML = resultCard(mode, board, name, foot);
   wireNameForm(el, (newName, was) => join(el, board, newName, was));
 }

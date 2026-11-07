@@ -1,7 +1,8 @@
 # Space Chase leaderboard
 
 A small Cloudflare Worker with a D1 (SQLite) database. It keeps each player's best score per daily challenge per day,
-and the game shows today's top scores on the main menu and under the results. It runs on Cloudflare's free plan
+and the game shows today's top scores on the main menu and under the results. Each day's top five is kept for good:
+the game's calendar shows any past day, and places 1 to 3 are that player's gold, silver and bronze trophies. It runs on Cloudflare's free plan
 (100,000 requests a day, which is roughly a thousand daily players) and never goes to sleep.
 
 Until its address is in `game/pods/leaderboard/leaderboard-url.js`, the game has no board and works exactly as before.
@@ -25,10 +26,11 @@ All commands run in this folder (`leaderboard-worker/`).
    ```
    It prints a `database_id`. Paste it into `wrangler.toml` in place of `00000000-0000-0000-0000-000000000000`.
    (If wrangler offers to add the database to the config for you, say no: it's already there.)
-5. **Create the table:**
+5. **Create the tables:**
    ```bash
    npm run db:remote
    ```
+   Run it again whenever `migrations/` gets a new file, before deploying.
 6. **Deploy:**
    ```bash
    npm run deploy
@@ -53,6 +55,8 @@ npm run db:local
 npm run dev
 ```
 
+To run the hourly job by hand while it's running: `curl "http://127.0.0.1:8787/__scheduled?cron=5+*+*+*+*"`.
+
 Then start the game as usual (`npm run dev` in the repo root) and open
 http://localhost:8765/?leaderboard=http://127.0.0.1:8787 to play against the local board. The `?leaderboard=` switch
 only works on localhost. The local database lives in `.wrangler/`; delete that folder to start over.
@@ -70,13 +74,23 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   household on one Wi-Fi counts as one address, which these numbers allow for. Requests refused this way still count
   towards the free plan's 100,000 a day; if that's ever used up, the board stops showing until the next day and the
   game carries on without it.
-- **Old days:** once a day (03:30 UTC) rows older than 30 days are deleted (`src/cleanup.js`, `[triggers]` in
-  `wrangler.toml`). The privacy page promises 30 days, so change both together.
+- **When a day closes:** players send their own local date, so a date is being played somewhere for about 50 hours.
+  A day takes scores until 14:00 UTC the next day (15:00 in Sweden in winter), then it's final (`src/day-close.js`).
+- **Every hour** (`[triggers]` in `wrangler.toml`): each closed day's top five per challenge is copied into the
+  `podium` table and kept for good (`src/podium-db.js`); then scores rows older than 30 days are deleted
+  (`src/cleanup.js`). The privacy page describes both, so change them together.
 - **No anti-cheat:** anyone who looks at the game's code can send a made-up score from a terminal. If that happens,
   remove the row (below).
 - **Remove a row** (a test name, a made-up score, a rude name, or someone asking to be removed):
   ```bash
   npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM scores WHERE name_key = 'test'"
+  ```
+  If the day has already closed, its top five is kept separately too. Remove the name there as well, then delete that
+  day's kept rows so the next hourly run rebuilds them from the scores (and whoever was 6th moves up). This works for
+  days under 30 days old; for older ones, only the name's rows go:
+  ```bash
+  npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM podium WHERE name_key = 'test'"
+  npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM podium WHERE day = '2026-11-06' AND mode = 'flight'"
   ```
 - **See everything from one day:**
   ```bash
@@ -89,5 +103,10 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   `{best, rank, players, top}`. `was` is the name used before a rename: that name's row for the day is dropped.
   A refused name gets 422 `{"error":"name"}`; too many calls from one address get 429.
 - `GET /top?mode=flight&day=2026-11-06` returns `{players, top: [{name, score}]}`, the top ten.
+- `GET /month?m=2026-11` returns every day of that month that anyone played, with its top five per challenge:
+  `{month, days: {"2026-11-06": {final, closes?, modes: {flight: [{name, score}], survive: [...]}}}}`. `final` means the
+  day has stopped taking scores; an open day has `closes` (ms since 1970).
+- `GET /trophies?name=Anna` returns `{trophies: [{mode, day, place}]}`: that name's places 1 to 3, newest first.
+- A score for a day that has closed gets 409 `{"error":"closed"}`.
 
 `mode` is the game mode's id: `flight` (Escape, in points) or `survive` (milliseconds). Higher is better in both.

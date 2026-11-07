@@ -2,19 +2,23 @@
 //   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day;
 //                was: the name used before a rename, whose row for that day is dropped.
 //                422 {error: 'name'} when the name isn't allowed (name-filter.js), so the game can ask for another.
+//                409 {error: 'closed'} once that day has stopped taking scores (day-close.js).
 //   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{name, score}]}
-// Too many calls from one address in a minute: 429 (rate-limits.js). Once a day, old days are deleted (cleanup.js).
+//   GET  /month, GET /trophies: the calendar of past days (history-routes.js).
+// Too many calls from one address in a minute: 429 (rate-limits.js). Every hour, closed days' top fives are kept for
+// good (podium-db.js), and days over 30 days old are deleted (cleanup.js).
 import { originAllowed, corsHeaders } from './cors.js';
 import { cleanMode, cleanDay, cleanName, cleanScore, nameKey } from './score-rules.js';
 import { nameAllowed } from './name-filter.js';
 import { overLimit } from './rate-limits.js';
 import { dropOldDays } from './cleanup.js';
 import { saveBest, dropRow, rankOf, topScores, playerCount } from './scores-db.js';
+import { dayOpen, lastClosedDay } from './day-close.js';
+import { archiveClosedDays } from './podium-db.js';
+import { getMonth, getTrophies } from './history-routes.js';
+import { json } from './json-response.js';
 
 const MAX_BODY = 1024; // bytes; a real score is about 100
-const json = (body, status, cors) => new Response(JSON.stringify(body), {
-  status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...cors },
-});
 
 async function postScore(request, env, cors) {
   const text = await request.text();
@@ -23,6 +27,7 @@ async function postScore(request, env, cors) {
   try { body = JSON.parse(text); } catch { return json({ error: 'expected JSON' }, 400, cors); }
   const mode = cleanMode(body?.mode), day = cleanDay(body?.day), score = cleanScore(body?.score);
   if (!mode || !day || score === null) return json({ error: 'bad mode, day or score' }, 400, cors);
+  if (!dayOpen(day)) return json({ error: 'closed' }, 409, cors);
   const name = cleanName(body?.name);
   if (!name || !nameAllowed(name)) return json({ error: 'name' }, 422, cors);
   const where = { mode, day }, key = nameKey(name), was = cleanName(body?.was);
@@ -40,7 +45,12 @@ async function getTop(url, env, cors) {
   return json({ mode, day, players, top }, 200, cors);
 }
 
-const ROUTES = { 'POST /score': [postScore, 'write'], 'GET /top': [(req, env, cors, url) => getTop(url, env, cors), 'read'] };
+const ROUTES = {
+  'POST /score': [postScore, 'write'],
+  'GET /top': [(req, env, cors, url) => getTop(url, env, cors), 'read'],
+  'GET /month': [(req, env, cors, url) => getMonth(url, env, cors), 'read'],
+  'GET /trophies': [(req, env, cors, url) => getTrophies(url, env, cors), 'read'],
+};
 
 export default {
   async fetch(request, env) {
@@ -58,7 +68,9 @@ export default {
     }
   },
 
+  // Hourly: keep the top fives of days that have closed, then forget old days (in that order, so nothing is missed).
   async scheduled(event, env) {
-    console.log(`cleanup: removed ${await dropOldDays(env.DB)} old rows`);
+    const kept = await archiveClosedDays(env.DB, lastClosedDay());
+    console.log(`podium: kept ${kept} rows; cleanup: removed ${await dropOldDays(env.DB)} old rows`);
   },
 };

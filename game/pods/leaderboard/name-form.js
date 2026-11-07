@@ -10,8 +10,9 @@ export const nameFormHtml = (prompt, current = '', problem = '') => `${problem ?
     enterkeyhint="done" aria-label="Your name on the board">
   <button class="main" type="submit">Join</button></form>`;
 
-export const whoHtml = name => `<span class="dim small">on the board as <b>${esc(name)}</b> ·
-  <a href="#" data-lb-rename>change</a></span>`;
+// medals: your medal count (HTML, may be '').
+export const whoHtml = (name, medals = '') => `<span class="dim small">on the board as <b>${esc(name)}</b> ·
+  <a href="#" data-lb-rename>change</a></span>${medals ? ` <span class="small">${medals}</span>` : ''}`;
 
 // Wires the form and the change link inside el. onName(name, was) gets the saved name and the one before it, if any.
 export function wireNameForm(el, onName) {
