@@ -1,6 +1,6 @@
 {
   "name": "space-chase",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "private": true,
   "description": "Space Chase: you can't attack. Lead your pursuers into rocks, walls and each other. A daily course every day.",
   "scripts": {
