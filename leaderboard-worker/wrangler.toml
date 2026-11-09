@@ -23,6 +23,22 @@ name = "SCORE_READS"
 namespace_id = "7102"
 simple = { limit = 120, period = 60 }
 
+# Asking for a login code and typing it in (src/auth/auth-routes.js). A login is two or three of these; the cap stops
+# one address from mailing codes to many inboxes or guessing codes. Each email also gets at most 5 codes an hour.
+[[ratelimits]]
+name = "AUTH_REQUESTS"
+namespace_id = "7103"
+simple = { limit = 10, period = 60 }
+
+# Who sends the login-code emails (src/email/send-login-code.js): "resend" or "mailgun", once one is set up (README,
+# "Login emails"). Left empty, logging in is switched off (the boards still show). `npm run dev` uses "log" instead,
+# which prints codes to the console. The provider's API key is a secret, never in this file: `npx wrangler secret put`.
+[vars]
+EMAIL_PROVIDER = ""
+EMAIL_FROM = "Space Chase <login@spacechase.mikaelbrandt.com>"
+MAILGUN_DOMAIN = "spacechase.mikaelbrandt.com"
+MAILGUN_REGION = "eu"
+
 # Every hour at half past: keep the top five of each day that has closed (src/podium-db.js), then delete days older
 # than 30 (src/cleanup.js). A day closes at midnight in Sweden plus 30 minutes for runs still flying (src/day-close.js),
 # so the night's run at :35 keeps it right away.

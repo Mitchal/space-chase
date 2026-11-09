@@ -1,26 +1,32 @@
-// Space Chase's leaderboard: today's best runs per daily challenge.
-//   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day;
-//                was: the name used before a rename, whose row for that day is dropped.
-//                422 {error: 'name'} when the name isn't allowed (name-filter.js), so the game can ask for another.
+// Space Chase's leaderboard: today's best runs per daily challenge, posted by players logged in with their email.
+//   POST /score  {mode, day, score}  → {best, rank, players, top}   keeps each player's best of the day. Needs
+//                "Authorization: Bearer <token>" (auth/auth-routes.js): 401 {error: 'login'} without a working one,
+//                422 {error: 'no name'} while the account has no name yet (accounts/profile-routes.js).
 //                409 {error: 'closed'} once that day has stopped taking scores (day-close.js).
-//   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{name, score}]}
+//   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{id, name, score}]}
 //   GET  /month, GET /trophies: the calendar of past days (history-routes.js).
+//   POST /auth/start, /auth/verify, /auth/logout: logging in with an emailed code (auth/auth-routes.js).
+//   GET, POST, DELETE /me: your account (accounts/profile-routes.js).
 // Too many calls from one address in a minute: 429 (rate-limits.js). Every hour, closed days' top fives are kept for
-// good (podium-db.js), and days over 30 days old are deleted (cleanup.js).
+// good (podium-db.js), and old days, expired sessions and spent login codes are deleted (cleanup.js).
 import { originAllowed, corsHeaders } from './cors.js';
-import { cleanMode, cleanDay, cleanName, cleanScore, nameKey } from './score-rules.js';
-import { nameAllowed } from './name-filter.js';
+import { cleanMode, cleanDay, cleanScore } from './score-rules.js';
 import { overLimit } from './rate-limits.js';
-import { dropOldDays } from './cleanup.js';
-import { saveBest, dropRow, rankOf, topScores, playerCount } from './scores-db.js';
+import { cleanUp } from './cleanup.js';
+import { saveBest, rankOf, topScores, playerCount } from './scores-db.js';
 import { dayOpen, lastClosedDay } from './day-close.js';
 import { archiveClosedDays } from './podium-db.js';
 import { getMonth, getTrophies } from './history-routes.js';
+import { postStart, postVerify, postLogout } from './auth/auth-routes.js';
+import { sessionPlayer } from './auth/sessions-db.js';
+import { getMe, postMe, deleteMe, loginNeeded } from './accounts/profile-routes.js';
 import { json } from './json-response.js';
 
 const MAX_BODY = 1024; // bytes; a real score is about 100
 
 async function postScore(request, env, cors) {
+  const player = await sessionPlayer(request, env.DB);
+  if (!player) return loginNeeded(cors);
   const text = await request.text();
   if (text.length > MAX_BODY) return json({ error: 'too big' }, 413, cors);
   let body;
@@ -28,11 +34,9 @@ async function postScore(request, env, cors) {
   const mode = cleanMode(body?.mode), day = cleanDay(body?.day), score = cleanScore(body?.score);
   if (!mode || !day || score === null) return json({ error: 'bad mode, day or score' }, 400, cors);
   if (!dayOpen(day)) return json({ error: 'closed' }, 409, cors);
-  const name = cleanName(body?.name);
-  if (!name || !nameAllowed(name)) return json({ error: 'name' }, 422, cors);
-  const where = { mode, day }, key = nameKey(name), was = cleanName(body?.was);
-  if (was && nameKey(was) !== key) await dropRow(env.DB, { ...where, key: nameKey(was) });
-  const best = await saveBest(env.DB, { ...where, key, name, score });
+  if (!player.name) return json({ error: 'no name' }, 422, cors);
+  const where = { mode, day };
+  const best = await saveBest(env.DB, { ...where, playerId: player.id, score });
   const [rank, players, top] = await Promise.all([rankOf(env.DB, where, best), playerCount(env.DB, where), topScores(env.DB, where)]);
   return json({ mode, day, best: best.score, rank, players, top }, 200, cors);
 }
@@ -50,6 +54,12 @@ const ROUTES = {
   'GET /top': [(req, env, cors, url) => getTop(url, env, cors), 'read'],
   'GET /month': [(req, env, cors, url) => getMonth(url, env, cors), 'read'],
   'GET /trophies': [(req, env, cors, url) => getTrophies(url, env, cors), 'read'],
+  'POST /auth/start': [postStart, 'auth'],
+  'POST /auth/verify': [postVerify, 'auth'],
+  'POST /auth/logout': [postLogout, 'write'],
+  'GET /me': [getMe, 'read'],
+  'POST /me': [postMe, 'write'],
+  'DELETE /me': [deleteMe, 'write'],
 };
 
 export default {
@@ -71,6 +81,6 @@ export default {
   // Hourly: keep the top fives of days that have closed, then forget old days (in that order, so nothing is missed).
   async scheduled(event, env) {
     const kept = await archiveClosedDays(env.DB, lastClosedDay());
-    console.log(`podium: kept ${kept} rows; cleanup: removed ${await dropOldDays(env.DB)} old rows`);
+    console.log(`podium: kept ${kept} rows; cleanup: removed ${JSON.stringify(await cleanUp(env.DB))}`);
   },
 };
