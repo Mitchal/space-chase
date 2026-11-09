@@ -4,6 +4,11 @@ import { randomBytes } from 'node:crypto';
 import worker from '../src/worker.js';
 import { swedishDay } from '../src/day-close.js';
 import { fakeD1 } from './fake-d1.js';
+import { SIM_VERSION } from '../../game/core/sim-version.js';
+import { encodeReplay } from '../../game/core/replay-codec.js';
+
+// Any well-formed replay: the Worker only checks its shape (the run checker replays it later).
+const REPLAY = encodeReplay(Array.from({ length: 600 }, () => ({ x: 64, y: 0, grip: 30 })));
 
 export const GAME = 'http://localhost:8765';
 export const today = () => swedishDay();
@@ -24,7 +29,7 @@ export async function call(env, method, path, { body, key, origin = GAME, header
 }
 
 export const postScore = (env, key, name, score, { mode = 'flight', day = today(), ...extra } = {}) =>
-  call(env, 'POST', '/score', { key, body: { mode, day, name, score, ...extra } });
+  call(env, 'POST', '/score', { key, body: { mode, day, name, score, simVersion: SIM_VERSION, replay: REPLAY, ...extra } });
 
 // The day's rows straight from the table: {name_key: score} for one challenge.
 export function rows(env, { mode = 'flight', day = today() } = {}) {

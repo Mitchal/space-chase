@@ -1,11 +1,12 @@
-// Between the screen and the world. The view can be turned in quarter turns (view.turn, set each frame by
+// host-only: between the screen and the world. The view can be turned in quarter turns (view.turn, set each frame by
 // core/canvas.js): on a tall screen (a phone held upright, for one-handed play) it's turned so the course runs along
 // the screen's length, and a mode may flip it end for end (world.flipView). The world, the play frame and the daily
 // course are exactly the same either way: only how they're shown changes.
 // Screen space: view.w × view.h game pixels, x right, y down, as the player sees it.
 // View space: W × H, the world through the camera (world.cam) before any turn. Ahead (+x) lands on the screen:
 //   turn 0: right · 1: up · 2: left · 3: down
-import { world, W, H } from './world.js';
+import { world, H } from './world.js';
+import { W } from './view-size.js';
 import { view, cvs } from './canvas.js';
 
 // Per turn: the canvas transform from view to screen [a, b, c, d, e, f] (x' = a·x + c·y + e, y' = b·x + d·y + f),

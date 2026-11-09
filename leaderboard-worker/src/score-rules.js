@@ -1,4 +1,5 @@
-// Light sanity checks only: well-formed input and plausible numbers. Not anti-cheat.
+// Light sanity checks: well-formed input and plausible numbers. The score itself is checked afterwards, by replaying
+// the run (run-check-routes.js).
 // Each check returns the cleaned value, or null when it doesn't pass.
 export const MAX_SCORE = 10_000_000; // points in Escape; milliseconds in Survive (that's 2¾ hours)
 export const NAME_MAX = 16;

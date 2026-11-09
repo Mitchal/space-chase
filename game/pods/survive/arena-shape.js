@@ -1,5 +1,7 @@
 // The arena: a circle centred on (0, 0), about four screens of floor. Its wall hurts you and kills missiles, like the
 // flight's death walls (P10: one set of rules).
+import { hypot } from '../../core/det-math.js';
+
 export const RADIUS = 850;
 const MARGIN = 250; // rocks start beyond the wall and leave the world this far out
 
@@ -13,7 +15,7 @@ export function chordAt(x) {
 
 // How far o pokes out through the wall (> 0: touching it), and the outward direction.
 export function wallContact(o) {
-  const d = Math.hypot(o.x, o.y) || 1;
+  const d = hypot(o.x, o.y) || 1;
   return { over: d + o.r - RADIUS, nx: o.x / d, ny: o.y / d };
 }
 

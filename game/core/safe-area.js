@@ -1,4 +1,4 @@
-// Where a phone's screen is really usable: notches, camera holes and rounded corners eat into its edges, so UI stays
+// host-only: where a phone's screen is really usable: notches, camera holes and rounded corners eat into its edges, so UI stays
 // inside these insets (his ask, 2026-11-04: "Move all UI in from the edges to avoid the notches and curves of the phone").
 // Sources, largest wins: CSS env(safe-area-inset-*) from the browser; window.__lureSafeArea, which the Android app sets
 // from the real cutout and corner sizes (then fires 'lure-safearea'); and a small minimum on touch screens.

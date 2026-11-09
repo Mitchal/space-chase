@@ -1,13 +1,14 @@
 // The warning before a pursuer enters (P5: run 33, "another one came from out of nowhere near the bottom of the
 // screen and killed me. Felt bad."). While a chaser is spawning (harmless and immune), a pulsing arrowhead sits on
 // the edge of the screen where it will come in, pointing at you; if the entry point is on screen, a ring closes on it.
-import { world, W, H } from '../../core/world.js';
+import { world, H } from '../../core/world.js';
+import { W } from '../../core/view-size.js';
 import { player } from '../../core/player.js';
 import { clamp } from '../../core/geometry.js';
 import { glowSprite, drawSprite } from '../../core/sprites.js';
 import { viewInset } from '../../core/screen-mapping.js';
+import { WARN_S } from './sim.js';
 
-export const WARN_S = 1.5;
 const INSET = 22;
 
 export function drawEntryWarning(ctx, e, color) {

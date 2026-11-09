@@ -12,3 +12,4 @@ release/
 android/keystore.properties
 *.jks
 *.keystore
+tests/out/

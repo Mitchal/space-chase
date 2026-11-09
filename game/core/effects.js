@@ -1,56 +1,17 @@
-// Juice: particles, floating text, screen shake and hit-stop. Any pod can trigger these.
-import { on } from './events.js';
-import { addSystem, addDrawer, ORDER, LAYER } from './registry.js';
-import { rand } from './geometry.js';
-import { H } from './world.js';
-import { hudFont, view } from './canvas.js';
-import { toScreen } from './screen-mapping.js';
-
+// Juice that the simulation asks for: particles, floating text, screen shake, hit-stop and slow-mo. Any pod can trigger
+// these. hitstop and slowmo are simulation time (core/sim-tick.js); everything else is only shown, by whatever the host
+// installs with showEffects (core/effects-view.js in the browser). A headless replay installs nothing, so it's free.
 export const fx = { shake: 0, hitstop: 0, slowmo: 0, slowScale: 1 };
-let parts = [], texts = [];
 
-export function burst(x, y, col, n = 16) {
-  for (let i = 0; i < n; i++) {
-    const a = Math.random() * Math.PI * 2, sp = rand(60, 260);
-    parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: rand(0.3, 0.7), col });
-  }
-}
+const shows = [];
+// view: { burst(x, y, col, n), floatText(x, y, s, opts), bigText(s, opts), clear() }
+export const showEffects = view => { shows.push(view); };
 
+export function burst(x, y, col, n = 16) { for (const v of shows) v.burst(x, y, col, n); }
 // floatText sits at a world position; bigText is a screen-centred banner (y in view pixels, 0..H: scaled to the screen).
-export function floatText(x, y, s, { col = '#e8ecf3', t = 0.9 } = {}) { texts.push({ x, y, s, col, t, big: false }); }
-export function bigText(s, { y = H / 2 - 110, col = '#e8ecf3', t = 1.6 } = {}) { texts.push({ x: null, y, s, col, t, big: true }); }
-export function clearEffects() { parts = []; texts = []; }
+export function floatText(x, y, s, opts = {}) { for (const v of shows) v.floatText(x, y, s, opts); }
+export function bigText(s, opts = {}) { for (const v of shows) v.bigText(s, opts); }
+export function clearEffects() { for (const v of shows) v.clear(); }
 
-// Every death gets a burst in the dead entity's own colour.
-on('kill', ({ e }) => burst(e.x, e.y, e.color || '#ffffff'));
-
-addSystem(ORDER.late, dt => {
-  for (const q of parts) { q.t -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.92; q.vy *= 0.92; }
-  parts = parts.filter(q => q.t > 0);
-  for (const t of texts) { t.t -= dt; if (!t.big) t.y -= 30 * dt; }
-  texts = texts.filter(t => t.t > 0);
-  fx.shake *= Math.pow(0.002, dt);
-}, { always: true });
-
-addDrawer(LAYER.effects, ctx => {
-  for (const q of parts) { ctx.globalAlpha = Math.min(1, q.t * 2); ctx.fillStyle = q.col; ctx.fillRect(q.x - 2, q.y - 2, 4, 4); }
-  ctx.globalAlpha = 1;
-});
-
-// Centred on the screen as it is now; shrunk to fit a narrow (upright) screen.
-function bigLine(ctx, t) {
-  const room = view.w - view.inset.left - view.inset.right - 32, w = ctx.measureText(t.s).width;
-  if (w > room) ctx.font = hudFont(30 * room / w, 700);
-  ctx.fillText(t.s, view.w / 2, t.y / H * view.h);
-}
-
-addDrawer(LAYER.overlay, ctx => {
-  ctx.textAlign = 'center';
-  for (const t of texts) {
-    ctx.globalAlpha = Math.min(1, t.t * 2); ctx.fillStyle = t.col;
-    ctx.font = t.big ? hudFont(30, 700) : hudFont(15, 700);
-    if (t.big) bigLine(ctx, t);
-    else { const p = toScreen(t.x, t.y); ctx.fillText(t.s, p.x, p.y); }
-  }
-  ctx.globalAlpha = 1;
-});
+// A fresh run starts with no hit-stop or slow-mo left over from the last one.
+export function resetTime() { fx.hitstop = 0; fx.slowmo = 0; fx.slowScale = 1; }

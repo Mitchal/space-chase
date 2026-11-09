@@ -1,5 +1,6 @@
 // How the arena looks: the red wall around it (everything beyond tinted), and the clock at the top of the screen.
-import { world, W, H } from '../../core/world.js';
+import { world, H } from '../../core/world.js';
+import { W } from '../../core/view-size.js';
 import { addDrawer, LAYER } from '../../core/registry.js';
 import { hudFont, view } from '../../core/canvas.js';
 import { RADIUS } from './arena-shape.js';

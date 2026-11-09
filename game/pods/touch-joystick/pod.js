@@ -10,13 +10,12 @@
 // Delete this folder and touch falls back to the kernel's hold-to-steer.
 import { world } from '../../core/world.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
-import { addInputSource } from '../../core/input.js';
-import { handling } from '../../core/player.js';
+import { addInputSource, steering } from '../../core/input.js';
 import { view } from '../../core/canvas.js';
 import { clientToScreen } from '../../core/screen-mapping.js';
 
 const RADIUS = 20, DEADZONE = 0.1, CURVE = 0.7, TOUCH_GRIP = 30; // RADIUS in CSS pixels: the same on any screen
-const KEY_GRIP = handling.grip;
+const KEY_GRIP = steering.grip;
 const stick = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
 const area = document.getElementById('wrap');
 area.style.touchAction = 'none'; // no scrolling or zooming while you steer
@@ -26,7 +25,7 @@ if (matchMedia('(pointer: coarse)').matches) content.controlsHelp = 'Put your th
 area.addEventListener('pointerdown', e => {
   if (e.pointerType !== 'touch' || stick.id !== null) return;
   Object.assign(stick, { id: e.pointerId, ox: e.clientX, oy: e.clientY, x: e.clientX, y: e.clientY });
-  handling.grip = TOUCH_GRIP;
+  steering.grip = TOUCH_GRIP;
   e.preventDefault(); e.stopImmediatePropagation();
 }, { capture: true });
 
@@ -39,7 +38,7 @@ addEventListener('pointermove', e => {
 const release = e => { if (e.pointerId === stick.id) stick.id = null; };
 addEventListener('pointerup', release);
 addEventListener('pointercancel', release);
-addEventListener('keydown', () => { handling.grip = KEY_GRIP; });
+addEventListener('keydown', () => { steering.grip = KEY_GRIP; });
 
 // The drag as a vector of length ≤ 1: a small dead zone, then a curve that reaches most of the speed early.
 function drag() {

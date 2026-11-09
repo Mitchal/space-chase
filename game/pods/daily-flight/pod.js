@@ -1,14 +1,14 @@
 // Daily flight, the main hook (meta loop 3, his pick on 2026-11-03: "simple and pure skill"). One course a day, the
-// same for every run that day: the date seeds the rocks, mines and laser angles (core/course-seed.js). Every run
+// same for every run that day: the date seeds the rocks, mines and laser angles (core/run.js seeds every run by its
+// mode and day, core/course-seed.js). Every run
 // starts at sector 1, today's best score is the number to beat, and the ghost of your best run flies with you
 // ("I love all of it, including the ghosts"). A streak counts the days in a row you've flown.
-// Delete this folder and every Escape run gets a fresh random course with checkpoints again.
+// Delete this folder and Escape offers checkpoints again, with no daily best, ghost or streak.
 import { world } from '../../core/world.js';
 import { on } from '../../core/events.js';
 import { content, addSystem, addDrawer, addSummary, collectSummary, ORDER, LAYER } from '../../core/registry.js';
 import { addModeNote } from '../../core/game-modes.js';
-import { setCourseSeed } from '../../core/course-seed.js';
-import { today, loadRecord, saveRecord, streak, notePlayed } from './daily-record.js';
+import { loadRecord, saveRecord, streak, notePlayed } from './daily-record.js';
 import { recordSample, ghostAt, drawGhost } from './ghost.js';
 import { hudFont, view } from '../../core/canvas.js';
 
@@ -25,13 +25,12 @@ addModeNote(MODE, () => {
 content.dailyNotes.push(() => { days = streak(); return days > 0 ? `🔥 ${days} day${days === 1 ? '' : 's'}` : ''; });
 content.resultNotes.push(() => !result ? '' : result.newBest ? 'new best today!' : `today's best ${result.best.toLocaleString()}`);
 
-on('runStart', () => {
+on('runStart', run => {
   result = null; track = [];
-  if (world.botPolicy) { if (world.mode === MODE) setCourseSeed(null); return; }
-  days = notePlayed();
+  if (world.botPolicy) return;
+  days = notePlayed(run.day);
   if (world.mode !== MODE) return;
-  rec = loadRecord(today());
-  setCourseSeed(`daily|${rec.day}`);
+  rec = loadRecord(run.day);
   rec.attempts++;
   saveRecord(rec);
 });

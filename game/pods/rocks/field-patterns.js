@@ -7,7 +7,8 @@
 import { world } from '../../core/world.js';
 import { player } from '../../core/player.js';
 import { fieldPoint } from '../../core/spawn-points.js';
-import { dist } from '../../core/geometry.js';
+import { dist, between } from '../../core/geometry.js';
+import { cos, sin, pow15, PI } from '../../core/det-math.js';
 
 export const SPILL = 450;
 
@@ -15,12 +16,12 @@ const SHARE = 0.65;
 export const fieldShare = () => SHARE;
 
 // Scatter n rocks through [x0, x0 + w], this stretch all streaming one way. random: the course's generator for it.
-export function scatter(x0, w, n, add, random = Math.random) {
-  const between = (a, b) => a + random() * (b - a);
-  const dir = (random() < 0.5 ? 1 : -1) * Math.PI / 2 + between(-0.6, 0.6) + (random() < 0.3 ? Math.PI * 0.15 : 0);
+export function scatter(x0, w, n, add, random) {
+  const within = (a, b) => between(random, a, b);
+  const dir = (random() < 0.5 ? 1 : -1) * PI / 2 + within(-0.6, 0.6) + (random() < 0.3 ? PI * 0.15 : 0);
   for (let i = 0; i < n; i++) {
-    const r = 22 + 48 * random() ** 1.5, pt = fieldPoint(x0, x0 + w, r, 30, SPILL, random);
-    const a = dir + between(-0.25, 0.25), s = between(70, 130);
-    if (pt && dist(pt, player) > 220 + r) add({ x: pt.x, y: pt.y, r, vx: Math.cos(a) * s, vy: Math.sin(a) * s });
+    const r = 22 + 48 * pow15(random()), pt = fieldPoint(x0, x0 + w, r, 30, SPILL, random);
+    const a = dir + within(-0.25, 0.25), s = within(70, 130);
+    if (pt && dist(pt, player) > 220 + r) add({ x: pt.x, y: pt.y, r, vx: cos(a) * s, vy: sin(a) * s });
   }
 }

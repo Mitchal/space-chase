@@ -1,4 +1,4 @@
-// Glowing shapes drawn once and reused. A live shadowBlur is one of the most expensive things a phone's canvas can do,
+// host-only: glowing shapes drawn once and reused. A live shadowBlur is one of the most expensive things a phone's canvas can do,
 // so anything that glows is painted with its glow into a small canvas the first time, then stamped with drawImage.
 const cache = new Map();
 const RES = 2; // sprite pixels per game pixel: crisp at the highest render scale (core/canvas.js)

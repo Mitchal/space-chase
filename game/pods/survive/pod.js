@@ -3,22 +3,20 @@
 // lasers since v3: he died to them too often). The day seeds all of it, so every run that day meets the same missiles
 // and rocks at the same moments (timeline.js) and you can practise. The score is how long you last, to the millisecond.
 // Delete this folder and the game is the Escape challenge alone.
-import { world, lurables, kill } from '../../core/world.js';
+// What happens is sim.js; here, how it's presented: the menu, today's tries and best, the milestones, the results.
+import './sim.js';
+import { world } from '../../core/world.js';
 import { on } from '../../core/events.js';
-import { content, addSystem, addSummary, ORDER } from '../../core/registry.js';
+import { addSystem, addSummary, ORDER } from '../../core/registry.js';
 import { addMode, addModeNote } from '../../core/game-modes.js';
-import { setCourseSeed } from '../../core/course-seed.js';
-import { player, hurt } from '../../core/player.js';
 import { bigText } from '../../core/effects.js';
-import { RADIUS, bounds, chordAt, wallContact, knockInside } from './arena-shape.js';
-import { beginTimeline, stepTimeline } from './timeline.js';
+import { RADIUS } from './arena-shape.js';
 import { drawArena, COLOR } from './arena-draw.js';
-import { today, loadRecord, saveRecord, TIERS, tierOf, formatTime } from './survive-record.js';
+import { loadRecord, saveRecord, TIERS, tierOf, formatTime } from './survive-record.js';
+import { MODE, runMs } from './sim.js';
 
-const MODE = 'survive', KNOCK = 160;
 let rec = loadRecord(), result = null, tierShown = 0;
 
-const runMs = () => Math.round((world.run.endedAt ?? world.t - world.run.startedAt) * 1000);
 const tries = n => `${n} ${n === 1 ? 'try' : 'tries'}`;
 
 addMode({
@@ -27,16 +25,7 @@ addMode({
     `Stay alive in the <b style="color:${COLOR}">arena</b> as long as you can. Its <b style="color:#ff4d6d">wall</b> hurts. It only gets busier, and every run today meets the same missiles and rocks.`,
     "Two hits and you're down.",
   ],
-  score: () => runMs(),
   format: formatTime,
-  setup() {
-    content.arenas = [{ name: 'Arena', banner: 'SURVIVE' }];
-    content.stageLabel = 'Arena';
-    content.scoring = 'time';
-    world.cameraFollows = true;
-    world.bounds = bounds();
-    world.laneAt = chordAt;
-  },
   result(run) {
     const ms = runMs(), tier = tierOf(ms), up = TIERS.find(t => ms < t.s * 1000), bits = [];
     if (tier) bits.push(tier.name.toLowerCase());
@@ -55,20 +44,13 @@ addModeNote(MODE, () => {
   return rec.best === null ? 'not played yet today' : `best today <b>${formatTime(rec.best)}</b> · ${tries(rec.attempts)}`;
 });
 
-on('runStart', () => {
+on('runStart', run => {
   if (world.mode !== MODE) return;
   result = null; tierShown = 0;
-  if (world.botPolicy) { setCourseSeed(`survive|bot|${Math.random()}`); return; }
-  rec = loadRecord(today());
-  setCourseSeed(`survive|${rec.day}`);
+  if (world.botPolicy) return;
+  rec = loadRecord(run.day);
   rec.attempts++;
   saveRecord(rec);
-});
-
-on('arenaEnter', () => {
-  if (world.mode !== MODE) return;
-  Object.assign(player, { x: 0, y: 0, vx: 0, vy: 0 });
-  beginTimeline();
 });
 
 on('runEnd', () => {
@@ -79,17 +61,10 @@ on('runEnd', () => {
   result = { ms, newBest };
 });
 
+// The milestones, as you pass them.
 addSystem(ORDER.director, () => {
-  const t = world.t - world.run.startedAt;
-  stepTimeline(t);
   const tier = TIERS[tierShown];
-  if (tier && t >= tier.s) { tierShown++; bigText(`${tier.s}s · ${tier.name}`, { col: COLOR, t: 1.6 }); }
-}, { mode: MODE });
-
-addSystem(ORDER.collide, () => {
-  const hit = wallContact(player);
-  if (hit.over > 0) { hurt('wall', { x: player.x, y: player.y }); knockInside(player, hit, KNOCK); }
-  for (const e of lurables()) if (wallContact(e).over > 0) kill(e, 'wall');
+  if (tier && world.t - world.run.startedAt >= tier.s) { tierShown++; bigText(`${tier.s}s · ${tier.name}`, { col: COLOR, t: 1.6 }); }
 }, { mode: MODE });
 
 addSummary('survive', () => world.mode !== MODE ? null

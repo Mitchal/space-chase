@@ -1,8 +1,9 @@
-// The canvas, its scaling to the window, and the per-frame draw pass.
-import { W, H, world, setViewWidth } from './world.js';
+// host-only: the canvas, its scaling to the window, and the per-frame draw pass.
+import { H, world } from './world.js';
+import { W, setViewWidth } from './view-size.js';
 import { runDrawers, LAYER } from './registry.js';
 import { fx } from './effects.js';
-import { rand } from './geometry.js';
+import { visualRand } from './visual-random.js';
 import { measureSafeArea } from './safe-area.js';
 import { viewTransform } from './screen-mapping.js';
 
@@ -67,7 +68,7 @@ export function drawFrame() {
   ctx.transform(...viewTransform());
   ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
   ctx.save();
-  if (fx.shake > 0.3) ctx.translate(rand(-fx.shake, fx.shake), rand(-fx.shake, fx.shake));
+  if (fx.shake > 0.3) ctx.translate(visualRand(-fx.shake, fx.shake), visualRand(-fx.shake, fx.shake));
   drawGrid();
   ctx.translate(-world.cam.x, -world.cam.y);
   if (world.run) runDrawers(ctx, -Infinity, LAYER.hud);

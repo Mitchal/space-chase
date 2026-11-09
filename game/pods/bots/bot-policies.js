@@ -2,15 +2,18 @@
 //   random: no-skill floor.
 //   evader: crude competent player. Flees and swirls (which makes pursuers converge), dodges telegraphs,
 //           keeps off rocks and mines, collects the nearest key, then heads for the exit.
-import { world, W } from '../../core/world.js';
+import { world, MIN_W } from '../../core/world.js';
 import { content } from '../../core/registry.js';
-import { rand, lineDist } from '../../core/geometry.js';
+import { between, lineDist } from '../../core/geometry.js';
+import { generator, hashText } from '../../core/course-seed.js';
+import { cos, sin, hypot, TAU } from '../../core/det-math.js';
 
-export function randomPolicy() {
-  const s = {};
+// seed: its own random numbers (a bot is a player, not part of the run's simulation).
+export function randomPolicy(seed = 'random-bot') {
+  const s = {}, random = generator(hashText(String(seed)));
   return () => {
-    if (!s.until || world.t > s.until) { s.until = world.t + rand(0.3, 0.9); s.a = Math.random() * Math.PI * 2; }
-    return { ix: Math.cos(s.a), iy: Math.sin(s.a) };
+    if (!s.until || world.t > s.until) { s.until = world.t + between(random, 0.3, 0.9); s.a = random() * TAU; }
+    return { ix: cos(s.a), iy: sin(s.a) };
   };
 }
 
@@ -21,7 +24,7 @@ function swirlSign(p) {
 }
 
 function avoid(p, e, f) {
-  const dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1;
+  const dx = p.x - e.x, dy = p.y - e.y, d = hypot(dx, dy) || 1;
   if (e.lurable) {
     const w = 9000 / (d * d);
     const s = swirlSign(p) * 0.7;
@@ -42,7 +45,7 @@ function avoid(p, e, f) {
 function goal(p) {
   const exit = world.ents.find(e => e.type === 'exit');
   if (exit?.open) return { at: exit, w: 3 };
-  const keys = world.ents.filter(e => e.type === 'key' && !e.taken).sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y));
+  const keys = world.ents.filter(e => e.type === 'key' && !e.taken).sort((a, b) => hypot(a.x - p.x, a.y - p.y) - hypot(b.x - p.x, b.y - p.y));
   return keys.length ? { at: keys[0], w: 1.4 } : null;
 }
 
@@ -60,10 +63,10 @@ export function evaderPolicy() {
       f.x += (content.forward?.x ?? 0) * (gap < 350 ? 4 : 1.1);
       f.y += ((lane.top + lane.bottom) / 2 - p.y) * 0.002;
     } else {
-      if (p.x < m) f.x += (m - p.x) / m * 2; if (p.x > W - m) f.x -= (p.x - (W - m)) / m * 2;
+      if (p.x < m) f.x += (m - p.x) / m * 2; if (p.x > MIN_W - m) f.x -= (p.x - (MIN_W - m)) / m * 2;
     }
     const g = goal(p);
-    if (g) { const dx = g.at.x - p.x, dy = g.at.y - p.y, d = Math.hypot(dx, dy) || 1; f.x += dx / d * g.w; f.y += dy / d * g.w; }
+    if (g) { const dx = g.at.x - p.x, dy = g.at.y - p.y, d = hypot(dx, dy) || 1; f.x += dx / d * g.w; f.y += dy / d * g.w; }
     return { ix: f.x, iy: f.y };
   };
 }

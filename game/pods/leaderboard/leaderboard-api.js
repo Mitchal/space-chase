@@ -4,26 +4,31 @@ import { LEADERBOARD_URL } from './leaderboard-url.js';
 import { deviceKey } from './device-key.js';
 
 const TIMEOUT_MS = 6000;
-// The Worker's answer to a name it won't take, so the game can ask for another: {error: 'name'} (one it won't show) or
-// {error: 'taken'} (another device's).
-const NAME_REFUSED = 422;
+// Answers the game acts on: a name the Worker won't take (422 {error: 'name'}: one it won't show; {error: 'taken'}:
+// another device's), so the game asks for another; and a run played in another version of the game (409
+// {error: 'update'}: its replay can't be checked, core/replay-run.js).
+const ANSWERED = new Set(['name', 'taken', 'update']);
 export const nameRefused = answer => answer?.error === 'name' || answer?.error === 'taken';
+export const needsUpdate = answer => answer?.error === 'update';
 
 async function call(path, init) {
   const stop = new AbortController(), timer = setTimeout(() => stop.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(LEADERBOARD_URL + path, { ...init, signal: stop.signal });
-    return res.ok || res.status === NAME_REFUSED ? await res.json() : null;
+    if (res.ok) return await res.json();
+    const answer = res.status === 422 || res.status === 409 ? await res.json() : null;
+    return ANSWERED.has(answer?.error) ? answer : null;
   } catch { return null; } finally { clearTimeout(timer); }
 }
 
-// → { best, rank, players, top: [{name, score}] }, {error: 'name' | 'taken'} or null. The board keeps each player's
-// best of the day. Sent with this device's key, which the name belongs to (device-key.js).
+// → { best, rank, players, top: [{name, score}] }, {error: 'name' | 'taken' | 'update'} or null. The board keeps each
+// player's best of the day, and checks it afterwards by replaying the run (simVersion, replay: core/replay-recorder.js).
+// Sent with this device's key, which the name belongs to (device-key.js).
 // was: the name before a rename, so that day's rows move to the new name instead of staying behind.
-export const postScore = ({ mode, day, name, score, was = null }) => call('/score', {
+export const postScore = ({ mode, day, name, score, simVersion, replay, was = null }) => call('/score', {
   method: 'POST',
   headers: { 'content-type': 'application/json', authorization: `Bearer ${deviceKey()}` },
-  body: JSON.stringify({ mode, day, name, score, was }),
+  body: JSON.stringify({ mode, day, name, score, simVersion, replay, was }),
 });
 
 // → { players, top: [{name, score}] } or null.

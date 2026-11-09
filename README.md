@@ -17,7 +17,9 @@ into rocks, walls, mines, lasers and each other. Every death explodes, and a mis
 | …served locally | `LURE_DIST=1 LURE_HOST=0.0.0.0 node serve.js` | `http://<IP>:8766`, APK at `/space-chase.apk` |
 | Android app (debug APK) | `npm run android` | `release/space-chase.apk` |
 | Android app for Google Play (signed bundle) | `npm run android:release` | `release/space-chase.aab` |
-| Architecture lint | `npm run lint` | |
+| Architecture and determinism lint | `npm run lint` | |
+| Replay tests | `npm test` | |
+| Replay CPU benchmark | `npm run bench:replay` | |
 
 `npm run android` needs Android Studio installed (it uses its bundled Java and the Android SDK).
 
@@ -26,13 +28,36 @@ Open the dev server with `?playtest=1` to turn it on (it sticks in that browser)
 
 ## How it's built
 
-- `game/core/`: the kernel. It holds the loop, world, player, input, camera, canvas, events, registries, course seed, sprites and storage.
+- `game/core/`: the kernel. It holds the simulation (world, player, run, registries, events, course seed, the fixed
+  tick) and the browser host around it (frame loop, input, camera, canvas, sprites, storage). Host-only files say so on
+  their first line (`// host-only`).
 - Game modes (`core/game-modes.js`): each daily challenge is a mode pod (`flight` is Escape, `survive` is Survive). A run starts in one mode; systems and drawers can be limited to a mode, and hazard pods offer spawners (`spawn('rock', …)`) so a mode can place its own.
 - `game/pods/<feature>/`: one folder per feature. Each pod registers itself with the core (systems, drawers, events,
   `content` hooks) and never imports another pod, so **deleting a pod folder removes the feature and everything else
   keeps working**. `npm run lint` (`tools/check-pods.js`) checks this statically.
 - The dev server discovers pods from disk (`/api/pods`); the player build ships `pods.json` (made by `tools/build-web.js`,
   which also leaves out the dev-only pods `bots` and `reaction-form`).
+
+### Deterministic runs and replays
+The leaderboard checks every score by replaying the run (`leaderboard-worker/README.md`, "Every score is checked"),
+so a run must play out to
+the same bits from the same input on any device and engine:
+- **Simulation and view are split.** A pod's `sim.js` is what happens (systems, spawners, scoring); its `pod.js`
+  imports it and adds how it looks. The simulation is `core/sim-kernel.js` plus every `sim.js`; the run checker
+  (`tools/run-checks/`) and the tests load exactly that, with no screen.
+- **Fixed ticks.** The simulation advances 60 times a second of real time in fixed steps (`core/sim-tick.js`), whatever
+  the frame rate; hit-stop and slow-mo are part of it. Frames are drawn blended between the last two ticks
+  (`core/render-blend.js`).
+- **Input is the only thing that goes in.** Each tick's input is a small whole-number frame (direction and grip,
+  `core/sim-input.js`), recorded (`core/replay-recorder.js`) and packed (`core/replay-codec.js`). The screen's size
+  and turn never reach the simulation: it plays in a fixed frame around `world.focus` (`core/focus.js`).
+- **Seeded and exact.** All randomness comes from the run's seed (its mode and day, `core/course-seed.js`); decoration
+  has its own stream (`core/visual-random.js`). Simulation code uses `core/det-math.js` instead of `Math.sin`, `cos`,
+  `atan2`, `hypot`, `pow`… which engines may round differently. `npm run lint` (`tools/check-determinism.js`)
+  checks all of this statically.
+- **`SIM_VERSION`** (`core/sim-version.js`): bump it whenever a change makes the same input play out differently;
+  `npm test` fails on the golden replays (`game/dev/sim-golden.json`) as a reminder. To check another engine (Safari on
+  an iPhone, Firefox): `await (await import('/dev/replay-check.js')).check()` in its console on the dev server.
 
 ### Performance on phones
 - Drawing at most 1.5 backing pixels per game pixel. A 3× phone screen was ~9× the fill work, and that was most of the frame.
@@ -42,7 +67,7 @@ Open the dev server with `?playtest=1` to turn it on (it sticks in that browser)
 
 ### Fair on any screen
 The view widens to fill wide screens (H is always 640, W goes from 960 to 1440). Everything that shapes the game uses a
-fixed 960-wide **play frame** (`playFrame()` in `core/camera.js`) instead of the visible width: where pursuers spawn,
+fixed 960-wide **play frame** (`playFrame()` in `core/focus.js`) instead of the visible width: where pursuers spawn,
 when the course ahead is generated, and what is culled. A wide phone shows more of the same game; it doesn't play a different one.
 
 Held upright (one-handed play), the view is turned a quarter turn rather than shrunk: the same W×H world, drawn so the
@@ -56,7 +81,7 @@ and keys are screen directions, turned into the world in `core/input.js`.
 - **Not built yet:**
   - sound;
   - haptics;
-  - a shared daily leaderboard and other players' ghosts (needs a small server);
+  - other players' ghosts (the leaderboard keeps replays' scores, not the replays);
   - hearts per day (see `meta-loop.md`);
   - cosmetics as the sink.
 

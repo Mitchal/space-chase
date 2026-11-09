@@ -10,6 +10,8 @@
 // rampS: when a run starts in that sector, 8s with no pursuers, then they trickle in (run 18: "let me find my bearings").
 // wave: speed of the death wave (px/s).   lane: half-height of the lane (the lane is ~2× this tall, wider than the 640px view).
 
+import { sin } from '../../core/det-math.js';
+
 export const SECTOR_LEN = 3600;
 // Direct control (v11) out-handles pursuers far more easily, so they come more often (every × pace) and more may be
 // alive (max + extra). Death blasts clear crowds, so there are plenty of them. Same in both variants since v12.
@@ -38,7 +40,7 @@ export function laneShape(x, t) {
   const f = Math.max(0, Math.min(SECTORS.length - 1, x / SECTOR_LEN - 0.5));
   const i = Math.floor(f), k = f - i;
   const base = SECTORS[i].lane + (SECTORS[Math.min(i + 1, SECTORS.length - 1)].lane - SECTORS[i].lane) * k;
-  const centre = 320 + 140 * Math.sin(x / 1100) + 60 * Math.sin(x / 430 + 1);
-  const half = Math.max(260, base + 70 * Math.sin(x / 520) + 35 * Math.sin(t * 0.9 + x / 260));
+  const centre = 320 + 140 * sin(x / 1100) + 60 * sin(x / 430 + 1);
+  const half = Math.max(260, base + 70 * sin(x / 520) + 35 * sin(t * 0.9 + x / 260));
   return { top: centre - half, bottom: centre + half };
 }

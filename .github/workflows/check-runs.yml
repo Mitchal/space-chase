@@ -1,0 +1,38 @@
+# Checks the leaderboard's new scores: replays every run the Worker has stored unchecked, with the game's own
+# simulation, and sends back a verdict per run (tools/run-checks/, leaderboard-worker/README.md "Every score is checked").
+# Started by the Worker when a score arrives (at most once a minute), by its hourly job while runs are still waiting,
+# and every six hours by the schedule below as a backstop (GitHub turns schedules off in repositories with no commits
+# for 60 days; the Worker's starts don't depend on it).
+# It only ever runs master's code: there's no pull_request trigger, so a fork's pull request never sees the secret.
+name: Check leaderboard runs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *'
+
+permissions:
+  contents: read
+
+# One at a time: a start while one is running waits, and starts that pile up meanwhile merge into one.
+concurrency:
+  group: check-runs
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the whole history: runs from an older game version are replayed with that version's code
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The simulation needs no dependencies.
+      - run: node tools/run-checks/check-pending.js --linger 60
+        env:
+          BOARD_URL: https://space-chase-leaderboard.mikael-brandt90.workers.dev
+          RUN_CHECK_SECRET: ${{ secrets.RUN_CHECK_SECRET }}

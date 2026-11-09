@@ -38,6 +38,8 @@ past day. To get them, the game asks the leaderboard server for the top scores. 
   <li>your best score in that challenge that day,</li>
   <li>a device key: a random code the game made when you picked your nickname. It says nothing about you or your
     device; it only shows that a score comes from the same device that first used the nickname.</li>
+  <li>a recording of how you steered in that run (which way, moment by moment: nothing else), so the score can be
+    checked by playing the run again.</li>
 </ul>
 <p>The server stores only a one-way hash of the device key, next to the nickname it belongs to, so that nobody else
 can post under your nickname. The key itself is never stored there. If you uninstall the app or clear the site's data,
@@ -51,6 +53,11 @@ a day's top three), to show them on the main menu.</p>
 <p>The leaderboard runs on <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare</a>. Like any server on the
 internet, it sees the IP address a request comes from in order to answer it, and it counts requests per address for a
 minute to stop floods. The game does not store IP addresses or link them to nicknames.</p>
+<p>Scores are checked a few minutes after they arrive, on <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub</a>:
+the server hands GitHub the steering recording with the challenge, date and score (not your nickname), GitHub plays
+the run again, and the recording is deleted from the server once the score checks out. A score that doesn't check out
+is hidden from the leaderboard; its recording is kept with it as evidence until it's deleted with the rest of that
+day's scores.</p>
 <p>Scores and nicknames are deleted automatically after 30 days, except each day's top five in each challenge: those
 are kept, with their nicknames, for the calendar of past days and the trophies. To have a nickname and its scores
 removed, including from past days, email the address below. A nickname's device-key hash is kept until you change

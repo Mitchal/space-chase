@@ -7,6 +7,7 @@ import { spawn } from '../../core/registry.js';
 import { courseRng } from '../../core/course-seed.js';
 import { player } from '../../core/player.js';
 import { RADIUS } from './arena-shape.js';
+import { cos, sin, hypot, pow15, PI, TAU } from '../../core/det-math.js';
 
 // How it builds up (t: seconds into the run). A good run is ~30s, a great one ~60s, an extreme one ~90s.
 // v2 (his playtest, 2026-11-05: the first 10–20s were "too calm in the beginning. Definitely"): a busier start.
@@ -18,34 +19,33 @@ export const PACE = {
   // laser: { first: 4, every: t => Math.max(1.3, 4.2 - t * 0.04), crossFrom: 50 },
 };
 const KINDS = Object.keys(PACE);
-const TAU = Math.PI * 2;
 
 let next = {}, count = {};
 const rng = (kind, n) => courseRng('survive', kind, n);
 const alive = type => world.ents.filter(e => e.type === type && !e.dead).length;
-const onCircle = (a, r) => ({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+const onCircle = (a, r) => ({ x: cos(a) * r, y: sin(a) * r });
 
 // A missile comes in just inside the wall; never right on top of you (then it comes in opposite).
 function chaser(r, t) {
   let a = r() * TAU;
   const pt = onCircle(a, RADIUS - 40);
-  if (Math.hypot(pt.x - player.x, pt.y - player.y) < 320) a += Math.PI;
+  if (hypot(pt.x - player.x, pt.y - player.y) < 320) a += PI;
   if (alive('chaser') < PACE.chaser.max(t)) spawn('chaser', { ...onCircle(a, RADIUS - 40), speed: PACE.chaser.speed(t) });
 }
 
-const rockSize = r => 24 + 46 * r() ** 1.5;
+const rockSize = r => 24 + 46 * pow15(r());
 
 // A rock drifts in from beyond the wall, across the arena through a point near the middle, and out the other side.
 function rock(r, t) {
   const size = rockSize(r), from = onCircle(r() * TAU, RADIUS + size + 30), to = onCircle(r() * TAU, r() * RADIUS * 0.55);
-  const speed = 70 + r() * 60 + t * 0.5, d = Math.hypot(to.x - from.x, to.y - from.y);
+  const speed = 70 + r() * 60 + t * 0.5, d = hypot(to.x - from.x, to.y - from.y);
   if (alive('rock') < PACE.rock.max(t)) spawn('rock', { ...from, r: size, vx: (to.x - from.x) / d * speed, vy: (to.y - from.y) / d * speed });
 }
 
 function laser(r, t) {
-  const angle = r() * Math.PI;
+  const angle = r() * PI;
   spawn('laser', { x: player.x, y: player.y, angle });
-  if (t >= PACE.laser.crossFrom) spawn('laser', { x: player.x, y: player.y, angle: angle + Math.PI / 2 });
+  if (t >= PACE.laser.crossFrom) spawn('laser', { x: player.x, y: player.y, angle: angle + PI / 2 });
 }
 
 const FIRE = { chaser, rock, laser };
@@ -54,7 +54,7 @@ const FIRE = { chaser, rock, laser };
 export function beginTimeline() {
   for (let i = 0; i < PACE.rock.field; i++) {
     const r = rng('field', i), size = rockSize(r), at = onCircle(r() * TAU, 300 + r() * (RADIUS - 420)), a = r() * TAU, s = 30 + r() * 40;
-    spawn('rock', { ...at, r: size, vx: Math.cos(a) * s, vy: Math.sin(a) * s });
+    spawn('rock', { ...at, r: size, vx: cos(a) * s, vy: sin(a) * s });
   }
   for (const k of KINDS) { next[k] = PACE[k].first; count[k] = 0; }
 }

@@ -3,24 +3,35 @@ import { world } from './world.js';
 import { emit, on } from './events.js';
 import { content, addSystem, ORDER } from './registry.js';
 import { player, resetPlayer } from './player.js';
-import { nextRunIndex } from './storage.js';
-import { clearEffects, bigText } from './effects.js';
+import { clearEffects, bigText, resetTime } from './effects.js';
+import { setCourseSeed, courseSeed } from './course-seed.js';
 import { clamp } from './geometry.js';
 import { useMode } from './game-modes.js';
 
 const SETTLE_S = 1.4;
 
-// opts: { mode, startArena, variant, index } (index/variant are given by bots so they don't consume run numbers).
+// What the host decides about a new run when the caller doesn't say: its number (for the taste log), its A/B variant
+// and the game's day. The browser fills these in (core/live-run.js); a headless replay passes everything itself.
+export const runHost = { nextIndex: () => -1, variant: () => 'A', today: () => '2000-01-01' };
+
+// opts: { mode, startArena, variant, index, day, seed } (index/variant are given by bots so they don't consume run numbers).
 // mode: a game mode's id; left out, the run is in the same mode as the last one.
+// day: the game day the run belongs to ('YYYY-MM-DD'). seed: the run's random numbers (core/course-seed.js); left
+// out, the mode and day, so every run of a daily challenge that day meets the same course.
+// A run always starts from the same state (clock at zero, nothing left over), so the same inputs replay the same run.
 export function startRun(opts = {}) {
   useMode(opts.mode);
-  const index = opts.index ?? nextRunIndex();
+  const index = opts.index ?? runHost.nextIndex(), day = opts.day ?? runHost.today();
   const startArena = clamp(opts.startArena ?? 0, 0, content.arenas.length - 1);
+  world.t = 0;
+  resetTime();
+  setCourseSeed(opts.seed ?? `${world.mode}|${day}`);
   world.run = {
-    mode: world.mode, index, variant: opts.variant || (index % 2 === 0 ? 'A' : 'B'), startArena, ai: -1, startedAt: world.t,
+    mode: world.mode, day, seed: courseSeed(), index, variant: opts.variant || runHost.variant(index), startArena, ai: -1, startedAt: world.t,
     over: false, outcome: null, endedAt: null, endT: 0, killer: null, settled: false,
   };
   world.paused = false;
+  world.pressure = 1;
   player.hp = player.maxHp;
   emit('runStart', world.run);
   enterArena(startArena, true);
