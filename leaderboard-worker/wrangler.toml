@@ -3,11 +3,13 @@ name = "space-chase-leaderboard"
 main = "src/worker.js"
 compatibility_date = "2026-10-01"
 
-# The Worker replays posted runs with the game's own simulation (src/verify-run.js), bundled from ../game. This lists
-# the game's pods for it before every build (tools/list-sim-pods.js) and rebuilds when the game's code changes.
-[build]
-command = "node ../tools/list-sim-pods.js"
-watch_dir = ["src", "../game"]
+# Scores are checked after they're stored, by a GitHub Action that replays each run (README, "Every score is checked").
+# The Worker asks GitHub to start it (src/check-dispatch.js) with the secret GITHUB_DISPATCH_TOKEN, and the Action calls
+# back with the secret RUN_CHECK_SECRET (src/run-check-routes.js). Set both with `npx wrangler secret put`.
+[vars]
+GITHUB_REPO = "Mitchal/space-chase"
+CHECK_WORKFLOW = "check-runs.yml"
+CHECK_REF = "master"
 
 [[d1_databases]]
 binding = "DB"

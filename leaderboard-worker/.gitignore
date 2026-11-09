@@ -1,4 +1,3 @@
 node_modules/
-src/sim-pods.generated.js
 .wrangler/
 .dev.vars

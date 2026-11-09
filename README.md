@@ -39,11 +39,12 @@ Open the dev server with `?playtest=1` to turn it on (it sticks in that browser)
   which also leaves out the dev-only pods `bots` and `reaction-form`).
 
 ### Deterministic runs and replays
-The leaderboard checks every score by replaying the run (`leaderboard-worker/README.md`), so a run must play out to
+The leaderboard checks every score by replaying the run (`leaderboard-worker/README.md`, "Every score is checked"),
+so a run must play out to
 the same bits from the same input on any device and engine:
 - **Simulation and view are split.** A pod's `sim.js` is what happens (systems, spawners, scoring); its `pod.js`
-  imports it and adds how it looks. The simulation is `core/sim-kernel.js` plus every `sim.js`; the leaderboard Worker
-  and the tests load exactly that, with no screen.
+  imports it and adds how it looks. The simulation is `core/sim-kernel.js` plus every `sim.js`; the run checker
+  (`tools/run-checks/`) and the tests load exactly that, with no screen.
 - **Fixed ticks.** The simulation advances 60 times a second of real time in fixed steps (`core/sim-tick.js`), whatever
   the frame rate; hit-stop and slow-mo are part of it. Frames are drawn blended between the last two ticks
   (`core/render-blend.js`).

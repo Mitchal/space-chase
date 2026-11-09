@@ -3,8 +3,9 @@
 A small Cloudflare Worker with a D1 (SQLite) database. It keeps each player's best score per daily challenge per day,
 and the game shows today's top scores on the main menu and under the results. Each day's top five is kept for good:
 the game's calendar shows any past day, and places 1 to 3 are that player's gold, silver and bronze trophies. It was built for Cloudflare's free plan
-(100,000 requests a day, which is roughly a thousand daily players) and never goes to sleep; replaying every score
-needs more CPU than the free plan gives one request (see "Every score is replayed" below).
+(100,000 requests a day, which is roughly a thousand daily players) and never goes to sleep. Scores are trusted when
+they arrive and checked a minute or so later by a GitHub Action that replays each run (see "Every score is checked"
+below), so the Worker itself stays within the free plan's 10 ms of CPU per request.
 
 Until its address is in `game/pods/leaderboard/leaderboard-url.js`, the game has no board and works exactly as before.
 
@@ -46,8 +47,46 @@ All commands run in this folder (`leaderboard-worker/`).
 8. **Tell the game:** paste the address into `DEPLOYED` in `game/pods/leaderboard/leaderboard-url.js`, then release as
    usual (bump the version, push to `master`). The Android app picks it up with its next build.
 
+Then turn on score checks (next section).
+
 The first time a player finishes a daily run, the board shows under the results with a box for their name. Names are
 kept on each device; the same name on two devices counts as one player (capitals don't matter).
+
+## Turn on score checks (once, about 10 minutes)
+
+Two secrets connect the Worker and GitHub. Nothing else is shared: GitHub never gets Cloudflare or database access,
+and the Worker can only start the checking workflow.
+
+1. **Make the shared secret** (the Action shows it to the Worker when it fetches runs and sends verdicts):
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+   Give it to the Worker (paste it when asked):
+   ```bash
+   npx wrangler secret put RUN_CHECK_SECRET
+   ```
+   And to GitHub: the repository's **Settings → Secrets and variables → Actions → New repository secret**, named
+   `RUN_CHECK_SECRET`, with the same value (or `gh secret set RUN_CHECK_SECRET` in the repo root).
+2. **Make a token for the Worker to start the check:** https://github.com/settings/personal-access-tokens/new
+   (a *fine-grained* token). Resource owner: you. Expiration: the longest offered (write the date down: when it runs
+   out, see "When checks stop" below). Repository access: **Only select repositories → space-chase**. Permissions →
+   Repository permissions → **Actions: Read and write**; nothing else (Metadata: read-only is added by itself). This
+   token can start, cancel and read workflow runs in this one repository; it can't touch code or settings.
+   Give it to the Worker:
+   ```bash
+   npx wrangler secret put GITHUB_DISPATCH_TOKEN
+   ```
+   The repository, workflow and branch it starts are `[vars]` in `wrangler.toml`.
+3. **Release in this order** whenever a release brings a new file in `migrations/` (this one brings
+   `0004_run_checks.sql`):
+   1. `npm run db:remote`: the new columns have defaults, so the Worker that's running keeps working.
+   2. The secrets above (only the first time).
+   3. `npm run deploy`: the new Worker.
+   4. Release the game as usual (bump the version, push to `master`). This also puts the workflow
+      (`.github/workflows/check-runs.yml`) on `master`, where GitHub needs it to be started. Until then the Worker's
+      starts fail with a log line and are tried again; scores keep being stored.
+4. **Check it works:** after the next score, the repository's **Actions** tab shows a "Check leaderboard runs" run
+   ending with `checked N runs: N ok, 0 failed`. You can also start one by hand there (**Run workflow**).
 
 ## Run it on your computer
 
@@ -58,9 +97,13 @@ npm run dev
 
 To run the hourly job by hand while it's running: `curl "http://127.0.0.1:8787/__scheduled?cron=35+*+*+*+*"`.
 
-`npm run dev` first lists the game's pods for the bundled simulation (`[build]` in `wrangler.toml`) and rebuilds when
-the game's code changes. `node tests/post-replays.js` in the repo root plays long runs of today's challenges and posts
-them to the local Worker, timing each.
+For score checks, put a made-up secret in `.dev.vars` (not committed), e.g. `RUN_CHECK_SECRET=local-0123456789abcdef`.
+Without `GITHUB_DISPATCH_TOKEN` the local Worker never starts GitHub; check by hand from the repo root instead:
+```bash
+BOARD_URL=http://127.0.0.1:8787 RUN_CHECK_SECRET=local-0123456789abcdef node tools/run-checks/check-pending.js
+```
+`RUN_CHECK_SECRET=… node tests/check-runs-e2e.js` (repo root) does the whole round trip: it posts a genuine run of
+today's challenges and two cheats, runs the checker and confirms that only the cheats are gone.
 
 Then start the game as usual (`npm run dev` in the repo root) and open
 http://localhost:8765/?leaderboard=http://127.0.0.1:8787 to play against the local board. The `?leaderboard=` switch
@@ -71,7 +114,8 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
 - **Who can post:** browsers only from the game's own addresses (spacechase.mikaelbrandt.com, mitchal.github.io, the
   Android app and localhost); the list is in `src/cors.js`. If the game moves to another address, add it there and deploy.
 - **Checks:** a known date (within a day of today), a name of 1 to 16 characters, a whole-number score from 0 to
-  10,000,000, and then the score itself, by replaying the run (below).
+  10,000,000, a run from the game version the checker knows, and a readable replay. The score itself is checked
+  afterwards (below).
 - **Names:** `src/name-filter.js` refuses the obvious slurs and swearing (English and Swedish, also spelled with
   digits or dots). The game then asks the player for another name. Add words there as they turn up.
 - **Floods:** one address can send 20 scores and read the board 120 times a minute (`[[ratelimits]]` in
@@ -83,26 +127,48 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   midnight in Sweden. A run already flying at midnight still counts for the day it started if it lands within 30
   minutes; then the day is final (`src/day-close.js`, and `game/core/game-day.js` in the game).
 - **Every hour at half past** (`[triggers]` in `wrangler.toml`): each closed day's top five per challenge is copied into the
-  `podium` table and kept for good (`src/podium-db.js`); then scores rows older than 30 days are deleted
-  (`src/cleanup.js`). The privacy page describes both, so change them together.
-- **Every score is replayed:** the game sends each score with its run's input (one small frame per 1/60 s tick: the
-  steering direction and grip, packed into a few kB) and the version of the game's simulation it was played in. The
-  Worker bundles the game's own simulation (`../game/core/` and every `../game/pods/*/sim.js`, listed by
-  `tools/list-sim-pods.js` before each build), plays the run again from the day's seed and keeps the score that comes
-  out, which must equal the score claimed (`src/verify-run.js`). The simulation is deterministic to the bit on every
-  engine (`npm run lint` checks it; `npm test` replays recorded runs), so an honest run always checks out.
-  - A made-up score, or a replay that's been edited, cut short or padded, gets 422 `{"error":"replay"}` (and a log line
-    `replay mismatch` when only the score was off: worth a look if it ever shows up for an honest player).
-  - A run played in another version of the game gets 409 `{"error":"update"}`: its replay can't be checked by this
-    simulation. The game then says "Update the game to put your scores on the board." So **deploy the Worker together
-    with each game release that changes `SIM_VERSION`** (`game/core/sim-version.js`): until both are out, scores from the
-    side that's ahead are turned away.
-  - What it can't catch: who or what was steering. A bot, a script or a slowed-down tool-assisted run sends genuinely
-    valid input and passes. Replays from before this check (game 1.4.x) can't be checked at all.
-  - **Cost:** replaying is real work: about 20 to 30 µs of CPU per tick, so roughly 100 ms for a minute-long Escape run
-    and up to ~400 ms for the longest possible one (~4 minutes; `npm run bench:replay` in the repo root measures it).
-    The free plan allows 10 ms of CPU per request, so on the free plan long runs' scores would be cut off with an
-    error. Decide how to run it (Workers Paid, or checking only some scores, or checking later) before deploying.
+  `podium` table and kept for good (`src/podium-db.js`), but only once every run of that day has been checked, and
+  only from runs that checked out (until then the calendar shows it from the live scores). Then scores rows older than
+  30 days are deleted (`src/cleanup.js`), and if any run is still waiting for its check, GitHub is asked to check
+  again. The privacy page describes all of this, so change them together.
+- **Every score is checked**, trusted until proven guilty. The game sends each score with its run's input (one small
+  frame per 1/60 s tick: the steering direction and grip, packed into a few kB) and the version of the game's
+  simulation it was played in (`SIM_VERSION`, `game/core/sim-version.js`).
+  1. **The Worker stores it unchecked** (`check_status = 'unchecked'`, with its replay) and shows it on the board at
+     once, like any other score. Replaying costs ~100 ms of CPU (`npm run bench:replay` in the repo root), ten times
+     what the free plan gives a request, so the Worker doesn't (`src/run-shape.js` only checks the version and that
+     the replay is readable). It then asks GitHub to start the check, at most once a minute (`src/check-dispatch.js`).
+  2. **A GitHub Action replays it** (`.github/workflows/check-runs.yml`, running `tools/run-checks/check-pending.js`):
+     it fetches every waiting run (`GET /checks/pending`), plays each again from the day's seed with the game's own
+     simulation, and sends back a verdict per run (`POST /checks/verdicts`). It keeps looking for a minute after it
+     runs out, then stops. Actions minutes are free for a public repository. The Worker's hourly job asks for a check
+     too while anything is waiting, and GitHub runs it every six hours anyway.
+  3. **A run that checks out** (`'ok'`) stays on the board and its replay is deleted. **A run that doesn't**
+     (`'failed'`: the replay gives another score, stops before the run ends or goes on after it) disappears from the
+     board, the player counts, the ranks, the calendar and the trophies. Its row stays, frozen with its replay and the
+     reason (`check_note`), as evidence: that name can't post a new score that day or rename the row away.
+  - **Old versions:** a run is replayed with the code of its own `SIM_VERSION`. The Worker only takes runs from the
+    version it was deployed with, but runs still waiting when a new version goes out are replayed with the newest
+    `master` commit that still had theirs (`tools/run-checks/sim-code-at.js`, in a temporary git worktree). So **deploy
+    the Worker together with each game release that changes `SIM_VERSION`**; until both are out, scores from the side
+    that's ahead get 409 `{"error":"update"}` and the game says "Update the game to put your scores on the board."
+    Never deploy the Worker from a branch whose `SIM_VERSION` isn't on `master` yet: the checker can't find that
+    code, leaves those runs waiting and its run fails (red in the Actions tab).
+  - **What it can't catch:** who or what was steering. A bot, a script or a slowed-down tool-assisted run sends
+    genuinely valid input and passes. Scores from before checks (game 1.4.x) count as checked.
+  - **See failed runs** (GitHub's Actions log also prints each one, without the name):
+    ```bash
+    npx wrangler d1 execute space-chase-leaderboard --remote --command "SELECT mode, day, name, score, check_note FROM scores WHERE check_status = 'failed' ORDER BY day DESC"
+    ```
+    A failed run is already hidden: nothing more needs doing. To clear the name for the rest of that day (it loses the
+    evidence), delete its row as below. If an honest player's run ever fails (a bug that made the simulation play out
+    differently somewhere), put it back with `UPDATE scores SET check_status = 'ok', replay = NULL WHERE …`.
+  - **See what's waiting:** `SELECT mode, day, name, score, updated_at FROM scores WHERE check_status = 'unchecked'`.
+  - **When checks stop** (the token has expired, or the workflow has failed or been switched off): scores still show
+    as usual, but closed days' top fives aren't kept until their runs are checked, and they're lost if that takes 30
+    days. Look in the Actions tab; make a new token (step 2 of "Turn on score checks") if GitHub's answers in the
+    Worker's logs (`npx wrangler tail`) say 401. GitHub also turns off the six-hourly schedule after 60 days without
+    commits; the Worker's starts don't depend on it.
 - **Remove a row** (a test name, a made-up score, a rude name, or someone asking to be removed):
   ```bash
   npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM scores WHERE name_key = 'test'"
@@ -121,11 +187,11 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
 
 ## The API
 
-- `POST /score` with JSON `{mode, day, name, score, simVersion, replay, was?}` replays the run and, if it gives exactly
-  `score`, keeps the player's best for that day and returns `{best, rank, players, top}`. `replay` is the run's input
+- `POST /score` with JSON `{mode, day, name, score, simVersion, replay, was?}` keeps the player's best for that day
+  (unchecked until the checker has replayed it) and returns `{best, rank, players, top}`. `replay` is the run's input
   (base64, `game/core/replay-codec.js`); `simVersion` the simulation it was played in. `was` is the name used before a
-  rename: that name's row for the day is dropped. A score the replay doesn't bear out gets 422 `{"error":"replay"}`;
-  a run from another version of the game gets 409 `{"error":"update", "simVersion"}`. Up to 160 kB per request.
+  rename: that name's row for the day is dropped. A run from another version of the game gets 409
+  `{"error":"update", "simVersion"}`; an unreadable replay 422 `{"error":"replay"}`. Up to 160 kB per request.
   A refused name gets 422 `{"error":"name"}`; too many calls from one address get 429.
 - `GET /top?mode=flight&day=2026-11-06` returns `{players, top: [{name, score}]}`, the top ten.
 - `GET /month?m=2026-11` returns every day of that month that anyone played, with its top five per challenge:
@@ -133,5 +199,9 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   day has stopped taking scores; an open day has `closes` (ms since 1970).
 - `GET /trophies?name=Anna` returns `{trophies: [{mode, day, place}]}`: that name's places 1 to 3, newest first.
 - A score for a day that has closed gets 409 `{"error":"closed"}`.
+- For the checker only, with `Authorization: Bearer <RUN_CHECK_SECRET>` (404 while the secret isn't set):
+  `GET /checks/pending?limit=50` returns `{runs: [{mode, day, key, at, score, simVersion, replay}]}`, the oldest
+  waiting runs; `POST /checks/verdicts` with `{verdicts: [{mode, day, key, at, score, ok, why?}]}` returns `{applied}`.
+  A verdict on a run the player has since beaten changes nothing (`at` and `score` no longer match).
 
 `mode` is the game mode's id: `flight` (Escape, in points) or `survive` (milliseconds). Higher is better in both.

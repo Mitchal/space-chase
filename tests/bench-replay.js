@@ -1,11 +1,10 @@
-// How much CPU the leaderboard spends checking a score: replaying a run (core/replay-run.js), in Node (V8, like the
-// Worker). npm run bench:replay [-- --write]   (--write: save the longest genuine runs to tests/out/ for posting to a
-// local Worker with tests/post-replays.js).
-//  1. Genuine runs: bots on many days; the longest of each mode, replayed exactly as the Worker would.
+// How much CPU checking a score takes: replaying a run (core/replay-run.js), in Node, as the run checker does (a
+// GitHub Action, tools/run-checks/). That's why the check runs there and not in the leaderboard Worker, whose free plan
+// allows 10 ms of CPU per request. npm run bench:replay
+//  1. Genuine runs: bots on many days; the longest of each mode, replayed exactly as the checker does.
 //  2. Worst cases: an unhittable bot that dawdles just ahead of the death wave (the longest an Escape run can last:
 //     the wave sees to that) and one that survives three minutes in Survive (twice an "extreme" run). Not valid replays
 //     (nobody is unhittable), but they cost what the longest real runs would: same ticks, same crowds.
-import fs from 'node:fs';
 import { loadSim } from './load-sim.js';
 
 await loadSim();
@@ -40,11 +39,6 @@ for (const rec of Object.values(longest)) {
   const { r, ms: t } = timeReplay(rec);
   console.log(`  ${rec.mode.padEnd(7)} ${rec.day}  ${rec.ticks} ticks (${(rec.ticks / TICK_HZ).toFixed(0)} s)  score ${r.score}  ${t.toFixed(1)} ms  (${(t / rec.ticks * 1000).toFixed(1)} µs/tick)  ${rec.replay.length} B`);
 }
-if (process.argv.includes('--write')) {
-  fs.mkdirSync(new URL('./out/', import.meta.url), { recursive: true });
-  for (const rec of Object.values(longest)) fs.writeFileSync(new URL(`./out/longest-${rec.mode}.json`, import.meta.url), JSON.stringify(rec));
-  console.log('  saved to tests/out/');
-}
 
 // 2. Worst cases: the same tick loop a replay runs, with the player unhittable.
 function worstCase(mode, maxS) {
@@ -71,4 +65,4 @@ function worstCase(mode, maxS) {
 console.log('Worst cases (unhittable bot), the same tick loop in Node (median of 3):');
 worstCase('flight', 600);
 worstCase('survive', 180);
-console.log('Cloudflare free plan: 10 ms CPU per request. Workers Paid: 30 s by default.');
+console.log('For comparison, Cloudflare's free plan allows 10 ms of CPU per request.');

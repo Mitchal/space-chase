@@ -33,7 +33,9 @@ past day. To get them, the game asks the leaderboard server for the top scores. 
 <ul>
   <li>the nickname you typed,</li>
   <li>which daily challenge it was and the date,</li>
-  <li>your best score in that challenge that day.</li>
+  <li>your best score in that challenge that day,</li>
+  <li>a recording of how you steered in that run (which way, moment by moment: nothing else), so the score can be
+    checked by playing the run again.</li>
 </ul>
 <p>Your nickname and scores are <b>public</b>: anyone who plays can see them. Pick a nickname, not your real name.
 Changing your nickname moves today's scores to the new one.</p>
@@ -43,6 +45,11 @@ a day's top three), to show them on the main menu.</p>
 <p>The leaderboard runs on <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare</a>. Like any server on the
 internet, it sees the IP address a request comes from in order to answer it, and it counts requests per address for a
 minute to stop floods. The game does not store IP addresses or link them to nicknames.</p>
+<p>Scores are checked a few minutes after they arrive, on <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub</a>:
+the server hands GitHub the steering recording with the challenge, date and score (not your nickname), GitHub plays
+the run again, and the recording is deleted from the server once the score checks out. A score that doesn't check out
+is hidden from the leaderboard; its recording is kept with it as evidence until it's deleted with the rest of that
+day's scores.</p>
 <p>Scores and nicknames are deleted automatically after 30 days, except each day's top five in each challenge: those
 are kept, with their nicknames, for the calendar of past days and the trophies. To have a nickname and its scores
 removed, including from past days, email the address below.</p>
