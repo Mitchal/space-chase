@@ -20,5 +20,5 @@ export async function sha256Hex(text) {
   return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// What a login code is kept as: tied to its email, so the same code for two people hashes differently.
-export const codeHash = (email, code) => sha256Hex(`${email}:${code}`);
+// What a login code is kept as: tied to its email key, so the same code for two people hashes differently.
+export const codeHash = (key, code) => sha256Hex(`${key}:${code}`);

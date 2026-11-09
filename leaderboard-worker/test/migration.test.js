@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fakeD1 } from './fake-d1.js';
-import { call, player, postScore, today } from './worker-harness.js';
+import { call, player, postScore, today, makeEnv } from './worker-harness.js';
 
 function oldDatabase() {
   const db = fakeD1({ migrateUpTo: 2 });
@@ -19,16 +19,16 @@ function oldDatabase() {
 
 test('every old name becomes a player without an email, with its latest spelling', async () => {
   const db = oldDatabase();
-  const { results } = await db.prepare('SELECT name, legacy_key, email FROM players ORDER BY legacy_key').all();
+  const { results } = await db.prepare('SELECT name, legacy_key, email_key FROM players ORDER BY legacy_key').all();
   assert.deepEqual(results, [
-    { name: 'Anna', legacy_key: 'anna', email: null },
-    { name: 'Bo', legacy_key: 'bo', email: null },
-    { name: 'Cleo', legacy_key: 'cleo', email: null },
+    { name: 'Anna', legacy_key: 'anna', email_key: null },
+    { name: 'Bo', legacy_key: 'bo', email_key: null },
+    { name: 'Cleo', legacy_key: 'cleo', email_key: null },
   ]);
 });
 
 test("old scores and past days still show under their names, and their trophies stay theirs", async () => {
-  const env = { DB: oldDatabase(), EMAIL_PROVIDER: 'log' };
+  const env = makeEnv({ DB: oldDatabase() });
   const top = (await call(env, 'GET', `/top?mode=flight&day=${today()}`)).body.top;
   assert.deepEqual(top.map(r => [r.name, r.score]), [['Anna', 700]]);
   const day = (await call(env, 'GET', '/month?m=2026-11')).body.days['2026-11-02'].modes.flight;
@@ -38,7 +38,7 @@ test("old scores and past days still show under their names, and their trophies 
 });
 
 test("a new account named like an old name is a different player; the old row can't be touched", async () => {
-  const env = { DB: oldDatabase(), EMAIL_PROVIDER: 'log' };
+  const env = makeEnv({ DB: oldDatabase() });
   const { token, account } = await player(env, 'anna@example.com', 'Anna');
   await postScore(env, token, 50);
   const top = (await call(env, 'GET', `/top?mode=flight&day=${today()}`)).body.top;

@@ -14,7 +14,7 @@ test('first login makes the account; the next login finds the same one', async (
   const env = makeEnv();
   const first = await logIn(env, '  Anna@Example.COM ');
   assert.match(first.token, /^[A-Za-z0-9_-]{43}$/);
-  assert.deepEqual(first.account, { id: first.account.id, email: 'anna@example.com', name: null });
+  assert.deepEqual(first.account, { id: first.account.id, name: null });
   const again = await logIn(env, 'anna@example.com');
   assert.equal(again.account.id, first.account.id);
   assert.notEqual(again.token, first.token);
@@ -32,10 +32,12 @@ test('asking for a code answers the same whether or not the email has an account
   assert.deepEqual(known.body, { ok: true });
 });
 
-test('a malformed email is refused, and with no email provider logging in is off', async () => {
+test('a malformed email is refused, and without an email provider or pepper logging in is off', async () => {
   assert.equal((await start(makeEnv(), 'not-an-email')).status, 400);
-  const off = await start(makeEnv({ EMAIL_PROVIDER: '' }), 'a@example.com');
-  assert.deepEqual([off.status, off.body], [503, { error: 'email off' }]);
+  for (const missing of [{ EMAIL_PROVIDER: '' }, { EMAIL_PEPPER: undefined }, { EMAIL_PEPPER: 'too-short' }]) {
+    const off = await start(makeEnv(missing), 'a@example.com');
+    assert.deepEqual([off.status, off.body], [503, { error: 'email off' }]);
+  }
 });
 
 test('a code works once', async () => {

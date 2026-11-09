@@ -1,9 +1,9 @@
 // Your own account, for the game's profile screen. Each needs "Authorization: Bearer <token>" (auth-routes.js);
 // without a working one: 401 {error: 'login'}.
-//   GET    /me          → {account: {id, email, name}}
+//   GET    /me          → {account: {id, name}} (no email: only its key is stored, auth/email-key.js)
 //   POST   /me {name}   → {account}; the name shown on the boards (1 to 16 characters, not unique).
 //                          422 {error: 'name'} when the name filter refuses it.
-//   DELETE /me          → {ok: true}: the account, its email, sessions and scores are gone (players-db.js).
+//   DELETE /me          → {ok: true}: the account, its email key, sessions and scores are gone (players-db.js).
 import { json } from '../json-response.js';
 import { readJsonBody } from '../read-json-body.js';
 import { sessionPlayer } from '../auth/sessions-db.js';

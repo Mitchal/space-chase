@@ -7,7 +7,9 @@ the game's calendar shows any past day, and places 1 to 3 are that player's gold
 
 Playing never needs an account. Posting a score does: players log in with their email and a 6-digit code emailed to
 them (no passwords), pick a name for the boards (names needn't be unique), and their scores and trophies belong to that
-account. Names typed before accounts (November 2026) stay on their old scores and past days, read-only.
+account. Email addresses are never stored: the Worker keeps only a keyed hash of each (below, "The email pepper"), and
+the address itself only passes through to send the code. Names typed before accounts (November 2026) stay on their
+old scores and past days, read-only.
 
 Until its address is in `game/pods/leaderboard/leaderboard-url.js`, the game has no board and works exactly as before.
 
@@ -35,7 +37,8 @@ All commands run in this folder (`leaderboard-worker/`).
    npm run db:remote
    ```
    Run it again whenever `migrations/` gets a new file, before deploying.
-6. **Set up login emails** (below). Without them nobody can log in, so nobody can post a score.
+6. **Set the email pepper and set up login emails** (both below). Without them nobody can log in, so nobody can post
+   a score.
 7. **Deploy:**
    ```bash
    npm run deploy
@@ -49,6 +52,28 @@ All commands run in this folder (`leaderboard-worker/`).
    You should see `{"mode":"flight","day":"2026-11-06","players":0,"top":[]}`.
 9. **Tell the game:** paste the address into `DEPLOYED` in `game/pods/leaderboard/leaderboard-url.js`, then release as
    usual (bump the version, push to `master`). The Android app picks it up with its next build.
+
+## The email pepper
+
+Accounts are found by an email key: HMAC-SHA256 of the address (trimmed, lower-cased) with a secret, the pepper
+(`src/auth/email-key.js`). Login codes and the 5-codes-an-hour limit go by the same key. Keyed, because email
+addresses are easy to guess: a plain hash could be reversed by hashing a list of addresses. Nothing logs an address
+either; the dev console and provider errors show it masked (`m***@e***.com`).
+
+Make one (once), save it in your password manager, then give it to the Worker:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+npx wrangler secret put EMAIL_PEPPER
+```
+
+- **Never change or lose it.** Every account is found through it: with another pepper (or none), nobody can log in
+  to their account again, and their old scores and trophies stay under accounts nobody can reach. Cloudflare won't
+  show a secret back, so the saved copy is the only one.
+- **Changing your email address** means starting a new account: the server can't tell that two addresses are the
+  same person. (A logged-in "change my email" that re-keys the account could be added later.)
+- **Looking someone up** (they write in to have their account removed) means hashing the address they give you with
+  the pepper: `scripts/email-key.js`, under "Remove an account by hand".
+- Without a pepper of at least 32 characters, logging in is switched off (503), like without an email provider.
 
 ## Login emails
 
@@ -75,6 +100,9 @@ mailgun.com/pricing, documentation.mailgun.com, help.mailgun.com (authorized rec
 email sending for Workers, which may be worth a look given everything else runs there.
 
 Use an account that is yours alone (not a work one), and keep the API key out of every file: it's a Worker secret.
+The provider sees each address when it sends the code and keeps it in its sending logs (Resend 30 days, Mailgun 1 day
+on the free plans above): once one is picked, name it and its log retention on the privacy page (`game/privacy.html`,
+"Where it lives").
 
 ### Resend
 
@@ -108,7 +136,7 @@ Migrations `0003` and `0004` add accounts and move every score and kept top five
 becomes a player with no email, under the latest spelling it was typed with. The game and the Worker change together,
 and the Worker has to go first (the new game needs the new Worker to log in).
 
-1. **Set up login emails first** (above). The new Worker only takes scores from logged-in players, so without email
+1. **Set the pepper and login emails up first** (above). The new Worker only takes scores from logged-in players, so without email
    nobody can post.
 2. **Back up** (keep the file; D1 can also go back to any minute of the last 7 days on the free plan):
    ```bash
@@ -129,12 +157,14 @@ and the Worker has to go first (the new game needs the new Worker to log in).
 ## Run it on your computer
 
 ```bash
+cp .dev.vars.example .dev.vars
 npm run db:local
 npm run dev
 ```
 
-`npm run dev` sends no email: each login code is printed in its console (`[email: log mode] login code for …`), so
-logging in works with no provider. To run the hourly job by hand while it's running:
+`.dev.vars` holds a pepper for local work only (never the live one). `npm run dev` sends no email: each login code is
+printed in its console with the address masked (`[email: log mode] login code for m***@e***.com: 123456`), so logging
+in works with no provider. To run the hourly job by hand while it's running:
 `curl "http://127.0.0.1:8787/__scheduled?cron=35+*+*+*+*"`.
 
 Then start the game as usual (`npm run dev` in the repo root) and open
@@ -150,8 +180,8 @@ limits, sessions, posting, deleting an account, and the move from typed names. N
   Android app and localhost); the list is in `src/cors.js`. If the game moves to another address, add it there and
   deploy. Within those, only logged-in players with a name, and only as themselves.
 - **Logins:** a code is 6 digits, lasts 10 minutes, works once and takes 5 tries; an email gets at most 5 codes an hour
-  (`src/auth/login-codes-db.js`). A session lasts 30 days (`src/auth/sessions-db.js`). Only hashes of codes and
-  session tokens are stored. The game keeps its token in local storage and sends it as `Authorization: Bearer` (not a
+  (`src/auth/login-codes-db.js`). A session lasts 30 days (`src/auth/sessions-db.js`). Only hashes of codes, session
+  tokens and email addresses are stored. The game keeps its token in local storage and sends it as `Authorization: Bearer` (not a
   cookie: the Android app's pages come from `https://localhost`, which can't keep cookies for workers.dev).
 - **Checks:** a known date (within a day of today), a name of 1 to 16 characters, and a whole-number score from 0 to
   10,000,000.
@@ -169,10 +199,17 @@ limits, sessions, posting, deleting an account, and the move from typed names. N
   `podium` table and kept for good (`src/podium-db.js`); then scores rows older than 30 days, expired sessions and
   spent login codes are deleted (`src/cleanup.js`). The privacy page describes both, so change them together.
 - **No anti-cheat:** anyone logged in who looks at the game's code can send a made-up score from a terminal. If that
-  happens, remove the row (below); the account's email says who it was.
-- **Find a player** (boards show names; ids are in `/top` and `/month` answers):
+  happens, remove the row (below). The server doesn't know who it was (no addresses are kept); if someone names an
+  address, `scripts/email-key.js` tells whether it's that account.
+- **Find a player** by name (boards show names; ids are in `/top` and `/month` answers):
   ```bash
-  npx wrangler d1 execute space-chase-leaderboard --remote --command "SELECT id, email, name FROM players WHERE name LIKE '%anna%' OR email = 'anna@example.com'"
+  npx wrangler d1 execute space-chase-leaderboard --remote --command "SELECT id, name FROM players WHERE name LIKE '%anna%'"
+  ```
+  or by the address they write from: turn it into its key with the live pepper (from your password manager; in
+  PowerShell, `$env:EMAIL_PEPPER='…'` first), then look the key up:
+  ```bash
+  EMAIL_PEPPER='…' node scripts/email-key.js anna@example.com
+  npx wrangler d1 execute space-chase-leaderboard --remote --command "SELECT id, name FROM players WHERE email_key = '<the key it printed>'"
   ```
 - **Rename a rude name** (accounts can change it back, so for a repeat, remove the account instead):
   ```bash
@@ -188,12 +225,13 @@ limits, sessions, posting, deleting an account, and the move from typed names. N
   npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM podium WHERE day = '2026-11-06' AND mode = 'flight'"
   ```
 - **Remove an account by hand** (someone asks by email; players can also do it themselves from their profile). This is
-  what the profile's "Delete account" does: the email, sessions, pending code and scores go, and past top-five places
-  stay with no player (shown as "deleted player"), so nobody else's place or trophy changes. Find the id first (above):
+  what the profile's "Delete account" does: the email key, sessions, pending code and scores go, and past top-five
+  places stay with no player (shown as "deleted player"), so nobody else's place or trophy changes. Find the id and
+  key first, from the address they give you (above):
   ```bash
-  npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM sessions WHERE player_id = 12; DELETE FROM scores WHERE player_id = 12; UPDATE podium SET player_id = NULL WHERE player_id = 12; DELETE FROM login_codes WHERE email = 'anna@example.com'; DELETE FROM players WHERE id = 12"
+  npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM sessions WHERE player_id = 12; DELETE FROM scores WHERE player_id = 12; UPDATE podium SET player_id = NULL WHERE player_id = 12; DELETE FROM login_codes WHERE email_key = '<key>'; DELETE FROM players WHERE id = 12"
   ```
-  The same works for a name from before accounts (it has no email: leave out the `login_codes` part). To take the
+  The same works for a name from before accounts (it has no email key: leave out the `login_codes` part). To take the
   places out of past days entirely instead, also `DELETE FROM podium WHERE player_id = 12` before the last step (the
   places below don't move up for days over 30 days old).
 - **See everything from one day:**
@@ -208,9 +246,9 @@ aren't unique). A deleted account's place in a past day has `id` and `name` null
 
 - `POST /auth/start` with `{email}` emails a login code and answers `{ok: true}`, the same whether or not the email has
   an account. 400 `{"error":"email"}` for a malformed address, 429 when that email has had 5 codes this hour, 503
-  `{"error":"email off"}` with no email provider, 502 when the provider refused.
-- `POST /auth/verify` with `{email, code}` → `{token, expires, account: {id, email, name}}`, making the account on its
-  first login. 401 `{"error":"code","left":3}` for a wrong code; 401 `{"error":"expired"}` when a new code is needed.
+  `{"error":"email off"}` with no email provider or pepper, 502 when the provider refused.
+- `POST /auth/verify` with `{email, code}` → `{token, expires, account: {id, name}}`, making the account on its
+  first login. No answer ever contains an email address: the game shows the one it typed. 401 `{"error":"code","left":3}` for a wrong code; 401 `{"error":"expired"}` when a new code is needed.
 - `POST /auth/logout` ends the session the token belongs to.
 - With `Authorization: Bearer <token>` (401 `{"error":"login"}` without a working one):
   - `GET /me` → `{account}`; `POST /me` with `{name}` → `{account}` (422 `{"error":"name"}` when the filter refuses it);

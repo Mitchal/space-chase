@@ -22,12 +22,13 @@ a{color:var(--accent)}
 
 <p>Space Chase is a single-player game with an optional online leaderboard for the daily challenges. Playing never
 needs an account. Only if you log in to put your scores on the leaderboard does anything about you leave your device:
-your email address (to log in), the name you pick for the leaderboard, and your scores.</p>
+your email address (to send you a login code; the server keeps only a scrambled form of it), the name you pick for
+the leaderboard, and your scores.</p>
 
 <h2>What the game stores on your device</h2>
 <p>Your scores, today's best run (the "ghost"), your day streak and your settings are stored <b>on your device</b>.
 If you log in, so are your login (a random token, valid for 30 days), your email address, your leaderboard name and
-your trophies. Uninstalling the app (or clearing the site's data in your browser) deletes them.</p>
+your trophies. Your email address is only ever shown back to you from here, on your device. Uninstalling the app (or clearing the site's data in your browser) deletes them.</p>
 
 <h2>The leaderboard</h2>
 <p>The main menu and the end of each daily run show today's leaderboard, and a calendar shows the top five of any
@@ -37,14 +38,19 @@ past day. To get them, the game asks the leaderboard server for the top scores. 
 <p>To post scores you log in with your email address: the server emails you a 6-digit code, and you type it into the
 game. There is no password. The first time you log in, this creates your account, which holds:</p>
 <ul>
-  <li>your email address, used <b>only</b> to send you login codes. It is never shown to other players, never used
-    for anything else and never shared, except with the email service that delivers the codes (below);</li>
+  <li>a <b>keyed hash</b> of your email address, not the address itself: a scrambled form made with a secret key,
+    so the server can recognise the same address when you log in again, but can't turn it back into your address
+    or show it to anyone, you included. Your address is only held in memory long enough to send the code, and is
+    never written to the server's logs. A keyed hash still counts as (pseudonymised) personal data under the GDPR,
+    so you can have it deleted (below). Because the server can't see your address, changing it means starting a new
+    account;</li>
   <li>the name you pick for the leaderboard (you can change it at any time);</li>
   <li>which of your logins are active, as a scrambled (hashed) copy of each login token, so the server can recognise
     you. A login lasts 30 days.</li>
 </ul>
 <p>The server keeps only a scrambled copy of each code, for 10 minutes, and forgets codes and logins once they have
-expired. To stop abuse it counts how many codes each email address was sent in the last hour.</p>
+expired. To stop abuse it counts how many codes each email address (by its keyed hash) was sent in the last
+hour.</p>
 
 <h3>What's public</h3>
 <p>After each daily run, while you're logged in, the game sends which daily challenge it was, the date and your best
@@ -57,21 +63,24 @@ to show them on the main menu and your profile.</p>
 <h3>Where it lives, and for how long</h3>
 <p>The leaderboard runs on <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare</a>. Like any server on the
 internet, it sees the IP address a request comes from in order to answer it, and it counts requests per address for a
-minute to stop floods. The game does not store IP addresses or link them to accounts. Login codes are delivered by an
-email service (Resend or Mailgun), which receives your email address and the code to send it.</p>
+minute to stop floods. The game does not store IP addresses or link them to accounts.</p>
+<p>Login codes are delivered by an email service, which receives your email address and the code in order to send it,
+and keeps a record of the emails it sent for a limited time. Logging in isn't switched on yet; this page will name
+the service and how long it keeps that record before it is.</p>
 <p>Scores are deleted automatically after 30 days, except each day's top five in each challenge: those are kept for
-the calendar of past days and the trophies. Your account (email and name) is kept until you delete it.</p>
+the calendar of past days and the trophies. Your account (the keyed hash of your email and your name) is kept until
+you delete it.</p>
 
 <h3>Deleting your account</h3>
-<p>Your profile in the game (👤 on the main menu) has <b>Delete account</b>. It deletes your email address, your name,
-your logins and your scores straight away. Places you won in past days' top fives stay on the calendar as "deleted
+<p>Your profile in the game (👤 on the main menu) has <b>Delete account</b>. It deletes the keyed hash of your email
+address, your name, your logins and your scores straight away. Places you won in past days' top fives stay on the calendar as "deleted
 player", without your name, so other players' places don't change. You can also ask for this by email (below).</p>
 <p>Names typed for the leaderboard before accounts existed (before November 2026) stay on their old scores and past
 days. To have one removed, email the address below.</p>
 
 <h2>What the game does not do</h2>
 <ul>
-  <li>No passwords, real names, or personal data beyond the email address you log in with.</li>
+  <li>No passwords or real names, and no email addresses kept on the server: only the keyed hash described above.</li>
   <li>No analytics, tracking, advertising or advertising identifiers. Login emails contain no tracking.</li>
   <li>No network requests while you fly. The game works offline; without a connection the leaderboard simply
     doesn't show.</li>

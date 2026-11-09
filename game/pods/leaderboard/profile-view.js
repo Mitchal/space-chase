@@ -41,8 +41,9 @@ export const loggedOutHtml = () => `<div class="pf"><h2>Your profile</h2><div da
 // account: {email, name}; trophies: newest first; problem / note: a line under the name; confirming: the delete box.
 export function profileHtml({ account, trophies, problem = '', note = '', confirming = false }) {
   return `<div class="pf"><h2>Your profile</h2>
-    <div class="pf-field"><div class="pf-label">EMAIL</div><div class="pf-email">${esc(account.email)}</div>
-      <div class="dim small">Only used to send your login codes. Nobody else sees it.</div></div>
+    <div class="pf-field"><div class="pf-label">EMAIL</div><div class="pf-email">${esc(account.email ?? "–")}</div>
+      <div class="dim small">Kept only on this device. The server keeps a scrambled form of it, just to know it's you
+        when you log in, and nobody else sees it.</div></div>
     <div class="pf-field"><div class="pf-label">NAME ON THE BOARD</div>
       <form class="lb-form" data-pf-name><input name="v" maxlength="${NAME_MAX}" value="${esc(account.name ?? '')}"
         autocomplete="nickname" aria-label="Your name on the board" enterkeyhint="done"><button class="main" type="submit">Save</button></form>

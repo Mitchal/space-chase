@@ -15,15 +15,15 @@ export async function startSession(db, playerId, now = Date.now()) {
 
 const bearer = request => /^Bearer ([A-Za-z0-9_-]{20,100})$/.exec(request.headers.get('authorization') ?? '')?.[1] ?? null;
 
-// The logged-in player behind a request: {id, email, name, tokenHash}, or null (no token, unknown, or expired).
+// The logged-in player behind a request: {id, emailKey, name, tokenHash}, or null (no token, unknown, or expired).
 export async function sessionPlayer(request, db, now = Date.now()) {
   const token = bearer(request);
   if (!token) return null;
   const tokenHash = await sha256Hex(token);
-  const row = await db.prepare(`SELECT p.id, p.email, p.name, s.expires_at FROM sessions s JOIN players p ON p.id = s.player_id
+  const row = await db.prepare(`SELECT p.id, p.email_key, p.name, s.expires_at FROM sessions s JOIN players p ON p.id = s.player_id
     WHERE s.token_hash = ?1`).bind(tokenHash).first();
   if (!row || row.expires_at <= now) return null;
-  return { id: row.id, email: row.email, name: row.name, tokenHash };
+  return { id: row.id, emailKey: row.email_key, name: row.name, tokenHash };
 }
 
 export async function endSession(db, tokenHash) {

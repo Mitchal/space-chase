@@ -13,7 +13,7 @@ export const startLogin = email => post('/auth/start', { email });
 // → {account} once logged in (the session is saved), {error: 'code', left}, {error: 'expired'}, or null.
 export async function verifyCode(email, code) {
   const answer = await post('/auth/verify', { email, code });
-  if (answer?.token) saveSession(answer);
+  if (answer?.token) saveSession(answer, email.trim().toLowerCase());
   return answer;
 }
 
