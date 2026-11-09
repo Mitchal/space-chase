@@ -10,6 +10,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-appl
 main{max-width:680px;margin:0 auto;padding:32px 16px 64px}
 h1{letter-spacing:.06em}
 h2{margin-top:28px;font-size:18px}
+h3{margin-top:20px;font-size:16px}
 .dim{color:var(--dim)}
 a{color:var(--accent)}
 </style>
@@ -17,40 +18,70 @@ a{color:var(--accent)}
 <body>
 <main>
 <h1>Space Chase: Privacy Policy</h1>
-<p class="dim">Last updated: 7 November 2026</p>
+<p class="dim">Last updated: 9 November 2026</p>
 
-<p>Space Chase is a single-player game with an optional online leaderboard for the daily challenges. The only thing
-that ever leaves your device is what you choose to put on the leaderboard: a nickname and your scores.</p>
+<p>Space Chase is a single-player game with an optional online leaderboard for the daily challenges. Playing never
+needs an account. Only if you log in to put your scores on the leaderboard does anything about you leave your device:
+your email address (to send you a login code; the server keeps only a scrambled form of it), the name you pick for
+the leaderboard, and your scores.</p>
 
 <h2>What the game stores on your device</h2>
-<p>Your scores, today's best run (the "ghost"), your day streak, your settings and the leaderboard nickname you
-picked are stored <b>on your device</b>. Uninstalling the app (or clearing the site's data in your browser) deletes them.</p>
+<p>Your scores, today's best run (the "ghost"), your day streak and your settings are stored <b>on your device</b>.
+If you log in, so are your login (a random token, valid for 30 days), your email address, your leaderboard name and
+your trophies. Your email address is only ever shown back to you from here, on your device. Uninstalling the app (or clearing the site's data in your browser) deletes them.</p>
 
 <h2>The leaderboard</h2>
 <p>The main menu and the end of each daily run show today's leaderboard, and a calendar shows the top five of any
 past day. To get them, the game asks the leaderboard server for the top scores. Those requests carry no personal data.</p>
-<p>The leaderboard is opt-in. Only if you type a nickname to join it does the game send, after each daily run:</p>
+
+<h3>Logging in</h3>
+<p>To post scores you log in with your email address: the server emails you a 6-digit code, and you type it into the
+game. There is no password. The first time you log in, this creates your account, which holds:</p>
 <ul>
-  <li>the nickname you typed,</li>
-  <li>which daily challenge it was and the date,</li>
-  <li>your best score in that challenge that day.</li>
+  <li>a <b>keyed hash</b> of your email address, not the address itself: a scrambled form made with a secret key,
+    so the server can recognise the same address when you log in again, but can't turn it back into your address
+    or show it to anyone, you included. Your address is only held in memory long enough to send the code, and is
+    never written to the server's logs. A keyed hash still counts as (pseudonymised) personal data under the GDPR,
+    so you can have it deleted (below). Because the server can't see your address, changing it means starting a new
+    account;</li>
+  <li>the name you pick for the leaderboard (you can change it at any time);</li>
+  <li>which of your logins are active, as a scrambled (hashed) copy of each login token, so the server can recognise
+    you. A login lasts 30 days.</li>
 </ul>
-<p>Your nickname and scores are <b>public</b>: anyone who plays can see them. Pick a nickname, not your real name.
-Changing your nickname moves today's scores to the new one.</p>
-<p>Once you've joined, the game also asks the server which trophies your nickname has won (gold, silver and bronze for
-a day's top three), to show them on the main menu.</p>
-<p>Nicknames that are obviously offensive are refused, and others may be removed.</p>
+<p>The server keeps only a scrambled copy of each code, for 10 minutes, and forgets codes and logins once they have
+expired. To stop abuse it counts how many codes each email address (by its keyed hash) was sent in the last
+hour.</p>
+
+<h3>What's public</h3>
+<p>After each daily run, while you're logged in, the game sends which daily challenge it was, the date and your best
+score in that challenge that day. Your leaderboard name and scores are <b>public</b>: anyone who plays can see them.
+Pick a name, not your real name. Changing your name changes it everywhere, including past days. Names that are
+obviously offensive are refused, and others may be changed or removed.</p>
+<p>The game also asks the server which trophies your account has won (gold, silver and bronze for a day's top three),
+to show them on the main menu and your profile.</p>
+
+<h3>Where it lives, and for how long</h3>
 <p>The leaderboard runs on <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare</a>. Like any server on the
 internet, it sees the IP address a request comes from in order to answer it, and it counts requests per address for a
-minute to stop floods. The game does not store IP addresses or link them to nicknames.</p>
-<p>Scores and nicknames are deleted automatically after 30 days, except each day's top five in each challenge: those
-are kept, with their nicknames, for the calendar of past days and the trophies. To have a nickname and its scores
-removed, including from past days, email the address below.</p>
+minute to stop floods. The game does not store IP addresses or link them to accounts.</p>
+<p>Login codes are delivered by an email service, which receives your email address and the code in order to send it,
+and keeps a record of the emails it sent for a limited time. Logging in isn't switched on yet; this page will name
+the service and how long it keeps that record before it is.</p>
+<p>Scores are deleted automatically after 30 days, except each day's top five in each challenge: those are kept for
+the calendar of past days and the trophies. Your account (the keyed hash of your email and your name) is kept until
+you delete it.</p>
+
+<h3>Deleting your account</h3>
+<p>Your profile in the game (👤 on the main menu) has <b>Delete account</b>. It deletes the keyed hash of your email
+address, your name, your logins and your scores straight away. Places you won in past days' top fives stay on the calendar as "deleted
+player", without your name, so other players' places don't change. You can also ask for this by email (below).</p>
+<p>Names typed for the leaderboard before accounts existed (before November 2026) stay on their old scores and past
+days. To have one removed, email the address below.</p>
 
 <h2>What the game does not do</h2>
 <ul>
-  <li>No accounts, sign-in, email addresses or real names.</li>
-  <li>No analytics, tracking, advertising or advertising identifiers.</li>
+  <li>No passwords or real names, and no email addresses kept on the server: only the keyed hash described above.</li>
+  <li>No analytics, tracking, advertising or advertising identifiers. Login emails contain no tracking.</li>
   <li>No network requests while you fly. The game works offline; without a connection the leaderboard simply
     doesn't show.</li>
   <li>No access to your contacts, location, camera, microphone or files.</li>
@@ -61,8 +92,9 @@ removed, including from past days, email the address below.</p>
 device's share menu or clipboard. You choose where it goes. The game itself sends nothing.</p>
 
 <h2>Children</h2>
-<p>The game asks no one, including children, for personal information. The leaderboard nickname is shown to everyone,
-so children should pick one that isn't their real name, or not join the leaderboard.</p>
+<p>Playing asks no one, including children, for personal information. Posting scores needs an email address to log
+in, and the leaderboard name is shown to everyone, so children should ask a parent before logging in, and pick a name
+that isn't their real name.</p>
 
 <h2>Changes</h2>
 <p>If what the game sends ever changes, this page will be updated before that version is released.</p>

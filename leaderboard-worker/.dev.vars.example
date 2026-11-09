@@ -1,0 +1,3 @@
+# Copy to .dev.vars (never committed) for `npm run dev`. Local only: the live Worker's pepper is a secret
+# (`npx wrangler secret put EMAIL_PEPPER`) and must be a different, random one (README, "The email pepper").
+EMAIL_PEPPER="local-development-pepper-not-for-the-live-worker"

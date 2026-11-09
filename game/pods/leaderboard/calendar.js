@@ -4,7 +4,8 @@
 import { on } from '../../core/events.js';
 import { modeList, formatScore } from '../../core/game-modes.js';
 import { fetchMonth } from './leaderboard-api.js';
-import { today, loadName } from './player-record.js';
+import { today } from './player-record.js';
+import { account } from './session-record.js';
 import { trophies, markSeen } from './trophy-record.js';
 import { calendarHtml } from './calendar-view.js';
 
@@ -34,7 +35,7 @@ function dayIn(m) {
 function render() {
   const t = today();
   $('lbCalCard').innerHTML = calendarHtml({
-    month, selected, today: t, data: months.get(month), you: loadName(), trophies: trophies(),
+    month, selected, today: t, data: months.get(month), you: account(), trophies: trophies(),
     modes: modeList().map(m => ({ id: m.id, label: m.label, color: m.color, fmt: n => formatScore(n, m) })),
     canPrev: month > FIRST_MONTH, canNext: month < monthOf(t),
   });

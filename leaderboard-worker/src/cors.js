@@ -14,8 +14,8 @@ export function corsHeaders(origin) {
   if (!origin || !originAllowed(origin)) return {};
   return {
     'access-control-allow-origin': origin,
-    'access-control-allow-methods': 'GET, POST, OPTIONS',
-    'access-control-allow-headers': 'content-type',
+    'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS',
+    'access-control-allow-headers': 'content-type, authorization', // authorization: the login token (auth/sessions-db.js)
     'access-control-max-age': '86400',
     vary: 'Origin',
   };

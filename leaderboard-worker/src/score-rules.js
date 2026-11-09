@@ -16,7 +16,8 @@ export function cleanDay(d, now = Date.now()) {
   return Math.abs(t - todayUtc) <= DAY_MS ? d : null;
 }
 
-// Letters, digits, spaces and a little punctuation; whitespace squeezed; 1 to NAME_MAX characters.
+// A player's name on the boards (accounts/profile-routes.js): control characters dropped, whitespace squeezed, 1 to
+// NAME_MAX characters. The name filter (name-filter.js) is checked separately.
 export function cleanName(n) {
   if (typeof n !== 'string') return null;
   const s = n.replace(/[\p{C}]/gu, '').replace(/\s+/g, ' ').trim();
@@ -27,5 +28,3 @@ export function cleanName(n) {
 export const cleanMonth = m => typeof m === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(m) ? m : null;
 
 export const cleanScore = s => Number.isInteger(s) && s >= 0 && s <= MAX_SCORE ? s : null;
-
-export const nameKey = name => name.toLocaleLowerCase('en');

@@ -1,7 +1,8 @@
 // How the calendar looks: a month of days (Monday first), each marked when anyone played it, with your medal when you
 // placed; under it the chosen day's top five per challenge, and your trophies as a list of days to jump to.
-// Names are other people's typing: escaped.
-import { esc } from './board-view.js';
+// Names are other people's typing: escaped. You are the rows with your account's id; a deleted account's place has
+// no name.
+import { esc, isYou, nameSpan } from './board-view.js';
 import { MEDALS, shortDay, modeLabel } from './trophy-view.js';
 
 document.head.insertAdjacentHTML('beforeend', `<style>
@@ -30,7 +31,6 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 </style>`);
 
 const pad = n => String(n).padStart(2, '0');
-const sameName = (a, b) => !!a && !!b && a.toLocaleLowerCase('en') === b.toLocaleLowerCase('en');
 const longDay = day => new Date(day + 'T12:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 const monthTitle = month => new Date(month + '-15T12:00').toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 const WEEKDAYS = [...Array(7)].map((_, i) => new Date(2026, 10, 2 + i).toLocaleDateString(undefined, { weekday: 'narrow' }));
@@ -38,7 +38,7 @@ const WEEKDAYS = [...Array(7)].map((_, i) => new Date(2026, 10, 2 + i).toLocaleD
 // Your best place that day across the challenges (1 to 5), or 0.
 function yourPlace(entry, you) {
   if (!entry || !you) return 0;
-  const places = Object.values(entry.modes).map(rows => rows.findIndex(r => sameName(r?.name, you)) + 1).filter(Boolean);
+  const places = Object.values(entry.modes).map(rows => rows.findIndex(r => isYou(r, you)) + 1).filter(Boolean);
   return places.length ? Math.min(...places) : 0;
 }
 
@@ -68,8 +68,8 @@ function openUntil(closes) {
 
 const rank = i => i < 3 ? MEDALS[i] : i + 1;
 function modeColumn(mode, rows, you) {
-  const list = rows?.length ? rows.map((r, i) => `<div class="lb-row${sameName(r.name, you) ? ' you' : ''}"><span class="lb-rank">${rank(i)}</span>
-    <span class="lb-name" title="${esc(r.name)}">${esc(r.name)}</span><span class="lb-score">${esc(mode.fmt(r.score))}</span></div>`).join('')
+  const list = rows?.length ? rows.map((r, i) => `<div class="lb-row${isYou(r, you) ? ' you' : ''}"><span class="lb-rank">${rank(i)}</span>
+    ${nameSpan(r.name)}<span class="lb-score">${esc(mode.fmt(r.score))}</span></div>`).join('')
     : '<div class="lb-empty">nobody</div>';
   return `<div><div class="lb-mode" style="color:${mode.color}">${esc(mode.label.toUpperCase())}</div>${list}</div>`;
 }
@@ -92,7 +92,7 @@ function mine(list) {
 }
 
 // month 'YYYY-MM'; data: that month's answer, undefined while loading, null when it can't be reached; modes: [{id,
-// label, color, fmt}]; trophies: yours, newest first.
+// label, color, fmt}]; you: {id, name} of your account or null; trophies: yours, newest first.
 export function calendarHtml({ month, selected, today, data, modes, you, trophies, canPrev, canNext }) {
   const ctx = { data, selected, today, you, modes };
   return `<div class="lbc">
