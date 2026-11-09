@@ -3,6 +3,7 @@
 // before a name was picked, still counts the next time anything is sent.
 import { readSaved, writeSaved } from '../../core/storage.js';
 import { gameToday } from '../../core/game-day.js';
+import { deviceKey } from './device-key.js';
 
 const NAME_KEY = 'spacechase.boardName.v1', BESTS_KEY = 'spacechase.boardBests.v1';
 export const NAME_MAX = 16; // the Worker allows the same
@@ -11,7 +12,12 @@ export const today = gameToday; // the game's day: it turns over at midnight in 
 
 export const loadName = () => { const n = readSaved(NAME_KEY); return typeof n === 'string' && n ? n : null; };
 export const cleanName = n => [...String(n).replace(/\s+/g, ' ').trim()].slice(0, NAME_MAX).join('');
-export function saveName(n) { const name = cleanName(n); if (name) writeSaved(NAME_KEY, name); return name || null; }
+// Picking a name also makes this device's key, if it has none yet (device-key.js).
+export function saveName(n) {
+  const name = cleanName(n);
+  if (name) { writeSaved(NAME_KEY, name); deviceKey(); }
+  return name || null;
+}
 // Puts back the name from before a refused one (or none: the board asks again).
 export const restoreName = was => writeSaved(NAME_KEY, was || null);
 

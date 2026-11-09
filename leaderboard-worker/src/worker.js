@@ -1,6 +1,8 @@
 // Space Chase's leaderboard: today's best runs per daily challenge.
-//   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day;
-//                was: the name used before a rename, whose row for that day is dropped.
+//   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day.
+//                Needs the device's key (Authorization: Bearer, device-key.js), else 401 {error: 'key'}. A name belongs
+//                to the first device that posts with it (name-owners.js): another device gets 422 {error: 'taken'}.
+//                was: the name used before a rename; if this device owns it, that day's rows move over (rename.js).
 //                422 {error: 'name'} when the name isn't allowed (name-filter.js), so the game can ask for another.
 //                409 {error: 'closed'} once that day has stopped taking scores (day-close.js).
 //   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{name, score}]}
@@ -12,7 +14,10 @@ import { cleanMode, cleanDay, cleanName, cleanScore, nameKey } from './score-rul
 import { nameAllowed } from './name-filter.js';
 import { overLimit } from './rate-limits.js';
 import { dropOldDays } from './cleanup.js';
-import { saveBest, dropRow, rankOf, topScores, playerCount } from './scores-db.js';
+import { saveBest, rankOf, topScores, playerCount } from './scores-db.js';
+import { deviceOwner } from './device-key.js';
+import { claimName } from './name-owners.js';
+import { renameDay } from './rename.js';
 import { dayOpen, lastClosedDay } from './day-close.js';
 import { archiveClosedDays } from './podium-db.js';
 import { getMonth, getTrophies } from './history-routes.js';
@@ -21,6 +26,8 @@ import { json } from './json-response.js';
 const MAX_BODY = 1024; // bytes; a real score is about 100
 
 async function postScore(request, env, cors) {
+  const owner = await deviceOwner(request);
+  if (!owner) return json({ error: 'key' }, 401, cors);
   const text = await request.text();
   if (text.length > MAX_BODY) return json({ error: 'too big' }, 413, cors);
   let body;
@@ -31,7 +38,8 @@ async function postScore(request, env, cors) {
   const name = cleanName(body?.name);
   if (!name || !nameAllowed(name)) return json({ error: 'name' }, 422, cors);
   const where = { mode, day }, key = nameKey(name), was = cleanName(body?.was);
-  if (was && nameKey(was) !== key) await dropRow(env.DB, { ...where, key: nameKey(was) });
+  if (!(await claimName(env.DB, key, owner))) return json({ error: 'taken' }, 422, cors);
+  if (was) await renameDay(env.DB, { day, from: nameKey(was), to: key, name, owner });
   const best = await saveBest(env.DB, { ...where, key, name, score });
   const [rank, players, top] = await Promise.all([rankOf(env.DB, where, best), playerCount(env.DB, where), topScores(env.DB, where)]);
   return json({ mode, day, best: best.score, rank, players, top }, 200, cors);

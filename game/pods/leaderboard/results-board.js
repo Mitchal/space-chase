@@ -1,7 +1,8 @@
 // The board under the results card after a daily run. With a name, the run's day-best is sent and the board that comes
 // back shows your place; without one yet, the board is only looked at, with a box to pick a name and join. Nothing
 // shows until the Worker answers, and nothing at all if it doesn't. A name the Worker refuses (a rude one) is taken
-// back, and the box asks for another.
+// back, and the box asks for another; so is one another device already goes by (names belong to the device that first
+// posts with them: device-key.js).
 import { content } from '../../core/registry.js';
 import { modeById, formatScore } from '../../core/game-modes.js';
 import { postScore, fetchTop, nameRefused } from './leaderboard-api.js';
@@ -11,7 +12,11 @@ import { nameFormHtml, whoHtml, wireNameForm } from './name-form.js';
 import { trophies } from './trophy-record.js';
 import { medalCounts } from './trophy-view.js';
 
-const REFUSED = "That name can't be used on the board. Try another.";
+const PROBLEMS = {
+  name: "That name can't be used on the board. Try another.",
+  taken: 'Someone else is on the board with that name. Try another.',
+};
+const problemOf = answers => PROBLEMS[answers.find(nameRefused)?.error];
 let pending = null, panel = null;
 
 // At the end of a run: best is today's best in that challenge, which the board keeps if it's your highest.
@@ -22,7 +27,7 @@ export function boardAfterRun(mode, day, best) {
     if (!nameRefused(board)) return board && { ...board, mode, day };
     restoreName(null); // a name saved before the Worker refused it: ask for a new one
     const top = await fetchTop(mode, day);
-    return top && { ...top, mode, day, retry: { typed: name, problem: REFUSED } };
+    return top && { ...top, mode, day, retry: { typed: name, problem: problemOf([board]) } };
   });
 }
 export const forgetRun = () => { pending = null; };
@@ -39,12 +44,13 @@ function show(el, board) {
 }
 
 // A new name sends today's best of every challenge played so far, then shows this one's board again.
-// After a rename (was), the old name's rows for today go, so nobody is on the board twice.
+// After a rename (was), the old name's rows for today move to the new one, so nobody is on the board twice.
 async function join(el, board, name, was) {
   const sent = await Promise.all(bestsOn(board.day).map(b => postScore({ ...b, day: board.day, name, was })));
-  if (sent.some(nameRefused)) {
+  const problem = problemOf(sent);
+  if (problem) {
     restoreName(was);
-    return show(el, { ...board, retry: { typed: name, problem: REFUSED } });
+    return show(el, { ...board, retry: { typed: name, problem } });
   }
   const mine = sent.find(r => r?.mode === board.mode);
   show(el, mine ? { ...mine, mode: board.mode, day: board.day } : { ...board, retry: null });
