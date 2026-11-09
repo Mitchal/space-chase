@@ -1,5 +1,7 @@
 // How the board looks: a compact card of today's top three per challenge on the main menu, and the challenge you just
 // played on the results screen (top five, your place, your row lit up). Names are other people's typing: escaped.
+// Rows are {id, name, score}: you are the row with your account's id (names needn't be unique). A deleted account's
+// place has no id or name.
 document.head.insertAdjacentHTML('beforeend', `<style>
 .lb{margin:12px 0 2px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#10141f;text-align:left}
 .lb-head{display:flex;justify-content:space-between;gap:8px;color:var(--ghost);font-weight:800;letter-spacing:.1em;font-size:11px;margin-bottom:4px}
@@ -17,6 +19,10 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 .lb-form input{flex:1;min-width:0;background:#0e1118;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;
   font:inherit;-webkit-user-select:text;user-select:text}
 .lb-form button{padding:7px 14px}
+.lb-form button:disabled{opacity:.5}
+.lb-fine{margin-top:6px}
+.lb-gone{color:var(--dim);font-style:italic}
+.lb-you-link{white-space:nowrap;text-decoration:none;letter-spacing:0;font-weight:700}
 .lb-foot{margin-top:6px}
 .lb-problem{color:var(--warn);font-size:12px;margin-top:6px}
 @media (max-height:480px){.lb{margin:6px 0 0;padding:6px 12px}.lb-row{line-height:1.4}}
@@ -32,18 +38,25 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 
 const ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = s => String(s).replace(/[&<>"']/g, c => ENTITIES[c]);
-const same = (a, b) => !!a && !!b && a.toLocaleLowerCase('en') === b.toLocaleLowerCase('en');
 const ordinal = n => `#${n}`;
+// You: {id, name} of your account, or null when logged out.
+export const isYou = (r, you) => !!you && r?.id != null && r.id === you.id;
+// A name cell: a deleted account's place shows as such.
+export const nameSpan = name => name == null ? '<span class="lb-name lb-gone">deleted player</span>'
+  : `<span class="lb-name" title="${esc(name)}">${esc(name)}</span>`;
 
-// top: [{name, score}] best first. You beyond the shown rows: a gap, then your row.
+// top: [{id, name, score}] best first. You beyond the shown rows: a gap, then your row.
 function rows(top, { fmt, you, limit, rank = null, best = null }) {
-  const shown = top.slice(0, limit).map((r, i) => row(i + 1, r.name, fmt(r.score), same(r.name, you), i >= 3));
-  if (rank > limit && best !== null) shown.push('<div class="lb-more">⋯</div>', row(rank, you, fmt(best), true));
+  const shown = top.slice(0, limit).map((r, i) => row(i + 1, r.name, fmt(r.score), isYou(r, you), i >= 3));
+  if (rank > limit && best !== null) shown.push('<div class="lb-more">⋯</div>', row(rank, you?.name, fmt(best), true));
   return shown.join('');
 }
 // extra: a row past the top three, left out on short, narrow screens unless it's yours.
 const row = (rank, name, score, you, extra = false) => `<div class="lb-row${you ? ' you' : extra ? ' lb-extra' : ''}"><span class="lb-rank">${rank}</span>
-  <span class="lb-name" title="${esc(name)}">${esc(name)}</span><span class="lb-score">${esc(score)}</span></div>`;
+  ${nameSpan(name)}<span class="lb-score">${esc(score)}</span></div>`;
+
+// The way to your profile (profile.js): your name when logged in, else "Log in".
+export const youLink = you => `<a href="#" class="lb-you-link" data-lb-profile title="${you ? 'Your profile' : 'Log in to post your scores'}">👤 ${esc(you?.name || 'Log in')}</a>`;
 
 // columns: [{ mode: {label, color, fmt}, board: {players, top} | null }] in menu order. '' when the board can't be reached.
 // medals: your medal count (HTML, may be ''); news: a line about new trophies (HTML, may be '').
@@ -56,18 +69,19 @@ export function menuCard(columns, you, { medals = '', news = '' } = {}) {
   const calendar = `<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅${medals ? '' : ' Past days'}</a>`;
   // On short screens there's only the leaders line: your medal count (which opens the calendar too), or else the 📅.
   return `<div class="lb lb-full">${news}<div class="lb-head"><span>TODAY'S LEADERBOARD</span><span class="dim">${medals} ${calendar}</span></div>
-    <div class="lb-cols">${cols}</div></div>
-    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}${medals || `<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅</a>`}</div>`;
+    <div class="lb-cols">${cols}</div><div class="lb-foot small">${youLink(you)}</div></div>
+    <div class="lb-line" title="Today's leaderboard"><span aria-hidden="true">🏆</span>${columns.map(leaderLine).join('')}${medals || `<a href="#" class="lb-cal-link" data-lb-cal title="Past days' leaderboards">📅</a>`}<a href="#" class="lb-you-link" data-lb-profile title="${you ? 'Your profile' : 'Log in'}">👤</a></div>`;
 }
 
 // One challenge's leader for the short-screen line: "ESCAPE Anna 7,300".
 function leaderLine({ mode, board }) {
-  const top = board?.top[0], who = top ? `<span class="lb-name">${esc(top.name)}</span><span class="lb-score">${esc(mode.fmt(top.score))}</span>`
+  const top = board?.top[0], who = top ? `${nameSpan(top.name)}<span class="lb-score">${esc(mode.fmt(top.score))}</span>`
     : `<span class="lb-empty">${board ? 'nobody yet' : '–'}</span>`;
   return `<span class="lb-leader"><b style="color:${mode.color}">${esc(mode.label.toUpperCase())}</b>${who}</span>`;
 }
 
-// board: {players, top, rank?, best?} for the challenge just played; foot: HTML under it (the name form, or who you are).
+// board: {players, top, rank?, best?} for the challenge just played; foot: HTML under it (who you are; the login box
+// goes into .lb-foot after).
 export function resultCard(mode, board, you, foot) {
   const place = board.rank ? `<span class="dim">${ordinal(board.rank)} of ${board.players}</span>` : '';
   const list = board.top.length ? rows(board.top, { fmt: mode.fmt, you, limit: 5, rank: board.rank, best: board.best })
