@@ -13,10 +13,19 @@ export async function saveBest(db, { mode, day, key, name, score, now = Date.now
     .bind(mode, day, key).first();
 }
 
-// A player who changes their name takes today's row along: the old name's row goes (its score is sent again).
-export async function dropRow(db, { mode, day, key }) {
-  await db.prepare('DELETE FROM scores WHERE mode = ?1 AND day = ?2 AND name_key = ?3').bind(mode, day, key).run();
-}
+// A player who changes their name takes that day's rows along, in every challenge: each lands on the new name (the
+// better score wins if it has one already), then the old name's rows go. Statements for one batch; only rename.js
+// calls this, once it has checked the old name belongs to the same device.
+export const moveDay = (db, { day, from, to, name }) => [
+  db.prepare(`INSERT INTO scores (mode, day, name_key, name, score, updated_at)
+    SELECT mode, day, ?3, ?4, score, updated_at FROM scores WHERE day = ?1 AND name_key = ?2
+    ON CONFLICT (mode, day, name_key) DO UPDATE SET
+      name = excluded.name,
+      updated_at = CASE WHEN excluded.score > scores.score THEN excluded.updated_at
+        WHEN excluded.score = scores.score THEN MIN(excluded.updated_at, scores.updated_at) ELSE scores.updated_at END,
+      score = MAX(scores.score, excluded.score)`).bind(day, from, to, name),
+  db.prepare('DELETE FROM scores WHERE day = ?1 AND name_key = ?2').bind(day, from),
+];
 
 // 1 + how many players are ahead: a higher score, or the same score set earlier.
 export async function rankOf(db, { mode, day }, best) {

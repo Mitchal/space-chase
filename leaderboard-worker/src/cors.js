@@ -15,7 +15,7 @@ export function corsHeaders(origin) {
   return {
     'access-control-allow-origin': origin,
     'access-control-allow-methods': 'GET, POST, OPTIONS',
-    'access-control-allow-headers': 'content-type',
+    'access-control-allow-headers': 'content-type, authorization', // authorization: the device key (device-key.js)
     'access-control-max-age': '86400',
     vary: 'Origin',
   };
