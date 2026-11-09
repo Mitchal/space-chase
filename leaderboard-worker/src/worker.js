@@ -1,5 +1,7 @@
 // Space Chase's leaderboard: today's best runs per daily challenge.
-//   POST /score  {mode, day, name, score, was?}  → {best, rank, players, top}   keeps each player's best of the day;
+//   POST /score  {mode, day, name, score, simVersion, replay, was?}  → {best, rank, players, top}   keeps each player's
+//                best of the day. The score only counts if replaying the run gives exactly it (verify-run.js):
+//                422 {error: 'replay'} if not, 409 {error: 'update'} if the run was played in another version of the game.
 //                was: the name used before a rename, whose row for that day is dropped.
 //                422 {error: 'name'} when the name isn't allowed (name-filter.js), so the game can ask for another.
 //                409 {error: 'closed'} once that day has stopped taking scores (day-close.js).
@@ -17,19 +19,22 @@ import { dayOpen, lastClosedDay } from './day-close.js';
 import { archiveClosedDays } from './podium-db.js';
 import { getMonth, getTrophies } from './history-routes.js';
 import { json } from './json-response.js';
+import { verifyRun, MAX_BODY } from './verify-run.js'; // MAX_BODY: a score with its replay
 
-const MAX_BODY = 1024; // bytes; a real score is about 100
 
 async function postScore(request, env, cors) {
   const text = await request.text();
   if (text.length > MAX_BODY) return json({ error: 'too big' }, 413, cors);
   let body;
   try { body = JSON.parse(text); } catch { return json({ error: 'expected JSON' }, 400, cors); }
-  const mode = cleanMode(body?.mode), day = cleanDay(body?.day), score = cleanScore(body?.score);
-  if (!mode || !day || score === null) return json({ error: 'bad mode, day or score' }, 400, cors);
+  const mode = cleanMode(body?.mode), day = cleanDay(body?.day), claimed = cleanScore(body?.score);
+  if (!mode || !day || claimed === null) return json({ error: 'bad mode, day or score' }, 400, cors);
   if (!dayOpen(day)) return json({ error: 'closed' }, 409, cors);
   const name = cleanName(body?.name);
   if (!name || !nameAllowed(name)) return json({ error: 'name' }, 422, cors);
+  const run = verifyRun(body, { mode, day, claimed });
+  if (!run.ok) { const { ok, status, ...answer } = run; return json(answer, status, cors); }
+  const score = run.score;
   const where = { mode, day }, key = nameKey(name), was = cleanName(body?.was);
   if (was && nameKey(was) !== key) await dropRow(env.DB, { ...where, key: nameKey(was) });
   const best = await saveBest(env.DB, { ...where, key, name, score });

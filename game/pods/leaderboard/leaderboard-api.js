@@ -3,21 +3,29 @@
 import { LEADERBOARD_URL } from './leaderboard-url.js';
 
 const TIMEOUT_MS = 6000;
-const NAME_REFUSED = 422; // the Worker's answer to a name it won't show: {error: 'name'}, so the game can ask again
+// Answers the game acts on: a name the Worker won't show (422 {error: 'name'}: ask for another), and a run played in
+// another version of the game (409 {error: 'update'}: its replay can't be checked, core/replay-run.js).
+const ANSWERED = new Set(['name', 'update']);
 export const nameRefused = answer => answer?.error === 'name';
+export const needsUpdate = answer => answer?.error === 'update';
 
 async function call(path, init) {
   const stop = new AbortController(), timer = setTimeout(() => stop.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(LEADERBOARD_URL + path, { ...init, signal: stop.signal });
-    return res.ok || res.status === NAME_REFUSED ? await res.json() : null;
+    if (res.ok) return await res.json();
+    const answer = res.status === 422 || res.status === 409 ? await res.json() : null;
+    return ANSWERED.has(answer?.error) ? answer : null;
   } catch { return null; } finally { clearTimeout(timer); }
 }
 
-// → { best, rank, players, top: [{name, score}] }, {error: 'name'} or null. The board keeps each player's best of the day.
-// was: the name before a rename, so that day's row moves to the new name instead of staying behind.
-export const postScore = ({ mode, day, name, score, was = null }) => call('/score', {
-  method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mode, day, name, score, was }),
+// → { best, rank, players, top: [{name, score}] }, {error: 'name'}, {error: 'update'} or null. The board keeps each
+// player's best of the day. The Worker plays the run's replay (simVersion, replay: core/replay-recorder.js) and keeps
+// the score that comes out of it, which must be the score claimed. was: the name before a rename, so that day's row
+// moves to the new name instead of staying behind.
+export const postScore = ({ mode, day, name, score, simVersion, replay, was = null }) => call('/score', {
+  method: 'POST', headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ mode, day, name, score, simVersion, replay, was }),
 });
 
 // → { players, top: [{name, score}] } or null.

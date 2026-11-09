@@ -1,6 +1,7 @@
 // How the flight looks: the death walls, the death wave (with a warning when it's off-screen),
 // the finish line, and a run-wide progress bar showing you and the wave (P5: the threat must read).
-import { world, W, H } from '../../core/world.js';
+import { world, H } from '../../core/world.js';
+import { W } from '../../core/view-size.js';
 import { content, addDrawer, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
 import { hudFont, view } from '../../core/canvas.js';

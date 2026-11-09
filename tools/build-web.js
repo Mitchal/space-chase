@@ -15,6 +15,8 @@ function copy(dir, rel = '') {
       if (SKIP_DIRS.has(d.name) && !rel) continue;
       if (rel === 'pods' && DEV_PODS.has(d.name)) continue;
       copy(path.join(dir, d.name), r);
+    } else if (!rel && d.name === 'package.json') {
+      continue; // it marks game/ as ES modules for Node (the tests); the game doesn't need it
     } else {
       fs.mkdirSync(path.join(OUT, rel), { recursive: true });
       fs.copyFileSync(path.join(dir, d.name), path.join(OUT, r));

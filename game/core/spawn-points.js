@@ -1,11 +1,16 @@
 // Where new things may appear. All points are in world coordinates, relative to the current view.
 // Entities with `keepClear` reserve the space around them; entities flagged `field` (rocks, mines) avoid each other.
 import { world, H, MIN_W } from './world.js';
-import { playFrame } from './camera.js';
+import { playFrame } from './focus.js';
 import { player } from './player.js';
-import { rand, dist, clamp } from './geometry.js';
+import { between, dist, clamp } from './geometry.js';
+import { simRng } from './course-seed.js';
 
-// Spawning uses the play frame (core/camera.js), not the visible width: a wider screen must not change where pursuers
+// Random choices come from the run's own stream (core/course-seed.js), so a replay makes the same ones.
+const random = () => simRng('spawn-points')();
+const rand = (a, b) => between(random, a, b);
+
+// Spawning uses the play frame (core/focus.js), not the visible width: a wider screen must not change where pursuers
 // come from (bots won 5/20 at phone width vs 2/20 at 960 before this).
 const view = () => { const f = playFrame(); return { x: f.left, y: f.top }; };
 const clearOfReserved = (pt, radius) => world.ents.every(e => !e.keepClear || e.dead || dist(e, pt) > e.keepClear + radius);
@@ -22,7 +27,7 @@ export function edgePoint(minFromPlayer = 220) {
   const { x: cx, y: cy } = view();
   let pt = { x: cx + 30, y: cy + 30 };
   for (let k = 0; k < 30; k++) {
-    const side = Math.floor(Math.random() * 4);
+    const side = Math.floor(random() * 4);
     pt = side === 0 ? { x: cx + rand(30, MIN_W - 30), y: cy + 30 } : side === 1 ? { x: cx + rand(30, MIN_W - 30), y: cy + H - 30 }
        : side === 2 ? { x: cx + 30, y: cy + rand(30, H - 30) } : { x: cx + MIN_W - 30, y: cy + rand(30, H - 30) };
     if (dist(pt, player) > minFromPlayer && clearOfReserved(pt, 0)) return pt;
@@ -51,7 +56,7 @@ export function flankPoint(minFromPlayer = 380) {
   const { x: cx, y: cy } = view();
   let best = null, bestD = -1;
   for (let k = 0; k < 20; k++) {
-    const side = Math.random() < 0.8 ? Math.floor(Math.random() * 2) : 2; // mostly the sides: crossing, not head-on
+    const side = random() < 0.8 ? Math.floor(random() * 2) : 2; // mostly the sides: crossing, not head-on
     let x = side === 2 ? cx + MIN_W + 40 : cx + rand(MIN_W * 0.2, MIN_W * 0.65);
     x = Math.max(x, world.rearX + 200);
     const lane = world.laneAt(x), top = Math.max(cy - 40, lane.top + 30), bottom = Math.min(cy + H + 40, lane.bottom - 30);
@@ -68,7 +73,7 @@ export const entryPoint = from => from === 'behind' ? behindPoint() : from === '
 
 // A point in [x0, x1] inside the lane (or up to `spill` beyond its walls), clear of other field objects by `gap`.
 // Returns the roomiest try if crowded. random: the course's generator for this piece (core/course-seed.js).
-export function fieldPoint(x0, x1, radius, gap = 40, spill = 0, random = Math.random) {
+export function fieldPoint(x0, x1, radius, gap = 40, spill = 0, random = simRng('field-points')) {
   const between = (a, b) => a + random() * (b - a);
   let best = null, bestSlack = -Infinity;
   for (let k = 0; k < 30; k++) {

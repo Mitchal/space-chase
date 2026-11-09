@@ -5,8 +5,10 @@
   "description": "Space Chase: you can't attack. Lead your pursuers into rocks, walls and each other. A daily course every day.",
   "scripts": {
     "dev": "node serve.js",
-    "lint": "node tools/check-pods.js",
-    "build": "node tools/check-pods.js && node tools/build-web.js",
+    "lint": "node tools/check-pods.js && node tools/check-determinism.js",
+    "test": "node tools/list-sim-pods.js && node --test \"tests/*.test.js\"",
+    "bench:replay": "node tests/bench-replay.js",
+    "build": "npm run lint && node tools/build-web.js",
     "android": "npm run build && npx cap sync android && node tools/build-android.js",
     "android:release": "npm run build && npx cap sync android && node tools/build-android.js --release"
   },

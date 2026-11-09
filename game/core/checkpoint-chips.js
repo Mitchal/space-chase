@@ -1,4 +1,4 @@
-// The "start at arena N" chip row, shared by any screen that offers checkpoints.
+// host-only: the "start at arena N" chip row, shared by any screen that offers checkpoints.
 import { content } from './registry.js';
 import { progress, setChosenStart } from './storage.js';
 

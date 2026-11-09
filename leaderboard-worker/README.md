@@ -2,8 +2,9 @@
 
 A small Cloudflare Worker with a D1 (SQLite) database. It keeps each player's best score per daily challenge per day,
 and the game shows today's top scores on the main menu and under the results. Each day's top five is kept for good:
-the game's calendar shows any past day, and places 1 to 3 are that player's gold, silver and bronze trophies. It runs on Cloudflare's free plan
-(100,000 requests a day, which is roughly a thousand daily players) and never goes to sleep.
+the game's calendar shows any past day, and places 1 to 3 are that player's gold, silver and bronze trophies. It was built for Cloudflare's free plan
+(100,000 requests a day, which is roughly a thousand daily players) and never goes to sleep; replaying every score
+needs more CPU than the free plan gives one request (see "Every score is replayed" below).
 
 Until its address is in `game/pods/leaderboard/leaderboard-url.js`, the game has no board and works exactly as before.
 
@@ -57,6 +58,10 @@ npm run dev
 
 To run the hourly job by hand while it's running: `curl "http://127.0.0.1:8787/__scheduled?cron=35+*+*+*+*"`.
 
+`npm run dev` first lists the game's pods for the bundled simulation (`[build]` in `wrangler.toml`) and rebuilds when
+the game's code changes. `node tests/post-replays.js` in the repo root plays long runs of today's challenges and posts
+them to the local Worker, timing each.
+
 Then start the game as usual (`npm run dev` in the repo root) and open
 http://localhost:8765/?leaderboard=http://127.0.0.1:8787 to play against the local board. The `?leaderboard=` switch
 only works on localhost. The local database lives in `.wrangler/`; delete that folder to start over.
@@ -65,8 +70,8 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
 
 - **Who can post:** browsers only from the game's own addresses (spacechase.mikaelbrandt.com, mitchal.github.io, the
   Android app and localhost); the list is in `src/cors.js`. If the game moves to another address, add it there and deploy.
-- **Checks:** a known date (within a day of today), a name of 1 to 16 characters, and a whole-number score from 0 to
-  10,000,000.
+- **Checks:** a known date (within a day of today), a name of 1 to 16 characters, a whole-number score from 0 to
+  10,000,000, and then the score itself, by replaying the run (below).
 - **Names:** `src/name-filter.js` refuses the obvious slurs and swearing (English and Swedish, also spelled with
   digits or dots). The game then asks the player for another name. Add words there as they turn up.
 - **Floods:** one address can send 20 scores and read the board 120 times a minute (`[[ratelimits]]` in
@@ -80,8 +85,24 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
 - **Every hour at half past** (`[triggers]` in `wrangler.toml`): each closed day's top five per challenge is copied into the
   `podium` table and kept for good (`src/podium-db.js`); then scores rows older than 30 days are deleted
   (`src/cleanup.js`). The privacy page describes both, so change them together.
-- **No anti-cheat:** anyone who looks at the game's code can send a made-up score from a terminal. If that happens,
-  remove the row (below).
+- **Every score is replayed:** the game sends each score with its run's input (one small frame per 1/60 s tick: the
+  steering direction and grip, packed into a few kB) and the version of the game's simulation it was played in. The
+  Worker bundles the game's own simulation (`../game/core/` and every `../game/pods/*/sim.js`, listed by
+  `tools/list-sim-pods.js` before each build), plays the run again from the day's seed and keeps the score that comes
+  out, which must equal the score claimed (`src/verify-run.js`). The simulation is deterministic to the bit on every
+  engine (`npm run lint` checks it; `npm test` replays recorded runs), so an honest run always checks out.
+  - A made-up score, or a replay that's been edited, cut short or padded, gets 422 `{"error":"replay"}` (and a log line
+    `replay mismatch` when only the score was off: worth a look if it ever shows up for an honest player).
+  - A run played in another version of the game gets 409 `{"error":"update"}`: its replay can't be checked by this
+    simulation. The game then says "Update the game to put your scores on the board." So **deploy the Worker together
+    with each game release that changes `SIM_VERSION`** (`game/core/sim-version.js`): until both are out, scores from the
+    side that's ahead are turned away.
+  - What it can't catch: who or what was steering. A bot, a script or a slowed-down tool-assisted run sends genuinely
+    valid input and passes. Replays from before this check (game 1.4.x) can't be checked at all.
+  - **Cost:** replaying is real work: about 20 to 30 µs of CPU per tick, so roughly 100 ms for a minute-long Escape run
+    and up to ~400 ms for the longest possible one (~4 minutes; `npm run bench:replay` in the repo root measures it).
+    The free plan allows 10 ms of CPU per request, so on the free plan long runs' scores would be cut off with an
+    error. Decide how to run it (Workers Paid, or checking only some scores, or checking later) before deploying.
 - **Remove a row** (a test name, a made-up score, a rude name, or someone asking to be removed):
   ```bash
   npx wrangler d1 execute space-chase-leaderboard --remote --command "DELETE FROM scores WHERE name_key = 'test'"
@@ -100,8 +121,11 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
 
 ## The API
 
-- `POST /score` with JSON `{mode, day, name, score, was?}` keeps the player's best for that day and returns
-  `{best, rank, players, top}`. `was` is the name used before a rename: that name's row for the day is dropped.
+- `POST /score` with JSON `{mode, day, name, score, simVersion, replay, was?}` replays the run and, if it gives exactly
+  `score`, keeps the player's best for that day and returns `{best, rank, players, top}`. `replay` is the run's input
+  (base64, `game/core/replay-codec.js`); `simVersion` the simulation it was played in. `was` is the name used before a
+  rename: that name's row for the day is dropped. A score the replay doesn't bear out gets 422 `{"error":"replay"}`;
+  a run from another version of the game gets 409 `{"error":"update", "simVersion"}`. Up to 160 kB per request.
   A refused name gets 422 `{"error":"name"}`; too many calls from one address get 429.
 - `GET /top?mode=flight&day=2026-11-06` returns `{players, top: [{name, score}]}`, the top ten.
 - `GET /month?m=2026-11` returns every day of that month that anyone played, with its top five per challenge:

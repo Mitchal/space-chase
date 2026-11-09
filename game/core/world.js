@@ -1,12 +1,9 @@
-// Shared state of the current run and stage, plus the entity store.
-// Entities live in world coordinates. The screen is a W×H view onto the world through the camera.
+// Shared state of the current run and stage, plus the entity store: the simulation's state.
+// Entities live in world coordinates. The game plays in a MIN_W × H frame around world.focus (core/focus.js); the screen
+// may show more of it (core/view-size.js), but nothing the screen does reaches the simulation.
 import { emit } from './events.js';
 
-// The view is always H tall; its width W follows the screen's shape (a phone on its side is ~2:1), between MIN_W and MAX_W.
-// W is a live binding: importers always see the current width.
-export const H = 640, MIN_W = 960, MAX_W = 1440;
-export let W = MIN_W;
-export function setViewWidth(w) { W = Math.round(Math.max(MIN_W, Math.min(MAX_W, w))); }
+export const H = 640, MIN_W = 960;
 
 export const world = {
   t: 0,
@@ -17,11 +14,13 @@ export const world = {
   pressure: 1, // 0..~1.4, set by a pacing pod; spawners scale with it
   transition: 0, // seconds left in the between-stages pause
   paused: false,
-  botPolicy: null, // when set, a bot drives the player instead of the keyboard
-  cam: { x: 0, y: 0 }, // top-left of the view, in world coordinates
+  botPolicy: null, // when set, a bot drives the player instead of the keyboard (the host asks it for input each tick)
+  input: { ix: 0, iy: 0, grip: 14 }, // this tick's input, from a live player, a bot or a replay (core/sim-input.js)
+  focus: { x: MIN_W / 2, y: H / 2 }, // the centre of the play frame (core/focus.js)
+  cam: { x: 0, y: 0 }, // top-left of the view, in world coordinates: drawing only (core/camera.js)
   cameraFollows: false, // a mode pod sets this to keep the view centred on the player
   flipView: false, // a mode pod sets this to show the world end for end (ahead to the left, or down an upright screen)
-  bounds: { minX: 0, maxX: W, minY: 0, maxY: H }, // hard limits for anything that moves
+  bounds: { minX: 0, maxX: MIN_W, minY: 0, maxY: H }, // hard limits for anything that moves
   rearX: -Infinity, // nothing should appear behind this x (e.g. a death wave)
   cullBehind: false, // drop entities flagged `cull` once they're far left of the view (a forward flight)
   // The open lane at a given x (and time t, default now): { top, bottom }. A mode pod can replace this with a shaped corridor.

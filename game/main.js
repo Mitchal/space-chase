@@ -1,7 +1,9 @@
 // Boots the kernel, then loads whatever pods exist on disk. Deleting a pod folder removes the feature.
+import './core/sim-kernel.js'; // first: the simulation's systems register in the same order as in a headless replay
+import './core/live-run.js';
+import './core/effects-view.js';
+import './core/player-view.js';
 import './core/loop.js';
-import './core/run.js';
-import './core/camera.js';
 import { content } from './core/registry.js';
 import { startRun } from './core/run.js';
 import { loadServerLog, progress } from './core/storage.js';

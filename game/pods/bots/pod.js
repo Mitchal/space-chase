@@ -1,31 +1,22 @@
 // Headless playtests: window.LureSim.run(...) / .batch(n). Runs synchronously, never touches the taste log.
-import { world } from '../../core/world.js';
+// Each run is on a fresh random course unless you pass a seed; its replay is in the result (core/replay-run.js).
 import { emit } from '../../core/events.js';
-import { collectSummary } from '../../core/registry.js';
-import { startRun } from '../../core/run.js';
-import { step } from '../../core/loop.js';
-import { handling } from '../../core/player.js';
-import { randomPolicy, evaderPolicy } from './bot-policies.js';
+import { playBot } from './bot-run.js';
 
-const POLICIES = { random: randomPolicy, evader: evaderPolicy };
+const freshSeed = () => `bot|${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`;
 
-// direct: bypass any installed steering (e.g. thrusters) so bots compare layouts, not their own piloting.
-// mode: a game mode's id (left out: the current one).
-function run({ policy = 'evader', variant = 'A', startArena = 0, maxS = 600, direct = false, mode } = {}) {
-  const steer = handling.steer;
-  if (direct) handling.steer = null;
-  world.botPolicy = POLICIES[policy]();
-  startRun({ mode, variant, startArena, index: -1 });
-  for (let i = 0; i < maxS * 60 && !world.run.over; i++) step(1 / 60);
-  if (!world.run.over) { world.run.outcome = 'timeout'; emit('arenaExit', world.arena); world.run.endedAt = world.t - world.run.startedAt; }
-  const s = collectSummary().telemetry;
-  world.botPolicy = null; world.run = null; handling.steer = steer;
+// opts: { policy, variant, startArena, maxS, direct, mode, seed } (bot-run.js).
+function run(opts = {}) {
+  const { policy = 'evader', variant = 'A' } = opts;
+  const { summary, replay } = playBot({ ...opts, policy, variant, seed: opts.seed ?? freshSeed() });
+  const s = summary.telemetry;
   emit('showTitle');
   const kills = Object.values(s.kills).reduce((a, b) => a + b, 0);
   return {
     policy, variant, outcome: s.outcome, durationS: s.durationS, arenaReached: s.arenaReached, killedBy: s.killedBy,
     kills, seenShare: +(s.pursuersSeenS / s.durationS).toFixed(2), onScreen: +(s.pursuerScreenS / s.durationS).toFixed(2), wave: s.kills.wave || 0, nearMisses: s.nearMisses, killsPerS: +(kills / s.durationS).toFixed(2), lullShare: kills ? +(s.killsInLull / kills).toFixed(2) : null,
     arenas: s.arenas.map(a => ({ arena: a.arena, s: a.durationS, kills: a.kills, keys: a.keysAtS, escaped: a.escaped })),
+    replay,
   };
 }
 

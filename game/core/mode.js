@@ -1,4 +1,4 @@
-// Playtest mode: the taste experiment's tools (the reaction form, the on-disk log, blind A/B variants).
+// host-only: playtest mode: the taste experiment's tools (the reaction form, the on-disk log, blind A/B variants).
 // Off for players. Turn it on with ?playtest=1 (it sticks in this browser) and off with ?playtest=0.
 const KEY = 'lure.playtest';
 const asked = new URLSearchParams(location.search).get('playtest');

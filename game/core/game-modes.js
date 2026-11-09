@@ -4,7 +4,6 @@
 // Systems and drawers can be limited to one mode (the `mode` option in registry.js).
 import { world } from './world.js';
 import { content } from './registry.js';
-import { setCourseSeed } from './course-seed.js';
 
 // What a mode may change. Snapshotted here, before any pod loads.
 const CONTENT_KEYS = ['arenas', 'stageLabel', 'stageFlow', 'forward', 'scoring'];
@@ -17,7 +16,9 @@ const modes = new Map(), notes = new Map();
 // def: { id, label, color, tagline, howToPlay: [html], setup(),
 //        score(summary, run) → number (higher is better), format(score) → text,
 //        result?(run, summary) → { title, score, newBest, line, share } for the results screen }
-export function addMode(def) { modes.set(def.id, def); }
+// A mode pod may add its def in parts: the simulation's (setup, score: its sim.js, which a headless replay loads too)
+// and then how it looks (the rest). Each call adds to what's there.
+export function addMode(def) { modes.set(def.id, { ...modes.get(def.id), ...def }); }
 export const modeList = () => [...modes.values()];
 export const modeById = id => modes.get(id) || null;
 export const currentMode = () => modes.get(world.mode) || null;
@@ -34,11 +35,10 @@ export function useMode(id) {
   const def = modes.get(id) || currentMode() || modeList()[0];
   Object.assign(content, defaults.content);
   Object.assign(world, defaults.world, { bounds: { ...defaults.world.bounds } });
-  setCourseSeed(null);
   world.mode = def?.id ?? null;
   def?.setup?.();
 }
 
 // A run's score in its mode's terms, and how to show it.
 export const runScore = (summary, run) => currentMode()?.score?.(summary, run) ?? summary.score?.score ?? 0;
-export const formatScore = (n, mode = currentMode()) => mode?.format?.(n) ?? n.toLocaleString();
+export const formatScore = (n, mode = currentMode()) => mode?.format?.(n) ?? String(n); // each mode formats its own (locale-aware)

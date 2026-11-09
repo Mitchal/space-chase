@@ -1,4 +1,4 @@
-// The game's day. The daily challenges and their courses, the leaderboard, streaks and daily stats all turn over at
+// host-only: the game's day. The daily challenges and their courses, the leaderboard, streaks and daily stats all turn over at
 // midnight in Sweden, for everyone (his call, 2026-11-07: "Make Swedish midnight be the time"): one day, one course and
 // one board, wherever you play. The leaderboard Worker closes a day at the same moment (leaderboard-worker/src/day-close.js).
 // Days are 'YYYY-MM-DD'.

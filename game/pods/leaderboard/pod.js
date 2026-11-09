@@ -8,8 +8,9 @@ import { on } from '../../core/events.js';
 import { collectSummary } from '../../core/registry.js';
 import { runScore } from '../../core/game-modes.js';
 import { playtest } from '../../core/mode.js';
+import { lastReplay } from '../../core/replay-recorder.js';
 import { LEADERBOARD_URL } from './leaderboard-url.js';
-import { today, noteScore } from './player-record.js';
+import { noteScore } from './player-record.js';
 import { wireMenuBoard } from './menu-board.js';
 import { wireResultsBoard, boardAfterRun, forgetRun } from './results-board.js';
 import { wireCalendar } from './calendar.js';
@@ -20,14 +21,15 @@ if (LEADERBOARD_URL) {
   wireResultsBoard();
   wireCalendar();
 
-  // The day a run belongs to is the day it started (a run past midnight still counts for the course it flew).
-  let day = today();
-  on('runStart', () => { day = today(); forgetRun(); markSeen(); }); // trophy news shows until your next run
+  on('runStart', () => { forgetRun(); markSeen(); }); // trophy news shows until your next run
 
+  // The day a run belongs to is the day it started (a run past midnight still counts for the course it flew). Its
+  // replay goes with the score; only a daily run from the start can be checked (the Worker replays exactly that).
   on('runEnd', run => {
     if (world.botPolicy || playtest || !run.mode) return;
-    const score = Math.round(runScore(collectSummary(), run));
+    const score = Math.round(runScore(collectSummary(), run)), rec = lastReplay();
     if (!Number.isFinite(score) || score < 0) return;
-    boardAfterRun(run.mode, day, noteScore(run.mode, day, score));
+    const daily = rec && rec.startArena === 0 && rec.variant === 'A' && rec.seed === `${run.mode}|${run.day}`;
+    boardAfterRun(run.mode, run.day, noteScore(run.mode, run.day, score, daily ? rec : null));
   });
 }

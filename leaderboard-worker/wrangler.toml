@@ -3,6 +3,12 @@ name = "space-chase-leaderboard"
 main = "src/worker.js"
 compatibility_date = "2026-10-01"
 
+# The Worker replays posted runs with the game's own simulation (src/verify-run.js), bundled from ../game. This lists
+# the game's pods for it before every build (tools/list-sim-pods.js) and rebuilds when the game's code changes.
+[build]
+command = "node ../tools/list-sim-pods.js"
+watch_dir = ["src", "../game"]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "space-chase-leaderboard"

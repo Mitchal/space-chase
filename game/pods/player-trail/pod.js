@@ -8,11 +8,11 @@ import { on } from '../../core/events.js';
 import { addSystem, addDrawer, ORDER, LAYER } from '../../core/registry.js';
 import { player } from '../../core/player.js';
 import { glowSprite, drawSprite } from '../../core/sprites.js';
+import { visualRand, visualRandom } from '../../core/visual-random.js';
 
 const COLOR = '#7cf2c8', RIBBON_S = 0.45, SPARKLE_EVERY = 6, MAX_SPARKLES = 320, JUMP = 60;
 let ribbon = [], sparkles = [], last = null, travelled = 0;
 
-const rnd = (a, b) => a + Math.random() * (b - a);
 const clear = () => { ribbon = []; sparkles = []; last = null; travelled = 0; };
 on('runStart', clear);
 
@@ -25,9 +25,9 @@ const star = (key, col) => glowSprite(key, 4, 5, col, g => {
 
 function dropSparkle(x, y) {
   if (sparkles.length >= MAX_SPARKLES) sparkles.shift();
-  const life = rnd(1.0, 2.0);
-  sparkles.push({ x: x + rnd(-4, 4), y: y + rnd(-4, 4), vx: rnd(-14, 14), vy: rnd(-14, 14), t: life, life,
-    k: rnd(0.5, 1.1), phase: rnd(0, 6.3), spin: rnd(9, 16), white: Math.random() < 0.3 });
+  const life = visualRand(1.0, 2.0);
+  sparkles.push({ x: x + visualRand(-4, 4), y: y + visualRand(-4, 4), vx: visualRand(-14, 14), vy: visualRand(-14, 14), t: life, life,
+    k: visualRand(0.5, 1.1), phase: visualRand(0, 6.3), spin: visualRand(9, 16), white: visualRandom() < 0.3 });
 }
 
 // Lays the trail while you fly; keeps fading it after you're down or between stages.

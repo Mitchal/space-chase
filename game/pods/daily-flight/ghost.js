@@ -1,6 +1,7 @@
 // The ghost of today's best run: where you were, every tenth of a second of run time, played back beside you.
 // Run time is game time, so slow-mo and hit-stop stretch both runs alike.
-import { world, W, H } from '../../core/world.js';
+import { world, H } from '../../core/world.js';
+import { W } from '../../core/view-size.js';
 import { player } from '../../core/player.js';
 import { clamp } from '../../core/geometry.js';
 import { view } from '../../core/canvas.js';
