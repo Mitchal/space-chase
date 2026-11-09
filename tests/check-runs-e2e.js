@@ -5,6 +5,7 @@
 //   cd leaderboard-worker && npm run db:local && npm run dev      (with RUN_CHECK_SECRET in leaderboard-worker/.dev.vars)
 //   RUN_CHECK_SECRET=… node tests/check-runs-e2e.js [http://127.0.0.1:8787]
 import { spawnSync } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { playScripted } from './scripted-player.js';
 import { loadSim } from './load-sim.js';
@@ -20,7 +21,10 @@ if (!SECRET) throw new Error('Set RUN_CHECK_SECRET (the one in leaderboard-worke
 const day = gameToday(), tag = Date.now().toString(36).slice(-4);
 
 const call = async (path, init) => { const res = await fetch(BOARD + path, init); return { status: res.status, body: await res.json() }; };
-const post = body => call('/score', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+// One device per name (game/pods/leaderboard/device-key.js): a name belongs to the device that first posts with it.
+const devices = new Map(), deviceOf = name => devices.get(name) ?? devices.set(name, randomBytes(32).toString('hex')).get(name);
+const post = body => call('/score', { method: 'POST', body: JSON.stringify(body),
+  headers: { 'content-type': 'application/json', authorization: `Bearer ${deviceOf(body.name)}` } });
 const names = async mode => (await call(`/top?mode=${mode}&day=${day}`)).body.top.map(r => r.name);
 function expect(ok, what) { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if (!ok) process.exitCode = 1; }
 
