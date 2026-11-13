@@ -22,6 +22,8 @@ export const content = {
   dailyNotes: [], // () => short text a pod adds to the header of the menu's daily challenges (e.g. a streak)
   resultNotes: [], // run => text a pod adds to the end-of-run stats
   resultPanels: [], // (el, run) => void: a pod fills its own box under the results card, now or later (e.g. after a fetch)
+  bestRun: null, // async (mode, day) => {name, score, simVersion, replay} | null: the day's leader and their run, from a
+                 // pod that knows (the leaderboard), for one that shows it (core/replay-watch.js)
 };
 
 // mode: only while a run is in that game mode (core/game-modes.js); unset, in every mode.

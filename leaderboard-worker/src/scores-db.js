@@ -1,5 +1,5 @@
 // The scores table (migrations/0001_scores.sql, 0004_run_checks.sql): one row per name, mode and day, holding that
-// player's best, with the replay of the run that set it until the run has been checked (run-checks-db.js).
+// player's best, with the replay of the run that set it (checked later, run-checks-db.js).
 // A row whose run failed its check is hidden from everything here, and is frozen: later posts don't change it and a
 // rename doesn't drop it, so the evidence stays (until the day is deleted after 30 days, cleanup.js).
 export const TOP_N = 10;
@@ -62,4 +62,11 @@ export async function playerCount(db, { mode, day }) {
   const row = await db.prepare(`SELECT COUNT(*) AS n FROM scores WHERE mode = ?1 AND day = ?2 AND ${SHOWN}`)
     .bind(mode, day).first();
   return row.n;
+}
+
+// The day's leader with their run's replay, to watch it in the game: {name, score, simVersion, replay} or null.
+// replay is null for a run checked before replays were kept (game 1.5.x and earlier).
+export async function leaderRun(db, { mode, day }) {
+  return await db.prepare(`SELECT name, score, sim_version AS simVersion, replay FROM scores WHERE mode = ?1 AND day = ?2
+    AND ${SHOWN} ORDER BY score DESC, updated_at ASC LIMIT 1`).bind(mode, day).first() ?? null;
 }

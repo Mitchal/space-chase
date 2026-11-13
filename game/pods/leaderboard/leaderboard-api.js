@@ -34,6 +34,9 @@ export const postScore = ({ mode, day, name, score, simVersion, replay, was = nu
 // → { players, top: [{name, score}] } or null.
 export const fetchTop = (mode, day) => call(`/top?mode=${encodeURIComponent(mode)}&day=${encodeURIComponent(day)}`);
 
+// The day's leader and their run's input, to watch it: → { run: {name, score, simVersion, replay} | null } or null.
+export const fetchBestRun = (mode, day) => call(`/best?mode=${encodeURIComponent(mode)}&day=${encodeURIComponent(day)}`);
+
 // A month of daily top fives, for the calendar: → { month, days: { 'YYYY-MM-DD': { final, closes?, modes: { [mode]:
 // [{name, score}] best first } } } } or null. final: the day stopped taking scores; closes: when an open one will (ms).
 export const fetchMonth = month => call(`/month?m=${encodeURIComponent(month)}`);

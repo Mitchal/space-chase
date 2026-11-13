@@ -5,11 +5,12 @@
 // runs fly A/B variants, so they aren't comparable). Delete this folder and the game has no board, as before.
 import { world } from '../../core/world.js';
 import { on } from '../../core/events.js';
-import { collectSummary } from '../../core/registry.js';
+import { content, collectSummary } from '../../core/registry.js';
 import { runScore } from '../../core/game-modes.js';
 import { playtest } from '../../core/mode.js';
 import { lastReplay } from '../../core/replay-recorder.js';
 import { LEADERBOARD_URL } from './leaderboard-url.js';
+import { fetchBestRun } from './leaderboard-api.js';
 import { noteScore } from './player-record.js';
 import { wireMenuBoard } from './menu-board.js';
 import { wireResultsBoard, boardAfterRun, forgetRun } from './results-board.js';
@@ -20,6 +21,8 @@ if (LEADERBOARD_URL) {
   wireMenuBoard();
   wireResultsBoard();
   wireCalendar();
+  // The day's leader with their run, for a pod that shows it being flown (content.bestRun, core/registry.js).
+  content.bestRun = async (mode, day) => (await fetchBestRun(mode, day))?.run ?? null;
 
   on('runStart', () => { forgetRun(); markSeen(); }); // trophy news shows until your next run
 

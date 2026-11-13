@@ -1,12 +1,14 @@
 // host-only: the frame loop. Real time is fed to the simulation in fixed ticks (core/sim-tick.js): each tick takes this
 // moment's input (core/input.js), records it (core/replay-recorder.js) and plays it. Then the frame is drawn, blended
-// between the last two ticks (core/render-blend.js). Bots drive their runs themselves.
+// between the last two ticks (core/render-blend.js). Bots drive their runs themselves. A recorded run being watched
+// (core/replay-watch.js) plays here too, its frames standing in for this device's input.
 import { world } from './world.js';
 import { on, emit } from './events.js';
 import { player } from './player.js';
 import { tick, TICK } from './sim-tick.js';
 import { sampleFrame } from './input.js';
 import { recordFrame } from './replay-recorder.js';
+import { watching, nextWatchFrame } from './replay-watch.js';
 import { rememberPositions, blendPositions, restorePositions } from './render-blend.js';
 import { placeCamera } from './camera.js';
 import { drawFrame } from './canvas.js';
@@ -27,6 +29,7 @@ on('keyPressed', code => { if (code === 'KeyP') setPaused(!world.paused); });
 // One tick of live play.
 export function liveTick() {
   rememberPositions();
+  if (watching()) { tick(nextWatchFrame()); return; }
   const frame = sampleFrame(player);
   recordFrame(frame);
   tick(frame);
@@ -36,12 +39,12 @@ let last = performance.now(), owed = 0;
 function frame(now) {
   const elapsed = Math.min(MAX_FRAME_S, Math.max(0, now - last) / 1000);
   last = now;
-  if (world.run && !world.paused && !world.botPolicy) {
+  const live = world.run && (!world.botPolicy || watching());
+  if (live && !world.paused) {
     owed += elapsed;
     for (let n = 0; owed >= TICK && n < MAX_TICKS_PER_FRAME; n++) { liveTick(); owed -= TICK; }
     owed = Math.min(owed, TICK);
   } else owed = 0;
-  const live = world.run && !world.botPolicy;
   if (live) blendPositions(owed / TICK);
   placeCamera();
   drawFrame();

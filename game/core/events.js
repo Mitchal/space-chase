@@ -4,6 +4,7 @@
 // kill {e, cause}, hurt {cause, src}, playerDown {cause, src}, keyTaken {left, total},
 // exitOpened, keyPressed (code), pauseChanged (paused), showTitle, ready, nearMiss {e},
 // back {handled}: a screen that handles "back" sets handled = true.
+// watchStart {mode, day, name, score, …}, watchEnd: a recorded run being shown (core/replay-watch.js).
 
 const handlers = new Map();
 

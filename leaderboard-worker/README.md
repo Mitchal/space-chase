@@ -168,7 +168,8 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
      simulation, and sends back a verdict per run (`POST /checks/verdicts`). It keeps looking for a minute after it
      runs out, then stops. Actions minutes are free for a public repository. The Worker's hourly job asks for a check
      too while anything is waiting, and GitHub runs it every six hours anyway.
-  3. **A run that checks out** (`'ok'`) stays on the board and its replay is deleted. **A run that doesn't**
+  3. **A run that checks out** (`'ok'`) stays on the board and keeps its replay, so the game can show the day's
+     leader playing (`GET /best`); replays go with their day after 30 days. **A run that doesn't**
      (`'failed'`: the replay gives another score, stops before the run ends or goes on after it) disappears from the
      board, the player counts, the ranks, the calendar and the trophies. Its row stays, frozen with its replay and the
      reason (`check_note`), as evidence: that name can't post a new score that day or rename the row away.
@@ -187,7 +188,7 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
     ```
     A failed run is already hidden: nothing more needs doing. To clear the name for the rest of that day (it loses the
     evidence), delete its row as below. If an honest player's run ever fails (a bug that made the simulation play out
-    differently somewhere), put it back with `UPDATE scores SET check_status = 'ok', replay = NULL WHERE …`.
+    differently somewhere), put it back with `UPDATE scores SET check_status = 'ok' WHERE …`.
   - **See what's waiting:** `SELECT mode, day, name, score, updated_at FROM scores WHERE check_status = 'unchecked'`.
   - **When checks stop** (the token has expired, or the workflow has failed or been switched off): scores still show
     as usual, but closed days' top fives aren't kept until their runs are checked, and they're lost if that takes 30
@@ -223,6 +224,9 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   unreadable replay 422 `{"error":"replay"}`. Up to 160 kB per request. A refused name gets 422 `{"error":"name"}`;
   too many calls from one address get 429.
 - `GET /top?mode=flight&day=2026-11-06` returns `{players, top: [{name, score}]}`, the top ten.
+- `GET /best?mode=survive&day=2026-11-12` returns `{run: {name, score, simVersion, replay}}`: the day's leader and
+  their run's input, which the game plays on screen ("Watch the best"), or `{run: null}` when nobody has played. `replay`
+  is null for runs checked before replays were kept (game 1.5.x).
 - `GET /month?m=2026-11` returns every day of that month that anyone played, with its top five per challenge:
   `{month, days: {"2026-11-06": {final, closes?, modes: {flight: [{name, score}], survive: [...]}}}}`. `final` means the
   day has stopped taking scores; an open day has `closes` (ms since 1970).

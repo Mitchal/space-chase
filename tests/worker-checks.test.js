@@ -1,6 +1,6 @@
 // The leaderboard Worker trusts a score first and checks it later: it's stored unchecked with its replay and shown
 // right away; the checker takes the waiting runs (GET /checks/pending) and answers (POST /checks/verdicts). A run that
-// checks out loses its replay; one that fails is hidden everywhere but kept, frozen, as evidence.
+// checks out keeps its replay, so the game can show the day's leader (GET /best); one that fails is hidden everywhere but kept, frozen, as evidence.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { makeBoard, SECRET, TODAY } from './worker-harness.js';
@@ -60,13 +60,13 @@ test('only the checker, with the secret, can list or answer runs', async () => {
   assert.equal((await b.verdicts([{ ...b.verdict(run, true), at: 'soon' }])).status, 400);
 });
 
-test('a run that checks out stays on the board and drops its replay', async () => {
+test('a run that checks out stays on the board and keeps its replay', async () => {
   const b = makeBoard();
   await b.post('Anna', 500);
   const [run] = (await b.pending()).body.runs;
   assert.deepEqual((await b.verdicts([b.verdict(run, true)])).body, { applied: 1 });
   assert.equal(b.row('anna').check_status, 'ok');
-  assert.equal(b.row('anna').replay, null);
+  assert.equal(b.row('anna').replay, run.replay);
   assert.deepEqual((await b.pending()).body.runs, []);
   assert.deepEqual((await b.top()).top, [{ name: 'Anna', score: 500 }]);
 });
@@ -126,4 +126,18 @@ test('a rename takes an unchecked run along, still unchecked and with its replay
   assert.deepEqual([row.score, row.check_status, row.replay], [500, 'unchecked', replay]);
   assert.equal(b.row('anna'), undefined);
   assert.equal((await b.pending()).body.runs.length, 1);
+});
+
+test("the day's leader can be fetched with their run, and a failed run is never the leader", async () => {
+  const b = makeBoard();
+  const best = mode => b.call('GET', `/best?mode=${mode}&day=${TODAY}`).then(r => r.body);
+  assert.deepEqual(await best('flight'), { mode: 'flight', day: TODAY, run: null });
+  await b.post('Anna', 500);
+  await b.post('Bo', 700);
+  const { run } = await best('flight');
+  assert.deepEqual([run.name, run.score, run.simVersion, run.replay], ['Bo', 700, SIM_VERSION, b.row('bo').replay]);
+  const bo = (await b.pending()).body.runs.find(r => r.key === 'bo');
+  await b.verdicts([b.verdict(bo, false, 'score')]);
+  assert.equal((await best('flight')).run.name, 'Anna');
+  assert.equal((await b.call('GET', `/best?mode=flight&day=nope`)).status, 400);
 });

@@ -16,12 +16,11 @@ export async function uncheckedCount(db) {
   return (await db.prepare("SELECT COUNT(*) AS n FROM scores WHERE check_status = 'unchecked'").first()).n;
 }
 
-// verdicts: [{mode, day, key, at, score, ok, why?}]. A run that checked out drops its replay; one that didn't keeps it,
-// with why, as evidence. Returns how many rows changed.
+// verdicts: [{mode, day, key, at, score, ok, why?}]. Every run keeps its replay: one that checked out so the game can
+// show it (GET /best), one that didn't, with why, as evidence. Returns how many rows changed.
 export async function applyVerdicts(db, verdicts) {
   if (!verdicts.length) return 0;
-  const update = db.prepare(`UPDATE scores SET check_status = ?6, check_note = ?7,
-    replay = CASE WHEN ?6 = 'ok' THEN NULL ELSE replay END
+  const update = db.prepare(`UPDATE scores SET check_status = ?6, check_note = ?7
     WHERE mode = ?1 AND day = ?2 AND name_key = ?3 AND updated_at = ?4 AND score = ?5 AND check_status = 'unchecked'`);
   const done = await db.batch(verdicts.map(v =>
     update.bind(v.mode, v.day, v.key, v.at, v.score, v.ok ? 'ok' : 'failed', v.ok ? null : v.why)));

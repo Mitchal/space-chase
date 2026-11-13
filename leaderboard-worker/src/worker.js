@@ -9,6 +9,8 @@
 //                422 {error: 'name'} when the name isn't allowed (name-filter.js), so the game can ask for another.
 //                409 {error: 'closed'} once that day has stopped taking scores (day-close.js).
 //   GET  /top?mode=flight&day=2026-11-06  → {mode, day, players, top: [{name, score}]}
+//   GET  /best?mode=survive&day=2026-11-12  → {mode, day, run: {name, score, simVersion, replay} | null}: the day's
+//                leader with their run's input, so the game can show it being played.
 //   GET  /month, GET /trophies: the calendar of past days (history-routes.js).
 //   GET  /checks/pending, POST /checks/verdicts: for the run checker only (run-check-routes.js).
 // Too many calls from one address in a minute: 429 (rate-limits.js). Every hour, closed days' top fives are kept for
@@ -18,7 +20,7 @@ import { cleanMode, cleanDay, cleanName, cleanScore, nameKey } from './score-rul
 import { nameAllowed } from './name-filter.js';
 import { overLimit } from './rate-limits.js';
 import { dropOldDays } from './cleanup.js';
-import { saveBest, rankOf, topScores, playerCount } from './scores-db.js';
+import { saveBest, rankOf, topScores, playerCount, leaderRun } from './scores-db.js';
 import { deviceOwner } from './device-key.js';
 import { claimName } from './name-owners.js';
 import { renameDay } from './rename.js';
@@ -62,9 +64,16 @@ async function getTop(url, env, cors) {
   return json({ mode, day, players, top }, 200, cors);
 }
 
+async function getBest(url, env, cors) {
+  const mode = cleanMode(url.searchParams.get('mode')), day = cleanDay(url.searchParams.get('day'));
+  if (!mode || !day) return json({ error: 'bad mode or day' }, 400, cors);
+  return json({ mode, day, run: await leaderRun(env.DB, { mode, day }) }, 200, cors);
+}
+
 const ROUTES = {
   'POST /score': [postScore, 'write'],
   'GET /top': [(req, env, cors, url) => getTop(url, env, cors), 'read'],
+  'GET /best': [(req, env, cors, url) => getBest(url, env, cors), 'read'],
   'GET /month': [(req, env, cors, url) => getMonth(url, env, cors), 'read'],
   'GET /trophies': [(req, env, cors, url) => getTrophies(url, env, cors), 'read'],
   'GET /checks/pending': [getPending, 'read'],
