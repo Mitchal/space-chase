@@ -7,7 +7,7 @@ the game's calendar shows any past day, and places 1 to 3 are that player's gold
 they arrive and checked a minute or so later by a GitHub Action that replays each run (see "Every score is checked"
 below), so the Worker itself stays within the free plan's 10 ms of CPU per request.
 
-Until its address is in `game/pods/leaderboard/leaderboard-url.js`, the game has no board and works exactly as before.
+Until its address is in `game/core/server-url.js`, the game has no board and works exactly as before.
 
 ## Put it online (once, about 10 minutes)
 
@@ -44,7 +44,7 @@ All commands run in this folder (`leaderboard-worker/`).
    curl "https://space-chase-leaderboard.your-name.workers.dev/top?mode=flight&day=2026-11-06"
    ```
    You should see `{"mode":"flight","day":"2026-11-06","players":0,"top":[]}`.
-8. **Tell the game:** paste the address into `DEPLOYED` in `game/pods/leaderboard/leaderboard-url.js`, then release as
+8. **Tell the game:** paste the address into `DEPLOYED` in `game/core/server-url.js`, then release as
    usual (bump the version, push to `master`). The Android app picks it up with its next build.
 
 Then turn on score checks (next section).
@@ -212,6 +212,28 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   npx wrangler d1 execute space-chase-leaderboard --remote --command "SELECT * FROM scores WHERE day = '2026-11-06' ORDER BY mode, score DESC"
   ```
 
+## Turn on daily reminders (once, about 5 minutes)
+
+On the web, the daily reminder is a real notification: the game subscribes the browser to push, and every five minutes
+the Worker sends one to each player whose time has come (`src/reminder-sender.js`). The push says nothing itself; the
+game's service worker shows the words (`game/pods/daily-reminder/service-worker.js`). Until this is done, turning
+the reminder on in the web game says it couldn't be set.
+
+1. **The key pair.** Its public half is `VAPID_PUBLIC_KEY` in `wrangler.toml`; the private half is in `.dev.vars`
+   (not in git), so `npm run dev` already sends. Give the private half to the deployed Worker:
+   ```bash
+   grep VAPID_PRIVATE_KEY .dev.vars | cut -d= -f2 | npx wrangler secret put VAPID_PRIVATE_KEY
+   ```
+   Keep it: a new pair means every browser's subscription stops working (they're cleaned up after five refused days,
+   and players get the ask again from the menu link). To make a new pair anyway:
+   ```bash
+   node -e "const j=require('crypto').generateKeyPairSync('ec',{namedCurve:'prime256v1'}).privateKey.export({format:'jwk'});console.log('public',Buffer.concat([Buffer.from([4]),Buffer.from(j.x,'base64url'),Buffer.from(j.y,'base64url')]).toString('base64url'));console.log('private',j.d)"
+   ```
+2. **Release in this order:** `npm run db:remote` (adds `0005_reminders.sql`), the secret above, `npm run deploy`
+   (also adds the five-minute schedule), then the game.
+3. **Check it works:** turn the reminder on in the web game for a time a few minutes ahead; the notification comes
+   within five minutes of it. `npx wrangler tail` shows `reminders: {"sent":1,...}`.
+
 ## The API
 
 - `POST /score` with JSON `{mode, day, name, score, simVersion, replay, was?}` and the header
@@ -236,5 +258,10 @@ only works on localhost. The local database lives in `.wrangler/`; delete that f
   `GET /checks/pending?limit=50` returns `{runs: [{mode, day, key, at, score, simVersion, replay}]}`, the oldest
   waiting runs; `POST /checks/verdicts` with `{verdicts: [{mode, day, key, at, score, ok, why?}]}` returns `{applied}`.
   A verdict on a run the player has since beaten changes nothing (`at` and `score` no longer match).
+
+- `GET /reminder/key` returns `{key}`: the public key browsers subscribe to pushes with, or `null` while reminders are
+  off. `POST /reminder` with `{endpoint, hour, minute, timeZone}` reminds that browser every day at that local time
+  (again to change it) and returns `{nextAt}`; only addresses at the browsers' push services are taken (400 otherwise);
+  503 `{"error":"off"}` while the keys aren't set. `POST /reminder/off` with `{endpoint}` stops it.
 
 `mode` is the game mode's id: `flight` (Escape, in points) or `survive` (milliseconds). Higher is better in both.

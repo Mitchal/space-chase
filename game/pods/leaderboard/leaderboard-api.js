@@ -1,6 +1,6 @@
 // Talks to the leaderboard Worker (leaderboard-worker/). Every call resolves, never throws: null when the board can't
 // be reached (offline, no Worker, a slow network), so the game simply carries on without it.
-import { LEADERBOARD_URL } from './leaderboard-url.js';
+import { SERVER_URL as LEADERBOARD_URL } from '../../core/server-url.js';
 import { deviceKey } from './device-key.js';
 
 const TIMEOUT_MS = 6000;

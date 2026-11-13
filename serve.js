@@ -3,6 +3,7 @@
 // LURE_DIST=1 serves the player build (dist/, from tools/build-web.js) on port 8766 instead, as a plain static host.
 // LURE_PORT picks another port (e.g. when an old server still holds the default one).
 const http = require('http'), fs = require('fs'), path = require('path');
+const podWorkerParts = require('./tools/pod-worker-parts.js');
 const HOST = process.env.LURE_HOST || '127.0.0.1', DIST = !!process.env.LURE_DIST, PORT = +process.env.LURE_PORT || (DIST ? 8766 : 8765);
 const ROOT = path.join(__dirname, DIST ? 'dist' : 'game');
 const LOG = path.join(__dirname, 'data', 'taste-log.jsonl');
@@ -29,6 +30,13 @@ http.createServer((req, res) => {
     const pods = fs.existsSync(dir) ? fs.readdirSync(dir).filter(n => fs.existsSync(path.join(dir, n, 'pod.js'))).sort() : [];
     res.writeHead(200, { 'content-type': 'application/json' });
     return res.end(JSON.stringify(pods));
+  }
+  // A bare service worker (no offline cache while developing), with the pods' own parts, e.g. push notifications.
+  if (req.url === '/sw.js') {
+    res.writeHead(200, { 'content-type': 'text/javascript', 'cache-control': 'no-store' });
+    return res.end(['// The dev server\'s service worker (serve.js).', podWorkerParts(path.join(ROOT, 'pods')),
+      'self.addEventListener(\'install\', () => self.skipWaiting());',
+      'self.addEventListener(\'activate\', e => e.waitUntil(self.clients.claim()));', ''].join('\n'));
   }
   if (req.url === '/api/log' && req.method === 'GET') {
     res.writeHead(200, { 'content-type': 'application/json' });

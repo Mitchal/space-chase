@@ -1,5 +1,6 @@
 // What the reminder pod remembers in this browser (or app): how many runs you've flown, whether we've asked yet, and
-// the reminder you set ('app' = a phone notification the app schedules; 'calendar' = an event you added on the web).
+// the reminder you set ('app' = a notification the Android app schedules; 'push' = a web notification the game's
+// server sends; 'calendar', from versions before 1.7, = a calendar event: no longer offered, treated as none).
 const KEY = 'spacechase.reminder.v1';
 export const ASK_AFTER_RUNS = 5;
 

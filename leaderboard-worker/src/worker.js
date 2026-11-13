@@ -13,6 +13,8 @@
 //                leader with their run's input, so the game can show it being played.
 //   GET  /month, GET /trophies: the calendar of past days (history-routes.js).
 //   GET  /checks/pending, POST /checks/verdicts: for the run checker only (run-check-routes.js).
+//   GET  /reminder/key, POST /reminder, POST /reminder/off: daily reminders as web push (reminder-routes.js), sent
+//                every five minutes to whoever is due (reminder-sender.js).
 // Too many calls from one address in a minute: 429 (rate-limits.js). Every hour, closed days' top fives are kept for
 // good once their runs are checked (podium-db.js), and days over 30 days old are deleted (cleanup.js).
 import { originAllowed, corsHeaders } from './cors.js';
@@ -32,6 +34,8 @@ import { checkRunShape, MAX_BODY } from './run-shape.js'; // MAX_BODY: a score w
 import { getPending, postVerdicts } from './run-check-routes.js';
 import { uncheckedCount } from './run-checks-db.js';
 import { requestCheck } from './check-dispatch.js';
+import { getKey, postReminder, postReminderOff } from './reminder-routes.js';
+import { REMINDER_CRON, sendDueReminders } from './reminder-sender.js';
 
 async function postScore(request, env, cors, url, ctx) {
   const owner = await deviceOwner(request);
@@ -78,6 +82,9 @@ const ROUTES = {
   'GET /trophies': [(req, env, cors, url) => getTrophies(url, env, cors), 'read'],
   'GET /checks/pending': [getPending, 'read'],
   'POST /checks/verdicts': [postVerdicts, 'read'],
+  'GET /reminder/key': [getKey, 'read'],
+  'POST /reminder': [postReminder, 'write'],
+  'POST /reminder/off': [postReminderOff, 'write'],
 };
 
 export default {
@@ -96,9 +103,14 @@ export default {
     }
   },
 
-  // Hourly: keep the top fives of days that have closed and been checked, then forget old days (in that order, so
+  // Every five minutes: daily reminders that are due. Hourly: keep the top fives of days that have closed and been checked, then forget old days (in that order, so
   // nothing is missed). Runs still waiting for their check get the checker started again.
   async scheduled(event, env) {
+    if (event.cron === REMINDER_CRON) {
+      const sent = await sendDueReminders(env);
+      if (sent !== 'off' && sent.sent + sent.gone + sent.refused) console.log('reminders:', JSON.stringify(sent));
+      return;
+    }
     const closed = lastClosedDay(), kept = await archiveClosedDays(env.DB, closed);
     const [waiting, unchecked] = await Promise.all([closedDaysWaiting(env.DB, closed), uncheckedCount(env.DB)]);
     const dispatch = unchecked ? await requestCheck(env) : 'nothing to check';

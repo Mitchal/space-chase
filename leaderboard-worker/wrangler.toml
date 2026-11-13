@@ -10,6 +10,9 @@ compatibility_date = "2026-10-01"
 GITHUB_REPO = "Mitchal/space-chase"
 CHECK_WORKFLOW = "check-runs.yml"
 CHECK_REF = "master"
+# Daily reminders as web push (src/reminder-routes.js): the public half of the key pair. The private half is the secret
+# VAPID_PRIVATE_KEY (README, "Turn on daily reminders"); for `npm run dev` it's in .dev.vars (not in git).
+VAPID_PUBLIC_KEY = "BHXLHUjPLWqvbsYPT6XgHSxmI1cmQN3YBmvYJPmIOkcub45NxUCVyvwmFgBLqGElM8aM_a8i_OHZ6s40qKovLnc"
 
 [[d1_databases]]
 binding = "DB"
@@ -34,5 +37,6 @@ simple = { limit = 120, period = 60 }
 # Every hour at half past: keep the top five of each day that has closed (src/podium-db.js), then delete days older
 # than 30 (src/cleanup.js). A day closes at midnight in Sweden plus 30 minutes for runs still flying (src/day-close.js),
 # so the night's run at :35 keeps it right away.
+# Every five minutes: send the daily reminders that are due (src/reminder-sender.js).
 [triggers]
-crons = ["35 * * * *"]
+crons = ["35 * * * *", "*/5 * * * *"]
